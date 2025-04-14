@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ModeToggle } from "@/components/mode-toggle"
 import { UserNav } from "@/components/user-nav"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { AddTransactionDialog } from "@/components/add-transaction-dialog"
 
 export function SiteHeader() {
@@ -34,6 +34,7 @@ export function SiteHeader() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left">
+            <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
             <div className="flex flex-col gap-6 py-4">
               <Link href="/" className="flex items-center gap-2">
                 <WalletIcon className="h-8 w-8" />

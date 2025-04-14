@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { CalendarIcon, Plus } from "lucide-react"
+import { CalendarIcon, Plus, ArrowDownRight, ArrowUpRight } from "lucide-react"
 import dayjs from "dayjs"
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -56,7 +56,12 @@ const accounts = [
   { id: "3", name: "Credit Card" },
 ]
 
-export function AddTransactionDialog({ className }: { className?: string }) {
+interface AddTransactionDialogProps {
+  className?: string
+  type: 'income' | 'expense'
+}
+
+export function AddTransactionDialog({ className, type }: AddTransactionDialogProps) {
   const [open, setOpen] = useState(false)
   const form = useForm({
     resolver: yupResolver(formSchema),
@@ -82,8 +87,18 @@ export function AddTransactionDialog({ className }: { className?: string }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className={`${className} flex items-center justify-center bg-gray-100 p-1 sm:p-2 rounded-full`}>
-            <Plus className="h-4 w-4 text-gray-500" />
+        <Button variant="ghost" size="sm" className="flex items-center gap-2">
+          {type === 'income' ? (
+            <>
+              <ArrowDownRight className="h-4 w-4 text-emerald-500" />
+              Add Income
+            </>
+          ) : (
+            <>
+              <ArrowUpRight className="h-4 w-4 text-red-500" />
+              Add Expense
+            </>
+          )}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

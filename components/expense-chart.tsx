@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useTheme } from "next-themes"
 import {
   Bar,
@@ -21,16 +21,32 @@ import {
 } from "recharts"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ChartTypeDropdown } from "@/components/chart-type-dropdown"
+import { useForm } from "react-hook-form"
+
+interface ChartData {
+  name: string;
+  Groceries: number;
+  Rent: number;
+  Utilities: number;
+  Entertainment: number;
+  Transportation: number;
+}
+
+interface PieData {
+  name: string;
+  value: number;
+  color: string;
+}
 
 // Sample data - in a real app, this would come from your database
-const monthlyData = [
+const monthlyData: ChartData[] = [
   {
     name: "Jan",
     Groceries: 400,
     Rent: 1200,
     Utilities: 150,
-    Entertainment: 300,
-    Transportation: 200,
+    Entertainment: 200,
+    Transportation: 100,
   },
   {
     name: "Feb",
@@ -75,12 +91,12 @@ const monthlyData = [
 ]
 
 // Prepare data for pie chart
-const pieData = [
-  { name: "Groceries", value: 430, color: "#10b981" },
+const pieData: PieData[] = [
+  { name: "Groceries", value: 400, color: "#10b981" },
   { name: "Rent", value: 1200, color: "#3b82f6" },
-  { name: "Utilities", value: 165, color: "#6366f1" },
-  { name: "Entertainment", value: 330, color: "#f59e0b" },
-  { name: "Transportation", value: 215, color: "#ef4444" },
+  { name: "Utilities", value: 150, color: "#6366f1" },
+  { name: "Entertainment", value: 200, color: "#f59e0b" },
+  { name: "Transportation", value: 100, color: "#ef4444" },
 ]
 
 // Prepare data for area chart
@@ -93,9 +109,59 @@ interface ExpenseChartProps {
   chartType: 'bar' | 'line' | 'pie' | 'area'
 }
 
+interface FormData {
+  amount: number;
+  category: string;
+  description: string;
+  date: Date;
+}
+
+function useWindowSize() {
+  const [windowSize, setWindowSize] = useState({
+    width: 0,
+    height: 0,
+  })
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      })
+    }
+
+    // Add event listener
+    window.addEventListener("resize", handleResize)
+
+    // Call handler right away so state gets updated with initial window size
+    handleResize()
+
+    // Remove event listener on cleanup
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
+
+  return windowSize
+}
+
 export function ExpenseChart({ chartType }: ExpenseChartProps) {
   const { theme } = useTheme()
   const isDark = theme === "dark"
+  const { width } = useWindowSize()
+  const isMobile = width < 768
+
+  const fontSize: { axis: number; legend: number } = {
+    axis: isMobile ? 12 : 14,
+    legend: isMobile ? 10 : 12,
+  }
+
+  const form = useForm<FormData>({
+    defaultValues: {
+      amount: 0,
+      category: "",
+      description: "",
+      date: new Date(),
+    },
+  })
 
   // Define vibrant colors for categories
   const colors = {
@@ -106,25 +172,55 @@ export function ExpenseChart({ chartType }: ExpenseChartProps) {
     Transportation: "#ef4444", // red-500
   }
 
-  // Common tooltip and chart grid styling
   const tooltipStyle = {
     contentStyle: {
       backgroundColor: isDark ? "#1f2937" : "#fff",
       borderColor: isDark ? "#374151" : "#e5e7eb",
-      color: isDark ? "#fff" : "#000",
+      borderRadius: "0.375rem",
+      padding: "0.5rem",
     },
+    formatter: (value: number) => [`$${value.toFixed(2)}`, "Amount"],
   }
 
   const renderChart = () => {
     switch (chartType) {
+      case 'bar':
+        return (
+          <BarChart width="100%" height={350} data={monthlyData}>
+            <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#333" : "#eee"} />
+            <XAxis
+              dataKey="name"
+              stroke={isDark ? "#888" : "#333"}
+              tick={{ fontSize: fontSize.axis }}
+            />
+            <YAxis
+              stroke={isDark ? "#888" : "#333"}
+              tick={{ fontSize: fontSize.axis }}
+            />
+            <Tooltip {...tooltipStyle} />
+            <Legend wrapperStyle={{ fontSize: fontSize.legend }} />
+            <Bar dataKey="Groceries" fill={colors.Groceries} />
+            <Bar dataKey="Rent" fill={colors.Rent} />
+            <Bar dataKey="Utilities" fill={colors.Utilities} />
+            <Bar dataKey="Entertainment" fill={colors.Entertainment} />
+            <Bar dataKey="Transportation" fill={colors.Transportation} />
+          </BarChart>
+        )
       case 'line':
         return (
           <LineChart width="100%" height={350} data={monthlyData}>
             <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#333" : "#eee"} />
-            <XAxis dataKey="name" stroke={isDark ? "#888" : "#333"} tick={{ fontSize: window.innerWidth < 768 ? 12 : 14 }} />
-            <YAxis stroke={isDark ? "#888" : "#333"} tick={{ fontSize: window.innerWidth < 768 ? 12 : 14 }} />
+            <XAxis
+              dataKey="name"
+              stroke={isDark ? "#888" : "#333"}
+              tick={{ fontSize: fontSize.axis }}
+            />
+            <YAxis
+              stroke={isDark ? "#888" : "#333"}
+              tick={{ fontSize: fontSize.axis }}
+            />
             <Tooltip {...tooltipStyle} />
-            <Legend wrapperStyle={{ fontSize: window.innerWidth < 768 ? '10px' : '12px' }} />
+            <Legend wrapperStyle={{ fontSize: fontSize.legend }} />
             <Line type="monotone" dataKey="Groceries" stroke={colors.Groceries} activeDot={{ r: 6 }} />
             <Line type="monotone" dataKey="Rent" stroke={colors.Rent} />
             <Line type="monotone" dataKey="Utilities" stroke={colors.Utilities} />
@@ -143,23 +239,30 @@ export function ExpenseChart({ chartType }: ExpenseChartProps) {
               outerRadius={100}
               fill="#8884d8"
               dataKey="value"
-              label={({ name, percent }) => window.innerWidth < 768 ? `${(percent * 100).toFixed(0)}%` : `${name} ${(percent * 100).toFixed(0)}%`}
+              label={({ name, percent }) => isMobile ? `${(percent * 100).toFixed(0)}%` : `${name} ${(percent * 100).toFixed(0)}%`}
             >
               {pieData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip {...tooltipStyle} formatter={(value) => [`$${value}`, "Amount"]} />
-            <Legend wrapperStyle={{ fontSize: window.innerWidth < 768 ? '10px' : '12px' }} />
+            <Tooltip {...tooltipStyle} />
+            <Legend wrapperStyle={{ fontSize: fontSize.legend }} />
           </PieChart>
         )
       case 'area':
         return (
           <AreaChart width="100%" height={350} data={areaData}>
             <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#333" : "#eee"} />
-            <XAxis dataKey="name" stroke={isDark ? "#888" : "#333"} tick={{ fontSize: window.innerWidth < 768 ? 12 : 14 }} />
-            <YAxis stroke={isDark ? "#888" : "#333"} tick={{ fontSize: window.innerWidth < 768 ? 12 : 14 }} />
-            <Tooltip {...tooltipStyle} formatter={(value) => [`$${value}`, "Total Expenses"]} />
+            <XAxis
+              dataKey="name"
+              stroke={isDark ? "#888" : "#333"}
+              tick={{ fontSize: fontSize.axis }}
+            />
+            <YAxis
+              stroke={isDark ? "#888" : "#333"}
+              tick={{ fontSize: fontSize.axis }}
+            />
+            <Tooltip {...tooltipStyle} />
             <Area type="monotone" dataKey="Total" stroke="#8884d8" fill="#8884d8" />
           </AreaChart>
         )
@@ -167,10 +270,17 @@ export function ExpenseChart({ chartType }: ExpenseChartProps) {
         return (
           <BarChart width="100%" height={350} data={monthlyData}>
             <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#333" : "#eee"} />
-            <XAxis dataKey="name" stroke={isDark ? "#888" : "#333"} tick={{ fontSize: window.innerWidth < 768 ? 12 : 14 }} />
-            <YAxis stroke={isDark ? "#888" : "#333"} tick={{ fontSize: window.innerWidth < 768 ? 12 : 14 }} />
+            <XAxis
+              dataKey="name"
+              stroke={isDark ? "#888" : "#333"}
+              tick={{ fontSize: fontSize.axis }}
+            />
+            <YAxis
+              stroke={isDark ? "#888" : "#333"}
+              tick={{ fontSize: fontSize.axis }}
+            />
             <Tooltip {...tooltipStyle} />
-            <Legend wrapperStyle={{ fontSize: window.innerWidth < 768 ? '10px' : '12px' }} />
+            <Legend wrapperStyle={{ fontSize: fontSize.legend }} />
             <Bar dataKey="Groceries" fill={colors.Groceries} />
             <Bar dataKey="Rent" fill={colors.Rent} />
             <Bar dataKey="Utilities" fill={colors.Utilities} />

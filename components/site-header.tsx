@@ -21,11 +21,15 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { AddTransactionDialog } from "@/components/add-transaction-dialog"
 import { AddActionDropdown } from "./add-action-dropdown"
 
-export function SiteHeader() {
+interface SiteHeaderProps {
+  className?: string
+}
+
+export function SiteHeader({ className }: SiteHeaderProps) {
   const pathname = usePathname()
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className={cn("sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 py-3", className)}>
       <div className="container mx-auto max-w-7xl px-2 sm:px-4 lg:px-6 flex h-14 items-center justify-between">
         <div className="flex items-center">
           <Sheet>

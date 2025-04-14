@@ -11,9 +11,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { LogOut, Settings, User } from "lucide-react"
+import { LogOut, Settings, User, Moon, Sun } from "lucide-react"
+import { useTheme } from "next-themes"
 
 export function UserNav() {
+  const { setTheme, theme } = useTheme()
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -40,6 +43,14 @@ export function UserNav() {
           <DropdownMenuItem>
             <Settings className="mr-2 h-4 w-4" />
             <span>Settings</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+            {theme === "dark" ? (
+              <Sun className="mr-2 h-4 w-4" />
+            ) : (
+              <Moon className="mr-2 h-4 w-4" />
+            )}
+            <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

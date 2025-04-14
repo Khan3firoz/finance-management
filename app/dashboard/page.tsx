@@ -1,89 +1,126 @@
-import { Suspense } from "react"
+"use client"
+
+import { Suspense, useState } from "react"
 import Link from "next/link"
-import { ArrowRight, CreditCard, DollarSign, LineChart, PiggyBank, Plus, Wallet } from "lucide-react"
+import { ArrowRight, CreditCard, DollarSign, LineChart, PiggyBank, Plus, Wallet, ChevronDown, BarChart, PieChart, AreaChart } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 import { AccountSummary } from "@/components/account-summary"
 import { ExpenseChart } from "@/components/expense-chart"
 import { RecentTransactions } from "@/components/recent-transactions"
-import { AddTransactionDialog } from "@/components/add-transaction-dialog"
 import { BudgetOverview } from "@/components/budget-overview"
+import { AddActionDropdown } from "@/components/add-action-dropdown"
 
 export default function DashboardPage() {
+  const [chartType, setChartType] = useState<'bar' | 'line' | 'pie' | 'area'>('bar')
+
   return (
     <div className="flex flex-col">
-      <div className="flex-1 space-y-4 p-8 pt-6">
+      <div className="flex-1 space-y-4 p-2  sm:p-8  pt-6">
         <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h2>
           <div className="flex items-center space-x-2">
-            <AddTransactionDialog />
+            <AddActionDropdown />
           </div>
         </div>
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="budgets">Budgets</TabsTrigger>
+            <TabsTrigger value="overview" className="text-sm sm:text-base">Overview</TabsTrigger>
+            <TabsTrigger value="analytics" className="text-sm sm:text-base">Analytics</TabsTrigger>
+            <TabsTrigger value="budgets" className="text-sm sm:text-base">Budgets</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium">Total Balance</CardTitle>
                   <Wallet className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$5,231.89</div>
-                  <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+                  <div className="text-xl sm:text-2xl font-bold">$5,231.89</div>
+                  <p className="text-xs sm:text-sm text-muted-foreground">+20.1% from last month</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Income</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium">Income</CardTitle>
                   <DollarSign className="h-4 w-4 text-emerald-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-emerald-500">$3,500.00</div>
-                  <p className="text-xs text-muted-foreground">+2.5% from last month</p>
+                  <div className="text-xl sm:text-2xl font-bold text-emerald-500">$3,500.00</div>
+                  <p className="text-xs sm:text-sm text-muted-foreground">+2.5% from last month</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Expenses</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium">Expenses</CardTitle>
                   <CreditCard className="h-4 w-4 text-red-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-red-500">$1,892.50</div>
-                  <p className="text-xs text-muted-foreground">+18.2% from last month</p>
+                  <div className="text-xl sm:text-2xl font-bold text-red-500">$1,892.50</div>
+                  <p className="text-xs sm:text-sm text-muted-foreground">+18.2% from last month</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Savings</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium">Savings</CardTitle>
                   <PiggyBank className="h-4 w-4 text-cyan-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-cyan-500">$1,607.50</div>
-                  <p className="text-xs text-muted-foreground">+4.3% from last month</p>
+                  <div className="text-xl sm:text-2xl font-bold text-cyan-500">$1,607.50</div>
+                  <p className="text-xs sm:text-sm text-muted-foreground">+4.3% from last month</p>
                 </CardContent>
               </Card>
             </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-              <Card className="col-span-4">
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
+              <Card className="col-span-1 md:col-span-4">
                 <CardHeader>
-                  <CardTitle>Expense Overview</CardTitle>
+                  <div className="flex flex-row items-center justify-between">
+                    <CardTitle>Expense Overview</CardTitle>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="w-[130px] justify-between">
+                          <div className="flex items-center gap-2">
+                            {chartType === 'bar' && <BarChart className="h-4 w-4" />}
+                            {chartType === 'line' && <LineChart className="h-4 w-4" />}
+                            {chartType === 'pie' && <PieChart className="h-4 w-4" />}
+                            {chartType === 'area' && <AreaChart className="h-4 w-4" />}
+                            {chartType.charAt(0).toUpperCase() + chartType.slice(1)}
+                          </div>
+                          <ChevronDown className="h-4 w-4 opacity-50" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => setChartType('bar')} className="flex items-center gap-2">
+                          <BarChart className="h-4 w-4" />
+                          Bar Chart
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setChartType('line')} className="flex items-center gap-2">
+                          <LineChart className="h-4 w-4" />
+                          Line Chart
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setChartType('pie')} className="flex items-center gap-2">
+                          <PieChart className="h-4 w-4" />
+                          Pie Chart
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setChartType('area')} className="flex items-center gap-2">
+                          <AreaChart className="h-4 w-4" />
+                          Area Chart
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </CardHeader>
-                <CardContent className="pl-2">
-                  <Suspense fallback={<Skeleton className="h-[350px] w-full" />}>
-                    <ExpenseChart />
-                  </Suspense>
+                <CardContent>
+                  <ExpenseChart chartType={chartType} />
                 </CardContent>
               </Card>
-              <Card className="col-span-3">
+              <Card className="col-span-1 md:col-span-3">
                 <CardHeader>
                   <CardTitle>Recent Transactions</CardTitle>
                   <CardDescription>You made 12 transactions this month.</CardDescription>
@@ -140,8 +177,8 @@ export default function DashboardPage() {
             </Card>
           </TabsContent>
         </Tabs>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <Card className="col-span-4">
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
+          <Card className="col-span-12">
             <CardHeader>
               <CardTitle>Accounts</CardTitle>
               <CardDescription>Manage your financial accounts.</CardDescription>
@@ -159,38 +196,6 @@ export default function DashboardPage() {
                 </Link>
               </Button>
             </CardFooter>
-          </Card>
-          <Card className="col-span-3">
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Common tasks and shortcuts.</CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              <Button asChild variant="outline" className="justify-start">
-                <Link href="/income/new">
-                  <Plus className="mr-2 h-4 w-4 text-emerald-500" />
-                  Add Income
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="justify-start">
-                <Link href="/expenses/new">
-                  <Plus className="mr-2 h-4 w-4 text-red-500" />
-                  Add Expense
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="justify-start">
-                <Link href="/budgets/new">
-                  <Plus className="mr-2 h-4 w-4 text-cyan-500" />
-                  Create Budget
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="justify-start">
-                <Link href="/categories">
-                  <Plus className="mr-2 h-4 w-4 text-purple-500" />
-                  Manage Categories
-                </Link>
-              </Button>
-            </CardContent>
           </Card>
         </div>
       </div>

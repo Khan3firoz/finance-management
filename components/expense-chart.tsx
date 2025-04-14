@@ -20,6 +20,7 @@ import {
   AreaChart,
 } from "recharts"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ChartTypeDropdown } from "@/components/chart-type-dropdown"
 
 // Sample data - in a real app, this would come from your database
 const monthlyData = [
@@ -88,10 +89,13 @@ const areaData = monthlyData.map((item) => ({
   Total: item.Groceries + item.Rent + item.Utilities + item.Entertainment + item.Transportation,
 }))
 
-export function ExpenseChart() {
+interface ExpenseChartProps {
+  chartType: 'bar' | 'line' | 'pie' | 'area'
+}
+
+export function ExpenseChart({ chartType }: ExpenseChartProps) {
   const { theme } = useTheme()
   const isDark = theme === "dark"
-  const [chartType, setChartType] = useState("bar")
 
   // Define vibrant colors for categories
   const colors = {
@@ -111,81 +115,85 @@ export function ExpenseChart() {
     },
   }
 
+  const renderChart = () => {
+    switch (chartType) {
+      case 'line':
+        return (
+          <LineChart width="100%" height={350} data={monthlyData}>
+            <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#333" : "#eee"} />
+            <XAxis dataKey="name" stroke={isDark ? "#888" : "#333"} tick={{ fontSize: window.innerWidth < 768 ? 12 : 14 }} />
+            <YAxis stroke={isDark ? "#888" : "#333"} tick={{ fontSize: window.innerWidth < 768 ? 12 : 14 }} />
+            <Tooltip {...tooltipStyle} />
+            <Legend wrapperStyle={{ fontSize: window.innerWidth < 768 ? '10px' : '12px' }} />
+            <Line type="monotone" dataKey="Groceries" stroke={colors.Groceries} activeDot={{ r: 6 }} />
+            <Line type="monotone" dataKey="Rent" stroke={colors.Rent} />
+            <Line type="monotone" dataKey="Utilities" stroke={colors.Utilities} />
+            <Line type="monotone" dataKey="Entertainment" stroke={colors.Entertainment} />
+            <Line type="monotone" dataKey="Transportation" stroke={colors.Transportation} />
+          </LineChart>
+        )
+      case 'pie':
+        return (
+          <PieChart width={400} height={350}>
+            <Pie
+              data={pieData}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              outerRadius={100}
+              fill="#8884d8"
+              dataKey="value"
+              label={({ name, percent }) => window.innerWidth < 768 ? `${(percent * 100).toFixed(0)}%` : `${name} ${(percent * 100).toFixed(0)}%`}
+            >
+              {pieData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip {...tooltipStyle} formatter={(value) => [`$${value}`, "Amount"]} />
+            <Legend wrapperStyle={{ fontSize: window.innerWidth < 768 ? '10px' : '12px' }} />
+          </PieChart>
+        )
+      case 'area':
+        return (
+          <AreaChart width="100%" height={350} data={areaData}>
+            <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#333" : "#eee"} />
+            <XAxis dataKey="name" stroke={isDark ? "#888" : "#333"} tick={{ fontSize: window.innerWidth < 768 ? 12 : 14 }} />
+            <YAxis stroke={isDark ? "#888" : "#333"} tick={{ fontSize: window.innerWidth < 768 ? 12 : 14 }} />
+            <Tooltip {...tooltipStyle} formatter={(value) => [`$${value}`, "Total Expenses"]} />
+            <Area type="monotone" dataKey="Total" stroke="#8884d8" fill="#8884d8" />
+          </AreaChart>
+        )
+      default:
+        return (
+          <BarChart width="100%" height={350} data={monthlyData}>
+            <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#333" : "#eee"} />
+            <XAxis dataKey="name" stroke={isDark ? "#888" : "#333"} tick={{ fontSize: window.innerWidth < 768 ? 12 : 14 }} />
+            <YAxis stroke={isDark ? "#888" : "#333"} tick={{ fontSize: window.innerWidth < 768 ? 12 : 14 }} />
+            <Tooltip {...tooltipStyle} />
+            <Legend wrapperStyle={{ fontSize: window.innerWidth < 768 ? '10px' : '12px' }} />
+            <Bar dataKey="Groceries" fill={colors.Groceries} />
+            <Bar dataKey="Rent" fill={colors.Rent} />
+            <Bar dataKey="Utilities" fill={colors.Utilities} />
+            <Bar dataKey="Entertainment" fill={colors.Entertainment} />
+            <Bar dataKey="Transportation" fill={colors.Transportation} />
+          </BarChart>
+        )
+    }
+  }
+
   return (
-    <div className="space-y-4">
-      <Tabs value={chartType} onValueChange={setChartType} className="w-full">
-        <TabsList className="grid grid-cols-4 w-full md:w-auto">
-          <TabsTrigger value="bar">Bar Chart</TabsTrigger>
-          <TabsTrigger value="line">Line Chart</TabsTrigger>
-          <TabsTrigger value="pie">Pie Chart</TabsTrigger>
-          <TabsTrigger value="area">Area Chart</TabsTrigger>
-        </TabsList>
-        <TabsContent value="bar" className="mt-4">
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#333" : "#eee"} />
-              <XAxis dataKey="name" stroke={isDark ? "#888" : "#333"} />
-              <YAxis stroke={isDark ? "#888" : "#333"} />
-              <Tooltip {...tooltipStyle} />
-              <Legend />
-              <Bar dataKey="Groceries" fill={colors.Groceries} />
-              <Bar dataKey="Rent" fill={colors.Rent} />
-              <Bar dataKey="Utilities" fill={colors.Utilities} />
-              <Bar dataKey="Entertainment" fill={colors.Entertainment} />
-              <Bar dataKey="Transportation" fill={colors.Transportation} />
-            </BarChart>
-          </ResponsiveContainer>
-        </TabsContent>
-        <TabsContent value="line" className="mt-4">
-          <ResponsiveContainer width="100%" height={350}>
-            <LineChart data={monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#333" : "#eee"} />
-              <XAxis dataKey="name" stroke={isDark ? "#888" : "#333"} />
-              <YAxis stroke={isDark ? "#888" : "#333"} />
-              <Tooltip {...tooltipStyle} />
-              <Legend />
-              <Line type="monotone" dataKey="Groceries" stroke={colors.Groceries} activeDot={{ r: 8 }} />
-              <Line type="monotone" dataKey="Rent" stroke={colors.Rent} />
-              <Line type="monotone" dataKey="Utilities" stroke={colors.Utilities} />
-              <Line type="monotone" dataKey="Entertainment" stroke={colors.Entertainment} />
-              <Line type="monotone" dataKey="Transportation" stroke={colors.Transportation} />
-            </LineChart>
-          </ResponsiveContainer>
-        </TabsContent>
-        <TabsContent value="pie" className="mt-4">
-          <ResponsiveContainer width="100%" height={350}>
-            <PieChart>
-              <Pie
-                data={pieData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                outerRadius={120}
-                fill="#8884d8"
-                dataKey="value"
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-              >
-                {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip {...tooltipStyle} formatter={(value) => [`$${value}`, "Amount"]} />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </TabsContent>
-        <TabsContent value="area" className="mt-4">
-          <ResponsiveContainer width="100%" height={350}>
-            <AreaChart data={areaData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#333" : "#eee"} />
-              <XAxis dataKey="name" stroke={isDark ? "#888" : "#333"} />
-              <YAxis stroke={isDark ? "#888" : "#333"} />
-              <Tooltip {...tooltipStyle} formatter={(value) => [`$${value}`, "Total Expenses"]} />
-              <Area type="monotone" dataKey="Total" stroke="#8884d8" fill="#8884d8" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </TabsContent>
-      </Tabs>
+    <div className="space-y-4 px-[10px]">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
+        <h3 className="text-base sm:text-lg font-medium">Expense Overview</h3>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+
+        </div>
+      </div>
+      <div className="h-[300px] w-full">
+        <ResponsiveContainer width="100%" height={350}>
+          {renderChart()}
+        </ResponsiveContainer>
+      </div>
     </div>
   )
 }

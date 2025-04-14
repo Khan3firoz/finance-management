@@ -32,7 +32,7 @@ type Account = {
   name: string
   balance: number
   type: string
-  icon: any
+  iconName: string
   limit?: number
 }
 

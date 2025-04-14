@@ -11,11 +11,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 import { AccountSummary } from "@/components/account-summary"
-import { ExpenseChart } from "@/components/expense-chart"
 import { RecentTransactions } from "@/components/recent-transactions"
 import { BudgetOverview } from "@/components/budget-overview"
 import { AddActionDropdown } from "@/components/add-action-dropdown"
 import { fetchAccountStatsSummary, fetchIncomeExpense } from "@/app/service/account.service"
+import { TimeFilteredChart } from "@/components/time-filtered-chart"
+import { expenseData } from "@/app/data/expense-data"
 
 interface Summary {
   netAmount: number
@@ -29,7 +30,6 @@ interface IncomeExpense {
 }
 
 export default function DashboardPage() {
-  const [chartType, setChartType] = useState<'bar' | 'line' | 'pie' | 'area'>('bar')
   const [summary, setSummary] = useState<Summary | null>(null)
   const [incomeExpense, setIncomeExpense] = useState<IncomeExpense | null>(null)
 
@@ -56,11 +56,9 @@ export default function DashboardPage() {
     getIncomeExpense()
   }, [])
 
-  console.log(incomeExpense, "incomeExpense")
-
   return (
     <div className="flex flex-col">
-      <div className="flex-1 space-y-4 p-2  sm:p-8  pt-6">
+      <div className="flex-1 space-y-4 p-2 sm:p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h2>
           <div className="flex items-center space-x-2">
@@ -116,50 +114,17 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
             </div>
-            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
-              <Card className="col-span-1 md:col-span-4">
-                <CardHeader>
-                  <div className="flex flex-row items-center justify-between">
-                    <CardTitle>Expense Overview</CardTitle>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm" className="w-[130px] justify-between">
-                          <div className="flex items-center gap-2">
-                            {chartType === 'bar' && <BarChart className="h-4 w-4" />}
-                            {chartType === 'line' && <LineChart className="h-4 w-4" />}
-                            {chartType === 'pie' && <PieChart className="h-4 w-4" />}
-                            {chartType === 'area' && <AreaChart className="h-4 w-4" />}
-                            {chartType.charAt(0).toUpperCase() + chartType.slice(1)}
-                          </div>
-                          <ChevronDown className="h-4 w-4 opacity-50" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => setChartType('bar')} className="flex items-center gap-2">
-                          <BarChart className="h-4 w-4" />
-                          Bar Chart
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setChartType('line')} className="flex items-center gap-2">
-                          <LineChart className="h-4 w-4" />
-                          Line Chart
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setChartType('pie')} className="flex items-center gap-2">
-                          <PieChart className="h-4 w-4" />
-                          Pie Chart
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setChartType('area')} className="flex items-center gap-2">
-                          <AreaChart className="h-4 w-4" />
-                          Area Chart
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <ExpenseChart chartType={chartType} />
+            <div className="grid gap-4">
+              <Card className="col-span-12">
+                {/* <CardHeader>
+                  <CardTitle>Expense Overview</CardTitle>
+                  <CardDescription>Track your expenses across different categories</CardDescription>
+                </CardHeader> */}
+                <CardContent className="h-fit">
+                  <TimeFilteredChart data={expenseData} />
                 </CardContent>
               </Card>
-              <Card className="col-span-1 md:col-span-3">
+              <Card className="col-span-12">
                 <CardHeader>
                   <CardTitle>Recent Transactions</CardTitle>
                   <CardDescription>You made 12 transactions this month.</CardDescription>
@@ -216,7 +181,7 @@ export default function DashboardPage() {
             </Card>
           </TabsContent>
         </Tabs>
-        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
+        <div className="grid gap-4">
           <Card className="col-span-12">
             <CardHeader>
               <CardTitle>Accounts</CardTitle>

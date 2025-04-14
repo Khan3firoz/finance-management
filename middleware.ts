@@ -1,12 +1,17 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import storage from './utils/storage'
+
 
 // List of public routes that don't require authentication
 const publicRoutes = ['/', '/login', '/signup']
 
 export function middleware(request: NextRequest) {
-    const token = request.cookies.get('token')
+    const token = request.cookies.get('finTrac_token')
+    // const token = storage.getToken()
+    // console.log(token, "token")
     const { pathname } = request.nextUrl
+    debugger
 
     // Allow access to public routes without authentication
     if (publicRoutes.includes(pathname)) {

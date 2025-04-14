@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import Link from "next/link"
 import { ArrowRight, CreditCard, DollarSign, LineChart, PiggyBank, Plus, Wallet, ChevronDown, BarChart, PieChart, AreaChart } from "lucide-react"
 
@@ -15,9 +15,48 @@ import { ExpenseChart } from "@/components/expense-chart"
 import { RecentTransactions } from "@/components/recent-transactions"
 import { BudgetOverview } from "@/components/budget-overview"
 import { AddActionDropdown } from "@/components/add-action-dropdown"
+import { fetchAccountStatsSummary, fetchIncomeExpense } from "@/app/service/account.service"
+
+interface Summary {
+  netAmount: number
+  totalIncome: number
+  totalExpense: number
+}
+
+interface IncomeExpense {
+  income: number
+  expense: number
+}
 
 export default function DashboardPage() {
   const [chartType, setChartType] = useState<'bar' | 'line' | 'pie' | 'area'>('bar')
+  const [summary, setSummary] = useState<Summary | null>(null)
+  const [incomeExpense, setIncomeExpense] = useState<IncomeExpense | null>(null)
+
+  const getSummary = async () => {
+    try {
+      const res = await fetchAccountStatsSummary()
+      setSummary(res?.data)
+    } catch (err) {
+      console.log(err, "err")
+    }
+  }
+
+  const getIncomeExpense = async () => {
+    try {
+      const res = await fetchIncomeExpense()
+      setIncomeExpense(res?.data)
+    } catch (err) {
+      console.log(err, "err")
+    }
+  }
+
+  useEffect(() => {
+    getSummary()
+    getIncomeExpense()
+  }, [])
+
+  console.log(incomeExpense, "incomeExpense")
 
   return (
     <div className="flex flex-col">
@@ -42,7 +81,7 @@ export default function DashboardPage() {
                   <Wallet className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl sm:text-2xl font-bold">$5,231.89</div>
+                  <div className="text-xl sm:text-2xl font-bold">₹ {summary?.netAmount}</div>
                   <p className="text-xs sm:text-sm text-muted-foreground">+20.1% from last month</p>
                 </CardContent>
               </Card>
@@ -52,7 +91,7 @@ export default function DashboardPage() {
                   <DollarSign className="h-4 w-4 text-emerald-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl sm:text-2xl font-bold text-emerald-500">$3,500.00</div>
+                  <div className="text-xl sm:text-2xl font-bold text-emerald-500">₹ {summary?.totalIncome}</div>
                   <p className="text-xs sm:text-sm text-muted-foreground">+2.5% from last month</p>
                 </CardContent>
               </Card>
@@ -62,7 +101,7 @@ export default function DashboardPage() {
                   <CreditCard className="h-4 w-4 text-red-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl sm:text-2xl font-bold text-red-500">$1,892.50</div>
+                  <div className="text-xl sm:text-2xl font-bold text-red-500">₹ {summary?.totalExpense}</div>
                   <p className="text-xs sm:text-sm text-muted-foreground">+18.2% from last month</p>
                 </CardContent>
               </Card>
@@ -72,7 +111,7 @@ export default function DashboardPage() {
                   <PiggyBank className="h-4 w-4 text-cyan-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl sm:text-2xl font-bold text-cyan-500">$1,607.50</div>
+                  <div className="text-xl sm:text-2xl font-bold text-cyan-500">₹ 1,607.50</div>
                   <p className="text-xs sm:text-sm text-muted-foreground">+4.3% from last month</p>
                 </CardContent>
               </Card>
@@ -202,3 +241,4 @@ export default function DashboardPage() {
     </div>
   )
 }
+

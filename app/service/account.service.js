@@ -4,6 +4,9 @@ import dayjs from 'dayjs';
 const formatDate = (dateString) => {
     return dayjs(dateString).format('DD/MM/YYYY');
 };
+export const fetchAccountStatsSummary = async () => {
+    return await axios.get('/account/transaction/summary')
+}
 
 export const createAccount = async (payload) => {
     return await axios.post('/account/create', payload)

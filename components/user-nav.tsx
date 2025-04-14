@@ -13,9 +13,27 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { LogOut, Settings, User, Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
+import { useRouter } from "next/navigation"
+import Cookies from "js-cookie"
+import { toast } from "sonner"
 
 export function UserNav() {
   const { setTheme, theme } = useTheme()
+  const router = useRouter()
+
+  const handleLogout = () => {
+    // Clear token from cookies
+    Cookies.remove('token', {
+      secure: true,
+      sameSite: 'strict'
+    })
+
+    // Show success message
+    toast.success("Logged out successfully")
+
+    // Redirect to login page
+    router.push('/login')
+  }
 
   return (
     <DropdownMenu>
@@ -54,7 +72,7 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>

@@ -6,6 +6,7 @@ const storagePrefix = 'finTrac_';
 const storage = {
     getToken: () => {
         const tokenData = Cookies.get(`${storagePrefix}token`);
+        // console.log(tokenData, "tokenData")
         return tokenData ? JSON.parse(tokenData) : null;
     },
     setToken: (token) => {

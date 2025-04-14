@@ -19,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
 import { loginUser } from "@/app/service/user.service"
+import storage from "@/utils/storage"
 
 const loginSchema = z.object({
     email: z.string().email("Please enter a valid email address"),
@@ -58,12 +59,13 @@ export default function LoginPage() {
 
             if (token) {
                 // Store token securely in cookie
-                Cookies.set('token', token, {
-                    secure: true,
-                    sameSite: 'strict',
-                    expires: 7 // 7 days
-                })
-                routes.push('/')
+                storage.setToken(token)
+                // Cookies.set('token', token, {
+                //     secure: true,
+                //     sameSite: 'strict',
+                //     expires: 7 // 7 days
+                // })
+                routes.push('/dashboard')
                 toast.success("Logged in successfully")
             }
         } catch (err: any) {

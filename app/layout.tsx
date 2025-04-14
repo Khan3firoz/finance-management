@@ -5,6 +5,7 @@ import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
+import { Toaster } from "sonner"
 
 import "./globals.css"
 
@@ -13,7 +14,7 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Personal Finance Manager",
   description: "Manage your personal finances with ease",
-    generator: 'v0.dev'
+  generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -34,6 +35,7 @@ export default function RootLayout({
             </main>
             <SiteFooter className="mt-8" />
           </div>
+          <Toaster position="top-right" richColors />
         </ThemeProvider>
       </body>
     </html>
@@ -42,3 +44,4 @@ export default function RootLayout({
 
 
 import './globals.css'
+import { ToastProvider } from "@/components/ui/toast"

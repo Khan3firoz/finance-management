@@ -65,6 +65,19 @@ export function TimeFilteredChart({ data }: TimeFilteredChartProps) {
     const isDark = theme === "dark"
     const [timePeriod, setTimePeriod] = useState<'monthly' | 'yearly'>('monthly')
     const [selectedYear, setSelectedYear] = useState<string>(DEFAULT_YEAR)
+    const [windowWidth, setWindowWidth] = useState<number>(0)
+
+    useEffect(() => {
+        // Set initial width
+        setWindowWidth(window.innerWidth)
+
+        // Add resize listener
+        const handleResize = () => setWindowWidth(window.innerWidth)
+        window.addEventListener('resize', handleResize)
+
+        // Cleanup
+        return () => window.removeEventListener('resize', handleResize)
+    }, [])
 
     useEffect(() => {
         const availableYears = timePeriod === 'yearly'
@@ -207,7 +220,7 @@ export function TimeFilteredChart({ data }: TimeFilteredChartProps) {
                                 tickLine={false}
                                 axisLine={false}
                                 tick={{ fontSize: 12 }}
-                                interval={window?.innerWidth < 768 ? 1 : 0}
+                                interval={windowWidth < 768 ? 1 : 0}
                             />
                             <YAxis
                                 stroke={isDark ? "#888" : "#333"}

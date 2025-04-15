@@ -14,7 +14,7 @@ import { AccountSummary } from "@/components/account-summary"
 import { RecentTransactions } from "@/components/recent-transactions"
 import { BudgetOverview } from "@/components/budget-overview"
 import { AddActionDropdown } from "@/components/add-action-dropdown"
-import { fetchAccountStatsSummary, fetchIncomeExpense } from "@/app/service/account.service"
+import { fetchAccountList, fetchAccountStatsSummary, fetchAllTransaction, fetchIncomeExpense } from "@/app/service/account.service"
 import { TimeFilteredChart } from "@/components/time-filtered-chart"
 import { expenseData } from "@/app/data/expense-data"
 
@@ -32,6 +32,8 @@ interface IncomeExpense {
 export default function DashboardPage() {
   const [summary, setSummary] = useState<Summary | null>(null)
   const [incomeExpense, setIncomeExpense] = useState<IncomeExpense | null>(null)
+  const [allAccounts, setAllAccounts] = useState<any[]>([])
+  const [recentTransactions, setRecentTransactions] = useState<any[]>([])
 
   const getSummary = async () => {
     try {
@@ -51,11 +53,34 @@ export default function DashboardPage() {
     }
   }
 
+  const getAllAccounts = async () => {
+    try {
+      const res = await fetchAccountList()
+      setAllAccounts(res?.data)
+    } catch (err) {
+      console.log(err, "err")
+    }
+  }
+
+  const getRecentTransactions = async () => {
+    try {
+      const res = await fetchAllTransaction()
+      setRecentTransactions(res?.data?.transactions)
+    } catch (err) {
+      console.log(err, "err")
+    }
+  }
   useEffect(() => {
     getSummary()
     getIncomeExpense()
+    getAllAccounts()
+    getRecentTransactions()
   }, [])
 
+  console.log(recentTransactions, "recentTransactions")
+  console.log(allAccounts, "allAccounts")
+  console.log(summary, "summary")
+  console.log(incomeExpense, "incomeExpense")
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-2 sm:p-8 pt-6">
@@ -128,7 +153,7 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <Suspense fallback={<Skeleton className="h-[350px] w-full" />}>
-                    <RecentTransactions />
+                    <RecentTransactions transactions={recentTransactions} />
                   </Suspense>
                 </CardContent>
                 <CardFooter>

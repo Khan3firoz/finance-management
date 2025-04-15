@@ -4,73 +4,33 @@ import dayjs from "dayjs"
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { EditTransactionDialog } from "@/components/edit-transaction-dialog"
+import { useState } from "react"
 
-// Sample data - in a real app, this would come from your database
-const transactions = [
-  {
-    id: "1",
-    amount: 2500,
-    type: "income",
-    description: "Salary",
-    category: "Income",
-    date: "2023-06-01",
-    icon: "💼",
-    account: "Checking Account",
-  },
-  {
-    id: "2",
-    amount: 120.5,
-    type: "expense",
-    description: "Grocery Shopping",
-    category: "Groceries",
-    date: "2023-06-03",
-    icon: "🛒",
-    account: "Credit Card",
-  },
-  {
-    id: "3",
-    amount: 1200,
-    type: "expense",
-    description: "Rent Payment",
-    category: "Housing",
-    date: "2023-06-05",
-    icon: "🏠",
-    account: "Checking Account",
-  },
-  {
-    id: "4",
-    amount: 45.99,
-    type: "expense",
-    description: "Netflix Subscription",
-    category: "Entertainment",
-    date: "2023-06-07",
-    icon: "🎬",
-    account: "Credit Card",
-  },
-  {
-    id: "5",
-    amount: 500,
-    type: "income",
-    description: "Freelance Work",
-    category: "Income",
-    date: "2023-06-10",
-    icon: "💻",
-    account: "Savings Account",
-  },
-]
+interface RecentTransactionsProps {
+  transactions: any[]
+}
 
-export function RecentTransactions() {
+export function RecentTransactions({ transactions }: RecentTransactionsProps) {
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const transactionsPerPage = 5;
+
+  const indexOfLastTransaction = currentPage * transactionsPerPage;
+  const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
+  const currentTransactions = transactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
+  const totalPages = Math.ceil(transactions.length / transactionsPerPage);
+  console.log(transactions, "transactions===>")
   return (
     <div className="space-y-4">
-      {transactions.map((transaction) => (
+      {currentTransactions.map((transaction) => (
         <div key={transaction.id} className="flex items-center">
           <Avatar className="h-9 w-9">
-            <AvatarFallback>{transaction.icon}</AvatarFallback>
+            <AvatarFallback>{transaction.category?.icon}</AvatarFallback>
           </Avatar>
           <div className="ml-4 space-y-1">
-            <p className="text-sm font-medium leading-none">{transaction.description}</p>
+            <p className="text-md font-bold leading-none">{transaction.description}</p>
             <p className="text-xs text-muted-foreground">
-              {transaction.category} • {transaction.account}
+              {transaction.category?.name} • {transaction.account?.accountName}
             </p>
           </div>
           <div className="ml-auto font-medium">
@@ -85,9 +45,6 @@ export function RecentTransactions() {
               </span>
             </div>
             <p className="text-xs text-right text-muted-foreground">{dayjs(transaction.date).format("MMM D, YYYY")}</p>
-          </div>
-          <div className="ml-2">
-            <EditTransactionDialog transaction={transaction} />
           </div>
         </div>
       ))}

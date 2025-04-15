@@ -26,9 +26,15 @@ export const createTransaction = async (payload) => {
     return await axios.post('/account/transaction', payload)
 }
 
-export const fetchAllTransaction = async (type) => {
-    return await axios.get(`/account/transaction?${type ? `transactionType=${type}` : ''}`)
-}
+// export const fetchAllTransaction = async (type, startDate, endDate) => {
+//     return await axios.get(`/account/transaction?${type ? `transactionType=${type}` : ''}&startDate=${startDate}&endDate=${endDate}`)
+// }
+export const fetchAllTransaction = async (type, startDate, endDate) => {
+    const transactionTypeParam = type && type !== "all" ? `transactionType=${type}&` : '';
+    return await axios.get(
+        `/account/transaction?${transactionTypeParam}startDate=${startDate}&endDate=${endDate}`
+    );
+};
 
 export const fetchIncomeExpense = async ({ filterType, date, month, year }) => {
     let queryParams;

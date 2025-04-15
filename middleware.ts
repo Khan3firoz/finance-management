@@ -11,7 +11,6 @@ export function middleware(request: NextRequest) {
     // const token = storage.getToken()
     // console.log(token, "token")
     const { pathname } = request.nextUrl
-    debugger
 
     // Allow access to public routes without authentication
     if (publicRoutes.includes(pathname)) {

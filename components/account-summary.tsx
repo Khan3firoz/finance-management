@@ -4,12 +4,14 @@ import { Progress } from "@/components/ui/progress"
 import { EditAccountDialog } from "@/components/edit-account-dialog"
 
 type Account = {
-  id: string
+  _id: string
   name: string
   balance: number
   type: string
   iconName: string
   limit?: number
+  accountName: string
+  accountType: string
 }
 
 const iconMap: Record<string, LucideIcon> = {
@@ -18,46 +20,21 @@ const iconMap: Record<string, LucideIcon> = {
   CreditCard: CreditCard,
 }
 
-// Sample data - in a real app, this would come from your database
-const accounts: Account[] = [
-  {
-    id: "1",
-    name: "Checking Account",
-    balance: 2500.75,
-    type: "bank",
-    iconName: "Landmark",
-  },
-  {
-    id: "2",
-    name: "Savings Account",
-    balance: 12500.5,
-    type: "bank",
-    iconName: "Wallet",
-  },
-  {
-    id: "3",
-    name: "Credit Card",
-    balance: -1250.25,
-    type: "credit",
-    iconName: "CreditCard",
-    limit: 5000,
-  },
-]
-
-export function AccountSummary() {
-  const totalAssets = accounts.reduce((sum, account) => {
-    return account.type !== "credit" ? sum + account.balance : sum
+export function AccountSummary({ allAccounts }: { allAccounts: Account[] }) {
+  const totalAssets = allAccounts.reduce((sum, account) => {
+    return account.accountType !== "credit" ? sum + account.balance : sum
   }, 0)
 
   return (
     <div className="space-y-4">
-      {accounts.map((account) => {
+      {allAccounts.map((account) => {
         const Icon = iconMap[account.iconName]
+        console.log(account, "account")
         return (
-          <div key={account.id} className="flex flex-col space-y-2">
+          <div key={account._id} className="flex flex-col space-y-2">
             <div className="flex items-center">
-              <Icon className="mr-2 h-5 w-5 text-muted-foreground" />
-              <span className="font-medium">{account.name}</span>
+              {/* <Icon className="mr-2 h-5 w-5 text-muted-foreground" /> */}
+              <span className="font-medium">{account.accountName}</span>
               <span className={`ml-auto font-medium ${account.balance < 0 ? "text-red-500" : ""}`}>
                 ${Math.abs(account.balance).toFixed(2)}
               </span>
@@ -65,7 +42,9 @@ export function AccountSummary() {
                 <EditAccountDialog account={account} />
               </div>
             </div>
-            {account.type === "credit" && account.limit && (
+
+            {account.accountType?.trim().toLowerCase().replace(/\s+/g, '') === 'creditcard'
+              && typeof account.limit === "number" && account.limit > 0 && (
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Credit Used</span>

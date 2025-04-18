@@ -20,6 +20,7 @@ import { UserNav } from "@/components/user-nav"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { AddTransactionDialog } from "@/components/add-transaction-dialog"
 import { AddActionDropdown } from "./add-action-dropdown"
+import storage from "@/utils/storage"
 
 interface SiteHeaderProps {
   className?: string
@@ -27,59 +28,21 @@ interface SiteHeaderProps {
 
 export function SiteHeader({ className }: SiteHeaderProps) {
   const pathname = usePathname()
-
+  const isAuthenticated = storage.getToken()
+  console.log(isAuthenticated, "isAuthenticated")
   return (
     <header className={cn("sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 py-3", className)}>
       <div className="container mx-auto max-w-7xl px-2 sm:px-4 lg:px-6 flex h-14 items-center justify-between">
         <div className="flex items-center">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <MenuIcon className="h-5 w-5" />
-                <span className="sr-only">Toggle Menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left">
-              <div className="flex flex-col gap-6 py-4">
-                <Link href="/" className="flex items-center gap-2">
-                  <WalletIcon className="h-8 w-8" />
-                  <span className="font-bold text-lg sm:text-xl">FinanceTracker</span>
-                </Link>
-                <nav className="flex flex-col gap-4 text-sm sm:text-base">
-                  <Link href="/dashboard" className="flex items-center gap-2">
-                    <HomeIcon className="h-5 w-5" />
-                    Dashboard
-                  </Link>
-                  <Link href="/income" className="flex items-center gap-2 text-lg font-medium">
-                    <BanknotesIcon className="h-5 w-5 text-emerald-500" />
-                    Income
-                  </Link>
-                  <Link href="/expenses" className="flex items-center gap-2 text-lg font-medium">
-                    <CreditCardIcon className="h-5 w-5 text-red-500" />
-                    Expenses
-                  </Link>
-                  <Link href="/budgets" className="flex items-center gap-2 text-lg font-medium">
-                    <ChartBarIcon className="h-5 w-5 text-cyan-500" />
-                    Budgets
-                  </Link>
-                  <Link href="/accounts" className="flex items-center gap-2 text-lg font-medium">
-                    <WalletIcon className="h-5 w-5 text-purple-500" />
-                    Accounts
-                  </Link>
-                  <Link href="/categories" className="flex items-center gap-2 text-lg font-medium">
-                    <ChartBarIcon className="h-5 w-5 text-amber-500" />
-                    Categories
-                  </Link>
-                </nav>
-              </div>
-            </SheetContent>
-          </Sheet>
-          <div className="mr-4 hidden md:flex">
-            <Link href="/" className="mr-6 flex items-center space-x-2">
-              <WalletIcon className="h-8 w-8" />
-              <span className="hidden font-bold text-lg sm:text-xl sm:inline-block">FinanceTracker</span>
-            </Link>
-            <nav className="flex items-center space-x-6 text-sm sm:text-base">
+          <Link href="/" className="mr-6 flex items-center space-x-2">
+            <WalletIcon className="h-8 w-8" />
+            <span className="hidden font-bold text-lg sm:text-xl sm:inline-block">FinanceTracker</span>
+          </Link>
+        </div>
+
+        {isAuthenticated ? (
+          <>
+            <nav className="hidden md:flex items-center space-x-6 text-sm sm:text-base">
               <Link
                 href="/dashboard"
                 className={cn(
@@ -107,7 +70,6 @@ export function SiteHeader({ className }: SiteHeaderProps) {
                   </div>
                   Income
                 </span>
-                <div className="absolute inset-0 bg-gray-100/50 rounded-md opacity-0 group-hover:opacity-100 transition-opacity" />
               </Link>
               <Link
                 href="/expenses"
@@ -122,7 +84,6 @@ export function SiteHeader({ className }: SiteHeaderProps) {
                   </div>
                   Expenses
                 </span>
-                <div className="absolute inset-0 bg-gray-100/50 rounded-md opacity-0 group-hover:opacity-100 transition-opacity" />
               </Link>
               <Link
                 href="/budgets"
@@ -137,12 +98,21 @@ export function SiteHeader({ className }: SiteHeaderProps) {
                 </span>
               </Link>
             </nav>
+            <div className="flex items-center gap-2">
+              <AddActionDropdown className="h-9 w-9" />
+              <UserNav />
+            </div>
+          </>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Button asChild variant="ghost">
+              <Link href="/login">Login</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/signup">Sign Up</Link>
+            </Button>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <AddActionDropdown className="h-9 w-9" />
-          <UserNav />
-        </div>
+        )}
       </div>
     </header>
   )

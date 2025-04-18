@@ -34,6 +34,8 @@ type Account = {
   type: string
   iconName: string
   limit?: number
+  accountName: string
+  accountType: string
 }
 
 export function EditAccountDialog({ account }: { account: Account }) {

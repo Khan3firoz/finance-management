@@ -11,8 +11,8 @@ export const fetchAccountStatsSummary = async () => {
 export const createAccount = async (payload) => {
     return await axios.post('/account/create', payload)
 }
-export const updateAccount = async (payload) => {
-    return await axios.post('/account/create', payload)
+export const updateAccount = async (id, payload) => {
+    return await axios.put(`/account/${id}`, payload)
 }
 export const deleteAccount = async (id) => {
     return await axios.delete(`/account/${id}`)

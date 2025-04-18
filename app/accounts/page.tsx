@@ -1,4 +1,5 @@
-import { Suspense } from "react"
+'use client'
+import { Suspense, useEffect, useState } from "react"
 import Link from "next/link"
 import { CreditCard, Edit, Landmark, Plus, Trash, Wallet } from "lucide-react"
 
@@ -7,6 +8,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { deleteAccount, fetchAccountList } from "../service/account.service"
+import { AddAccountDialog } from "@/components/add-account-dialog"
+import { toast } from "sonner"
 
 // Sample data - in a real app, this would come from your database
 const accountsData = [
@@ -35,18 +39,42 @@ const accountsData = [
 ]
 
 export default function AccountsPage() {
+  const [allAccounts, setAllAccounts] = useState<any[]>([])
+  const [openAddAccountDialog, setOpenAddAccountDialog] = useState(false)
+  const [editAccount, setEditAccount] = useState<any>(null)
+
+  const fetchAccounts = async () => {
+    const res = await fetchAccountList()
+    setAllAccounts(res?.data?.accounts)
+  }
+
+  useEffect(() => {
+    fetchAccounts()
+  }, [])
+
+  const handleEditAccount = (account: any) => {
+    setOpenAddAccountDialog(true)
+    setEditAccount(account)
+  }
+
+  const handleDeleteAccount = async (id: any) => {
+    try {
+      const res = await deleteAccount(id)
+      toast.success("Account deleted successfully")
+      fetchAccounts()
+    } catch (error) {
+      console.log(error, "error")
+    }
+  }
+
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-2 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Accounts</h2>
           <div className="flex items-center space-x-2">
-            <Button asChild>
-              <Link href="/accounts/new">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Account
-              </Link>
-            </Button>
+            <Button variant="outline" className="cursor-pointer" onClick={() => setOpenAddAccountDialog(true)} >
+              <Plus />Add Account</Button>
           </div>
         </div>
         <Card>
@@ -59,25 +87,26 @@ export default function AccountsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Type</TableHead>
                     <TableHead>Name</TableHead>
+                    <TableHead>Type</TableHead>
                     <TableHead>Balance</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {accountsData.map((account) => (
-                    <TableRow key={account.id}>
+                  {allAccounts?.map((account) => (
+                    <TableRow key={account._id}>
                       <TableCell>
-                        <account.icon className="h-5 w-5 text-muted-foreground" />
+                        {/* <account.icon className="h-5 w-5 text-muted-foreground" /> */}
+                        {account.accountName}
                       </TableCell>
-                      <TableCell className="font-medium">{account.name}</TableCell>
+                      <TableCell className="font-medium">{account.accountType}</TableCell>
                       <TableCell className={account.balance < 0 ? "text-red-500" : ""}>
-                        ${account.balance.toFixed(2)}
+                        {account.currency}{account.balance.toFixed(2)}
                       </TableCell>
                       <TableCell>
-                        {account.type === "credit" && account.limit ? (
+                        {account.accountType === "credit" && account.limit ? (
                           <div className="w-40 space-y-1">
                             <div className="flex text-xs justify-between">
                               <span>Credit Used</span>
@@ -91,18 +120,18 @@ export default function AccountsPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/accounts/${account.id}`}>
-                              <Edit className="h-4 w-4" />
-                              <span className="sr-only">Edit</span>
-                            </Link>
+                          <Button variant="ghost" size="icon" onClick={() => handleEditAccount(account)}>
+                            <Edit className="h-4 w-4" />
+                            <span className="sr-only">Edit</span>
                           </Button>
-                          <Button variant="ghost" size="icon">
+                          <Button variant="ghost" size="icon" onClick={() => handleDeleteAccount(account._id)}>
                             <Trash className="h-4 w-4" />
                             <span className="sr-only">Delete</span>
                           </Button>
                         </div>
                       </TableCell>
+                      {openAddAccountDialog &&
+                        <AddAccountDialog open={openAddAccountDialog} onClose={() => setOpenAddAccountDialog(false)} editAccount={editAccount} />}
                     </TableRow>
                   ))}
                 </TableBody>
@@ -111,6 +140,7 @@ export default function AccountsPage() {
           </CardContent>
         </Card>
       </div>
+
     </div>
   )
 }

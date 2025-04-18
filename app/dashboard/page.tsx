@@ -17,6 +17,7 @@ import { AddActionDropdown } from "@/components/add-action-dropdown"
 import { fetchAccountList, fetchAccountStatsSummary, fetchAllTransaction, fetchIncomeExpense } from "@/app/service/account.service"
 import { TimeFilteredChart } from "@/components/time-filtered-chart"
 import { expenseData } from "@/app/data/expense-data"
+import { startOfMonth } from "date-fns"
 
 interface Summary {
   netAmount: number
@@ -34,6 +35,8 @@ export default function DashboardPage() {
   const [incomeExpense, setIncomeExpense] = useState<IncomeExpense | null>(null)
   const [allAccounts, setAllAccounts] = useState<any[]>([])
   const [recentTransactions, setRecentTransactions] = useState<any[]>([])
+  const [startDate, setStartDate] = useState<Date>(startOfMonth(new Date()))
+  const [endDate, setEndDate] = useState<Date>(new Date())
 
   const getSummary = async () => {
     try {
@@ -56,7 +59,7 @@ export default function DashboardPage() {
   const getAllAccounts = async () => {
     try {
       const res = await fetchAccountList()
-      setAllAccounts(res?.data)
+      setAllAccounts(res?.data?.accounts)
     } catch (err) {
       console.log(err, "err")
     }
@@ -64,7 +67,7 @@ export default function DashboardPage() {
 
   const getRecentTransactions = async () => {
     try {
-      const res = await fetchAllTransaction()
+      const res = await fetchAllTransaction('all', startDate, endDate)
       setRecentTransactions(res?.data?.transactions)
     } catch (err) {
       console.log(err, "err")
@@ -77,8 +80,6 @@ export default function DashboardPage() {
     getRecentTransactions()
   }, [])
 
-  console.log(recentTransactions, "recentTransactions")
-  console.log(allAccounts, "allAccounts")
   console.log(summary, "summary")
   console.log(incomeExpense, "incomeExpense")
   return (
@@ -211,7 +212,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <Suspense fallback={<Skeleton className="h-[200px] w-full" />}>
-                <AccountSummary />
+                <AccountSummary allAccounts={allAccounts} />
               </Suspense>
             </CardContent>
             <CardFooter>

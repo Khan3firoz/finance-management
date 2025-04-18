@@ -23,7 +23,7 @@ export function UserNav() {
 
   const handleLogout = () => {
     // Clear token from cookies
-    Cookies.remove('token', {
+    Cookies.remove('finTrac_token', {
       secure: true,
       sameSite: 'strict'
     })

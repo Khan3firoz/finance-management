@@ -32,6 +32,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { createAccount, updateAccount } from "@/app/service/account.service"
+import { toast } from "sonner"
 
 const accountTypes = [
     { id: "checking", label: "Checking Account" },
@@ -42,38 +44,49 @@ const accountTypes = [
 ]
 
 const formSchema = z.object({
-    name: z.string().min(2, {
+    accountName: z.string().min(2, {
         message: "Account name must be at least 2 characters.",
     }),
-    type: z.string({
+    accountType: z.string({
         required_error: "Please select an account type.",
     }),
-    balance: z.string().refine((val) => !isNaN(Number(val)), {
+    accountBalance: z.string().refine((val) => !isNaN(Number(val)), {
         message: "Balance must be a valid number.",
+    }),
+    accountNumber: z.string().refine((val) => !isNaN(Number(val)), {
+        message: "Account number must be a valid number.",
     }),
 })
 
-export function AddAccountDialog() {
-    const [open, setOpen] = useState(false)
+export function AddAccountDialog({ open, onClose, editAccount }: { open: boolean, onClose: () => void, editAccount: any }) {
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: "",
-            type: "",
-            balance: "0",
+            accountName: editAccount?.accountName || "",
+            accountType: editAccount?.accountType || "",
+            accountBalance: editAccount?.accountBalance || "0",
+            accountNumber: editAccount?.accountNumber || "",
         },
     })
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: z.infer<typeof formSchema>) {
         // TODO: Implement account creation
-        console.log(values)
-        setOpen(false)
-        form.reset()
+        console.log(values, "values")
+        try {
+            const res = await (editAccount ? updateAccount(values) : createAccount(values))
+            console.log(res, "res")
+            debugger
+            onClose()
+            toast.success("Account created successfully")
+            form.reset()
+        } catch (error) {
+            console.log(error, "error")
+        }
     }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={onClose}>
             <DialogTrigger asChild>
                 <Button variant="ghost" size="sm" className="flex items-center gap-2">
                     <WalletIcon className="h-4 w-4" />
@@ -91,12 +104,12 @@ export function AddAccountDialog() {
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField
                             control={form.control}
-                            name="name"
+                            name="accountName"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Account Name</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="e.g., Main Checking" {...field} />
+                                        <Input placeholder="Enter Account Name" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -104,7 +117,20 @@ export function AddAccountDialog() {
                         />
                         <FormField
                             control={form.control}
-                            name="type"
+                            name="accountNumber"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Account Number</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Enter Account Number" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="accountType"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Account Type</FormLabel>
@@ -128,7 +154,7 @@ export function AddAccountDialog() {
                         />
                         <FormField
                             control={form.control}
-                            name="balance"
+                            name="accountBalance"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Initial Balance</FormLabel>

@@ -23,7 +23,7 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
   return (
     <div className="space-y-4">
       {currentTransactions.map((transaction) => (
-        <div key={transaction.id} className="flex items-center">
+        <div key={transaction._id} className="flex items-center">
           <Avatar className="h-9 w-9">
             <AvatarFallback>{transaction.category?.icon}</AvatarFallback>
           </Avatar>

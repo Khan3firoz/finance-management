@@ -5,16 +5,17 @@ import { fetchAccountList, fetchAccountStatsSummary, fetchAllTransaction, fetchI
 import { startOfMonth } from "date-fns"
 import { fetchCategory } from "../service/category.service"
 import storage from "@/utils/storage"
+import { fetchBudgetList } from "../service/budget.service"
 
 interface Account {
-    id: string
+    _id: string
     name: string
     balance: number
     type: string
 }
 
 interface Transaction {
-    id: string
+    _id: string
     amount: number
     type: 'income' | 'expense'
     category: string
@@ -24,14 +25,14 @@ interface Transaction {
 }
 
 interface Category {
-    id: string
+    _id: string
     name: string
     type: 'credit' | 'debit'
     budget?: number
 }
 
 interface Budget {
-    id: string
+    _id: string
     categoryId: string
     amount: number
     period: 'monthly' | 'yearly'
@@ -86,12 +87,13 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
             setError(null)
 
             // Fetch all data in parallel
-            const [accountsRes, transactionsRes, summaryRes, incomeExpenseRes, categoriesRes] = await Promise.all([
+            const [accountsRes, transactionsRes, summaryRes, incomeExpenseRes, categoriesRes, budgetRes] = await Promise.all([
                 fetchAccountList(),
                 fetchAllTransaction('all', startOfMonth(new Date()), new Date()),
                 fetchAccountStatsSummary(),
                 fetchIncomeExpense({ filterType: "monthly", date: new Date(), month: new Date().getMonth() + 1, year: new Date().getFullYear() }),
-                fetchCategory()
+                fetchCategory(),
+                fetchBudgetList()
             ])
 
             setAccounts(accountsRes?.data?.accounts || [])
@@ -99,6 +101,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
             setSummary(summaryRes?.data || null)
             setIncomeExpense(incomeExpenseRes?.data || null)
             setCategories(categoriesRes?.data?.categories || [])
+            setBudgets(budgetRes?.data?.budgets || [])
 
             // TODO: Add API calls for categories and budgets when available
             // For now, using mock data
@@ -111,16 +114,16 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
             //     { id: '6', name: 'Transportation', type: 'debit' }
             // ])
 
-            setBudgets([
-                {
-                    id: '1',
-                    categoryId: '1',
-                    amount: 1000,
-                    period: 'monthly',
-                    startDate: startOfMonth(new Date()),
-                    endDate: new Date()
-                }
-            ])
+            // setBudgets([
+            //     {
+            //         id: '1',
+            //         categoryId: '1',
+            //         amount: 1000,
+            //         period: 'monthly',
+            //         startDate: startOfMonth(new Date()),
+            //         endDate: new Date()
+            //     }
+            // ])
 
         } catch (err) {
             setError('Failed to fetch data')

@@ -40,18 +40,20 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
+import { useFinance } from "@/app/context/finance-context"
+import { createBudget } from "@/app/service/budget.service"
 
 const formSchema = yup.object({
   name: yup.string().required("Budget name is required"),
-  amount: yup
+  spent: yup
     .number()
     .required("Amount is required")
     .positive("Amount must be positive")
     .typeError("Amount must be a number"),
-  category: yup.string().required("Category is required"),
+  categoryId: yup.string().required("Category is required"),
   startDate: yup.date().required("Start date is required"),
   endDate: yup.date().required("End date is required"),
-  period: yup.string().required("Period is required"),
+  recurring: yup.string().required("Period is required"),
 })
 
 const periods = [
@@ -62,23 +64,39 @@ const periods = [
 
 export function AddBudgetDialog() {
   const [open, setOpen] = useState(false)
+  const { categories, userData, refreshData } = useFinance()
 
   const form = useForm({
     resolver: yupResolver(formSchema),
     defaultValues: {
       name: "",
-      amount: "",
-      category: "",
+      spent: 0,
+      categoryId: "",
       startDate: new Date(),
       endDate: new Date(),
-      period: "",
+      recurring: "",
     },
   })
 
-  function onSubmit(values: yup.InferType<typeof formSchema>) {
+  async function onSubmit(values: yup.InferType<typeof formSchema>) {
     console.log(values)
-    setOpen(false)
-    form.reset()
+    const payload = {
+      ...values,
+      userId: userData._id,
+      startDate: dayjs(values.startDate).
+        format("YYYY-MM-DD"),
+      endDate: dayjs(values.endDate).
+        format("YYYY-MM-DD"),
+    }
+    debugger
+    try {
+      const res = await createBudget(payload)
+      refreshData()
+      debugger
+    } catch (error) {
+      console.log(error, "error")
+    }
+
   }
 
   return (
@@ -113,7 +131,7 @@ export function AddBudgetDialog() {
             />
             <FormField
               control={form.control}
-              name="amount"
+              name="spent"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Amount</FormLabel>
@@ -135,21 +153,22 @@ export function AddBudgetDialog() {
             />
             <FormField
               control={form.control}
-              name="category"
+              name="categoryId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field._id}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="groceries">Groceries</SelectItem>
-                      <SelectItem value="utilities">Utilities</SelectItem>
-                      <SelectItem value="entertainment">Entertainment</SelectItem>
-                      <SelectItem value="transportation">Transportation</SelectItem>
+                      {categories.map((category) => (
+                        <SelectItem key={category._id} value={category._id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -158,7 +177,7 @@ export function AddBudgetDialog() {
             />
             <FormField
               control={form.control}
-              name="period"
+              name="recurring"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Period</FormLabel>

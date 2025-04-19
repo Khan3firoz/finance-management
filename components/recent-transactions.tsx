@@ -35,12 +35,12 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
           </div>
           <div className="ml-auto font-medium">
             <div className="flex items-center">
-              {transaction.type === "income" ? (
+              {transaction.transactionType === "credit" ? (
                 <ArrowUpIcon className="mr-1 h-4 w-4 text-emerald-500" />
               ) : (
                 <ArrowDownIcon className="mr-1 h-4 w-4 text-red-500" />
               )}
-              <span className={cn("text-sm", transaction.type === "income" ? "text-emerald-500" : "text-red-500")}>
+              <span className={cn("text-sm", transaction.transactionType === "credit" ? "text-emerald-500" : "text-red-500")}>
                 ${transaction.amount.toFixed(2)}
               </span>
             </div>

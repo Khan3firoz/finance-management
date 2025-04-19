@@ -24,71 +24,87 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
+import { useFinance } from "@/app/context/finance-context"
+import { createTransaction } from "@/app/service/account.service"
+import { toast } from "sonner"
 
 const formSchema = yup.object({
-  type: yup.string().oneOf(["income", "expense"], "Transaction type is required"),
+  transactionType: yup.string().oneOf(["credit", "debit"], "Transaction type is required"),
   amount: yup
     .number()
     .required("Amount is required")
     .positive("Amount must be positive")
     .typeError("Amount must be a number"),
   description: yup.string().required("Description is required"),
-  category: yup.string().required("Category is required"),
+  categoryId: yup.string().required("Category is required"),
   date: yup.date().required("Date is required").typeError("Invalid date"),
-  account: yup.string().required("Account is required"),
+  accountId: yup.string().required("Account is required"),
 })
 
 // Sample data - in a real app, this would come from your database
-const categories = [
-  { id: "1", name: "Groceries", type: "expense" },
-  { id: "2", name: "Housing", type: "expense" },
-  { id: "3", name: "Entertainment", type: "expense" },
-  { id: "4", name: "Transportation", type: "expense" },
-  { id: "5", name: "Utilities", type: "expense" },
-  { id: "6", name: "Salary", type: "income" },
-  { id: "7", name: "Freelance", type: "income" },
-  { id: "8", name: "Investment", type: "income" },
-]
+// const categories = [
+//   { id: "1", name: "Groceries", type: "expense" },
+//   { id: "2", name: "Housing", type: "expense" },
+//   { id: "3", name: "Entertainment", type: "expense" },
+//   { id: "4", name: "Transportation", type: "expense" },
+//   { id: "5", name: "Utilities", type: "expense" },
+//   { id: "6", name: "Salary", type: "income" },
+//   { id: "7", name: "Freelance", type: "income" },
+//   { id: "8", name: "Investment", type: "income" },
+// ]
 
-const accounts = [
-  { id: "1", name: "Checking Account" },
-  { id: "2", name: "Savings Account" },
-  { id: "3", name: "Credit Card" },
-]
+// const accounts = [
+//   { id: "1", name: "Checking Account" },
+//   { id: "2", name: "Savings Account" },
+//   { id: "3", name: "Credit Card" },
+// ]
 
 interface AddTransactionDialogProps {
   className?: string
-  type: 'income' | 'expense'
+  type: 'credit' | 'debit'
 }
 
 export function AddTransactionDialog({ className, type }: AddTransactionDialogProps) {
   const [open, setOpen] = useState(false)
+  const { categories, accounts, userData, refreshData } = useFinance()
+  console.log(userData, "userData-->")
+
+  console.log(categories, "categoriesRes")
   const form = useForm({
     resolver: yupResolver(formSchema),
     defaultValues: {
-      type: "expense",
-      amount: "",
+      transactionType: "debit",
+      amount: 0,
       description: "",
-      category: "",
+      categoryId: "",
       date: new Date(),
-      account: "",
+      accountId: "",
     },
   })
 
-  function onSubmit(values) {
+  async function onSubmit(values: any) {
+    const payload = {
+      ...values,
+      userId: userData?._id
+    }
     // In a real app, you would save the transaction to your database here
-    console.log(values)
-    setOpen(false)
-    form.reset()
+    try {
+      const res = await createTransaction(payload)
+      refreshData()
+      form.reset()
+      toast.success(res.message)
+      setOpen(false)
+    } catch (error) {
+      console.log(error, "error")
+    }
   }
 
-  const transactionType = form.watch("type")
-
+  const transactionType = form.watch("transactionType")
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className="flex items-center gap-2">
-          {type === 'income' ? (
+          {type === 'credit' ? (
             <>
               <ArrowDownRight className="h-4 w-4 text-emerald-500" />
               Add Income
@@ -110,7 +126,7 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="type"
+              name="transactionType"
               render={({ field }) => (
                 <FormItem className="space-y-1">
                   <FormLabel>Transaction Type</FormLabel>
@@ -118,26 +134,26 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
                     <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex space-x-2">
                       <FormItem className="flex items-center space-x-1 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="income" className="peer sr-only" />
+                          <RadioGroupItem value="credit" className="peer sr-only" />
                         </FormControl>
                         <Button
                           type="button"
-                          variant={field.value === "income" ? "default" : "outline"}
-                          className={cn(field.value === "income" && "bg-emerald-600 hover:bg-emerald-700 text-white")}
-                          onClick={() => form.setValue("type", "income")}
+                          variant={field.value === "credit" ? "default" : "outline"}
+                          className={cn(field.value === "credit" && "bg-emerald-600 hover:bg-emerald-700 text-white")}
+                          onClick={() => form.setValue("transactionType", "credit")}
                         >
                           Income
                         </Button>
                       </FormItem>
                       <FormItem className="flex items-center space-x-1 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="expense" className="peer sr-only" />
+                          <RadioGroupItem value="debit" className="peer sr-only" />
                         </FormControl>
                         <Button
                           type="button"
-                          variant={field.value === "expense" ? "default" : "outline"}
-                          className={cn(field.value === "expense" && "bg-red-600 hover:bg-red-700 text-white")}
-                          onClick={() => form.setValue("type", "expense")}
+                          variant={field.value === "debit" ? "default" : "outline"}
+                          className={cn(field.value === "debit" && "bg-red-600 hover:bg-red-700 text-white")}
+                          onClick={() => form.setValue("transactionType", "debit")}
                         >
                           Expense
                         </Button>
@@ -179,7 +195,7 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
             />
             <FormField
               control={form.control}
-              name="category"
+              name="categoryId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
@@ -191,10 +207,10 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
                     </FormControl>
                     <SelectContent>
                       {categories
-                        .filter((category) => category.type === transactionType)
+                        .filter((category) => category.transactionType === transactionType)
                         .map((category) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
+                          <SelectItem key={category._id} value={category._id}>
+                            {category.icon} {category.name}
                           </SelectItem>
                         ))}
                     </SelectContent>
@@ -231,7 +247,7 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
             />
             <FormField
               control={form.control}
-              name="account"
+              name="accountId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Account</FormLabel>
@@ -243,8 +259,8 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
                     </FormControl>
                     <SelectContent>
                       {accounts.map((account) => (
-                        <SelectItem key={account.id} value={account.id}>
-                          {account.name}
+                        <SelectItem key={account._id} value={account._id}>
+                          {account.accountName}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -257,10 +273,10 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
               <Button
                 type="submit"
                 className={
-                  transactionType === "income" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-red-600 hover:bg-red-700"
+                  transactionType === "credit" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-red-600 hover:bg-red-700"
                 }
               >
-                Add {transactionType === "income" ? "Income" : "Expense"}
+                Add {transactionType === "credit" ? "Income" : "Expense"}
               </Button>
             </DialogFooter>
           </form>

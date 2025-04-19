@@ -37,8 +37,8 @@ export function AddActionDropdown({ className }: AddActionDropdownProps) {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-                <AddTransactionDialog type="income" />
-                <AddTransactionDialog type="expense" />
+                <AddTransactionDialog type="credit" />
+                <AddTransactionDialog type="debit" />
                 <DropdownMenuItem onClick={() => setOpenAddAccount(true)}>
                     <WalletIcon className="h-4 w-4 mr-2" />
                     Add Account

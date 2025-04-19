@@ -3,6 +3,8 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react"
 import { fetchAccountList, fetchAccountStatsSummary, fetchAllTransaction, fetchIncomeExpense } from "@/app/service/account.service"
 import { startOfMonth } from "date-fns"
+import { fetchCategory } from "../service/category.service"
+import storage from "@/utils/storage"
 
 interface Account {
     id: string
@@ -24,7 +26,7 @@ interface Transaction {
 interface Category {
     id: string
     name: string
-    type: 'income' | 'expense'
+    type: 'credit' | 'debit'
     budget?: number
 }
 
@@ -42,6 +44,8 @@ interface FinanceContextType {
     transactions: Transaction[]
     categories: Category[]
     budgets: Budget[]
+    categoriesRes: Category[] | null
+    userData: any
     summary: {
         netAmount: number
         totalIncome: number
@@ -67,6 +71,14 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
     const [incomeExpense, setIncomeExpense] = useState<FinanceContextType['incomeExpense']>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [userData, setUserData] = useState<any>(null)
+
+    useEffect(() => {
+        const userData = storage.getUser()
+        if (userData) {
+            setUserData(userData)
+        }
+    }, [])
 
     const refreshData = async () => {
         try {
@@ -74,28 +86,30 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
             setError(null)
 
             // Fetch all data in parallel
-            const [accountsRes, transactionsRes, summaryRes, incomeExpenseRes] = await Promise.all([
+            const [accountsRes, transactionsRes, summaryRes, incomeExpenseRes, categoriesRes] = await Promise.all([
                 fetchAccountList(),
                 fetchAllTransaction('all', startOfMonth(new Date()), new Date()),
                 fetchAccountStatsSummary(),
-                fetchIncomeExpense({ filterType: "monthly", date: new Date(), month: new Date().getMonth() + 1, year: new Date().getFullYear() })
+                fetchIncomeExpense({ filterType: "monthly", date: new Date(), month: new Date().getMonth() + 1, year: new Date().getFullYear() }),
+                fetchCategory()
             ])
 
             setAccounts(accountsRes?.data?.accounts || [])
             setTransactions(transactionsRes?.data?.transactions || [])
             setSummary(summaryRes?.data || null)
             setIncomeExpense(incomeExpenseRes?.data || null)
+            setCategories(categoriesRes?.data?.categories || [])
 
             // TODO: Add API calls for categories and budgets when available
             // For now, using mock data
-            setCategories([
-                { id: '1', name: 'Groceries', type: 'expense' },
-                { id: '2', name: 'Salary', type: 'income' },
-                { id: '3', name: 'Rent', type: 'expense' },
-                { id: '4', name: 'Utilities', type: 'expense' },
-                { id: '5', name: 'Entertainment', type: 'expense' },
-                { id: '6', name: 'Transportation', type: 'expense' }
-            ])
+            // setCategories([
+            //     { id: '1', name: 'Groceries', type: 'debit' },
+            //     { id: '2', name: 'Salary', type: 'credit' },
+            //     { id: '3', name: 'Rent', type: 'debit' },
+            //     { id: '4', name: 'Utilities', type: 'debit' },
+            //     { id: '5', name: 'Entertainment', type: 'debit' },
+            //     { id: '6', name: 'Transportation', type: 'debit' }
+            // ])
 
             setBudgets([
                 {
@@ -130,7 +144,8 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
             incomeExpense,
             loading,
             error,
-            refreshData
+            refreshData,
+            userData
         }}>
             {children}
         </FinanceContext.Provider>

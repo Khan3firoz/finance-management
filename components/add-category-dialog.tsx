@@ -33,33 +33,33 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import storage from "@/utils/storage"
+import { toast } from "sonner"
+import { useFinance } from "@/app/context/finance-context"
 
 type FormValues = {
     name: string
-    type: "income" | "expense" | "credit_card"
+    transactionType: "credit" | "debit"
 }
 
 const formSchema = yup.object({
     name: yup.string().required("Category name is required"),
-    type: yup.string().oneOf(["income", "expense", "credit_card"] as const).required("Category type is required"),
+    transactionType: yup.string().oneOf(["credit", "debit"] as const).required("Category type is required"),
 }).required()
 
 export function AddCategoryDialog() {
     const [open, setOpen] = useState(false)
+    const { refreshData, userData } = useFinance()
 
     const form = useForm<FormValues>({
         resolver: yupResolver(formSchema),
         defaultValues: {
             name: "",
-            type: "expense",
+            transactionType: "debit",
         },
     })
 
+
     const onSubmit = async (values: FormValues) => {
-        const userData = storage.getUser()
-        console.log(userData, "userDate")
-        // In a real app, you would save the category to your database here
         const payload = {
             ...values,
             userId: userData?.user?._id,
@@ -67,13 +67,13 @@ export function AddCategoryDialog() {
         }
         try {
             const res = await createCategory(payload)
-
+            refreshData()
+            toast.success(res.message)
+            setOpen(false)
+            form.reset()
         } catch (error) {
-
+            console.log(error, "error")
         }
-        console.log(values)
-        setOpen(false)
-        form.reset()
     }
 
     return (
@@ -108,7 +108,7 @@ export function AddCategoryDialog() {
                         />
                         <FormField
                             control={form.control}
-                            name="type"
+                            name="transactionType"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Category Type</FormLabel>
@@ -119,9 +119,8 @@ export function AddCategoryDialog() {
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="expense">Expense</SelectItem>
-                                            <SelectItem value="income">Income</SelectItem>
-                                            <SelectItem value="credit_card">Credit Card</SelectItem>
+                                            <SelectItem value="debit">Expense</SelectItem>
+                                            <SelectItem value="credit">Income</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />

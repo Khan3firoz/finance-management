@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Tag } from "lucide-react"
+import { createCategory } from "@/app/service/category.service"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -32,6 +33,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import storage from "@/utils/storage"
 
 type FormValues = {
     name: string
@@ -54,8 +56,21 @@ export function AddCategoryDialog() {
         },
     })
 
-    const onSubmit = (values: FormValues) => {
+    const onSubmit = async (values: FormValues) => {
+        const userData = storage.getUser()
+        console.log(userData, "userDate")
         // In a real app, you would save the category to your database here
+        const payload = {
+            ...values,
+            userId: userData?.user?._id,
+            parentCategory: null,
+        }
+        try {
+            const res = await createCategory(payload)
+
+        } catch (error) {
+
+        }
         console.log(values)
         setOpen(false)
         form.reset()

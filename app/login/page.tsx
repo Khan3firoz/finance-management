@@ -56,7 +56,7 @@ export default function LoginPage() {
         try {
             const res = await loginUser(data)
             const token = res?.data?.accessToken
-
+            debugger
             if (token) {
                 // Store token securely in cookie
                 storage.setToken(token)
@@ -65,6 +65,8 @@ export default function LoginPage() {
                 //     sameSite: 'strict',
                 //     expires: 7 // 7 days
                 // })
+
+                storage.setUser(res.data.user)
                 routes.push('/dashboard')
                 toast.success("Logged in successfully")
             }

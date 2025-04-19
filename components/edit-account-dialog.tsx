@@ -28,7 +28,7 @@ const formSchema = z.object({
 })
 
 type Account = {
-  id: string
+  _id: string
   name: string
   balance: number
   type: string

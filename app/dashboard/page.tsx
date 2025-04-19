@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useState } from "react"
+import { Suspense } from "react"
 import Link from "next/link"
 import { ArrowRight, CreditCard, DollarSign, LineChart, PiggyBank, Plus, Wallet, ChevronDown, BarChart, PieChart, AreaChart } from "lucide-react"
 
@@ -14,74 +14,39 @@ import { AccountSummary } from "@/components/account-summary"
 import { RecentTransactions } from "@/components/recent-transactions"
 import { BudgetOverview } from "@/components/budget-overview"
 import { AddActionDropdown } from "@/components/add-action-dropdown"
-import { fetchAccountList, fetchAccountStatsSummary, fetchAllTransaction, fetchIncomeExpense } from "@/app/service/account.service"
 import { TimeFilteredChart } from "@/components/time-filtered-chart"
 import { expenseData } from "@/app/data/expense-data"
-import { startOfMonth } from "date-fns"
-
-interface Summary {
-  netAmount: number
-  totalIncome: number
-  totalExpense: number
-}
-
-interface IncomeExpense {
-  income: number
-  expense: number
-}
+import { useFinance } from "@/app/context/finance-context"
 
 export default function DashboardPage() {
-  const [summary, setSummary] = useState<Summary | null>(null)
-  const [incomeExpense, setIncomeExpense] = useState<IncomeExpense | null>(null)
-  const [allAccounts, setAllAccounts] = useState<any[]>([])
-  const [recentTransactions, setRecentTransactions] = useState<any[]>([])
-  const [startDate, setStartDate] = useState<Date>(startOfMonth(new Date()))
-  const [endDate, setEndDate] = useState<Date>(new Date())
+  const { summary, incomeExpense, accounts, transactions, loading, error } = useFinance()
 
-  const getSummary = async () => {
-    try {
-      const res = await fetchAccountStatsSummary()
-      setSummary(res?.data)
-    } catch (err) {
-      console.log(err, "err")
-    }
+  if (loading) {
+    return (
+      <div className="flex flex-col">
+        <div className="flex-1 space-y-4 p-2 sm:p-8 pt-6">
+          <Skeleton className="h-8 w-[200px]" />
+          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+            <Skeleton className="h-[120px]" />
+            <Skeleton className="h-[120px]" />
+            <Skeleton className="h-[120px]" />
+            <Skeleton className="h-[120px]" />
+          </div>
+        </div>
+      </div>
+    )
   }
 
-  const getIncomeExpense = async () => {
-    try {
-      const res = await fetchIncomeExpense()
-      setIncomeExpense(res?.data)
-    } catch (err) {
-      console.log(err, "err")
-    }
+  if (error) {
+    return (
+      <div className="flex flex-col">
+        <div className="flex-1 space-y-4 p-2 sm:p-8 pt-6">
+          <div className="text-red-500">{error}</div>
+        </div>
+      </div>
+    )
   }
 
-  const getAllAccounts = async () => {
-    try {
-      const res = await fetchAccountList()
-      setAllAccounts(res?.data?.accounts)
-    } catch (err) {
-      console.log(err, "err")
-    }
-  }
-
-  const getRecentTransactions = async () => {
-    try {
-      const res = await fetchAllTransaction('all', startDate, endDate)
-      setRecentTransactions(res?.data?.transactions)
-    } catch (err) {
-      console.log(err, "err")
-    }
-  }
-  useEffect(() => {
-    getSummary()
-    getIncomeExpense()
-    getAllAccounts()
-    getRecentTransactions()
-  }, [])
-
-  console.log(summary, "summary")
-  console.log(incomeExpense, "incomeExpense")
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-2 sm:p-8 pt-6">
@@ -139,10 +104,6 @@ export default function DashboardPage() {
             </div>
             <div className="grid gap-4">
               <Card className="col-span-12">
-                {/* <CardHeader>
-                  <CardTitle>Expense Overview</CardTitle>
-                  <CardDescription>Track your expenses across different categories</CardDescription>
-                </CardHeader> */}
                 <CardContent className="h-fit">
                   <TimeFilteredChart data={expenseData} />
                 </CardContent>
@@ -154,7 +115,7 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <Suspense fallback={<Skeleton className="h-[350px] w-full" />}>
-                    <RecentTransactions transactions={recentTransactions} />
+                    <RecentTransactions transactions={transactions} />
                   </Suspense>
                 </CardContent>
                 <CardFooter>
@@ -212,7 +173,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <Suspense fallback={<Skeleton className="h-[200px] w-full" />}>
-                <AccountSummary allAccounts={allAccounts} />
+                <AccountSummary allAccounts={accounts} />
               </Suspense>
             </CardContent>
             <CardFooter>

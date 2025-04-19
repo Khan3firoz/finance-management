@@ -12,6 +12,7 @@ type Account = {
   limit?: number
   accountName: string
   accountType: string
+  currency: string
 }
 
 const iconMap: Record<string, LucideIcon> = {
@@ -35,21 +36,21 @@ export function AccountSummary({ allAccounts }: { allAccounts: Account[] }) {
             <div className="flex items-center">
               {/* <Icon className="mr-2 h-5 w-5 text-muted-foreground" /> */}
               <span className="font-medium">{account.accountName}</span>
-              <span className={`ml-auto font-medium ${account.balance < 0 ? "text-red-500" : ""}`}>
-                ${Math.abs(account.balance).toFixed(2)}
+              <span className={`ml-auto font-medium {account.balance < 0 ? "text-red-500" : ""}`}>
+                {account.currency}{Math.abs(account.balance).toFixed(2)}
               </span>
               <div className="ml-2">
                 <EditAccountDialog account={account} />
               </div>
             </div>
 
-            {account.accountType?.trim().toLowerCase().replace(/\s+/g, '') === 'creditcard'
+            {account.accountType === "credit_card"
               && typeof account.limit === "number" && account.limit > 0 && (
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Credit Used</span>
                   <span className="text-muted-foreground">
-                    ${Math.abs(account.balance).toFixed(2)} / ${account.limit.toFixed(2)}
+                    {account.currency}{Math.abs(account.balance).toFixed(2)} /{account.limit.toFixed(2)}
                   </span>
                 </div>
                 <Progress

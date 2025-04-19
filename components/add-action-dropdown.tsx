@@ -7,6 +7,7 @@ import { AddAccountDialog } from "./add-account-dialog"
 import { AddTransactionDialog } from "./add-transaction-dialog"
 import { AddBudgetDialog } from "./add-budget-dialog"
 import { AddCategoryDialog } from "./add-category-dialog"
+import { useState } from "react"
 
 import {
     DropdownMenu,
@@ -21,6 +22,8 @@ interface AddActionDropdownProps {
 }
 
 export function AddActionDropdown({ className }: AddActionDropdownProps) {
+    const [openAddAccount, setOpenAddAccount] = useState(false)
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -36,10 +39,20 @@ export function AddActionDropdown({ className }: AddActionDropdownProps) {
             <DropdownMenuContent align="end" className="w-48">
                 <AddTransactionDialog type="income" />
                 <AddTransactionDialog type="expense" />
-                <AddAccountDialog />
+                <DropdownMenuItem onClick={() => setOpenAddAccount(true)}>
+                    <WalletIcon className="h-4 w-4 mr-2" />
+                    Add Account
+                </DropdownMenuItem>
                 <AddBudgetDialog />
                 <AddCategoryDialog />
             </DropdownMenuContent>
+            {openAddAccount && (
+                <AddAccountDialog
+                    open={openAddAccount}
+                    onClose={() => setOpenAddAccount(false)}
+                    editAccount={null}
+                />
+            )}
         </DropdownMenu>
     )
 }

@@ -5,6 +5,7 @@ import { useInView } from "react-intersection-observer"
 import { useTheme } from "next-themes"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ArrowUp, ArrowDown } from "lucide-react"
 import { format, startOfMonth } from "date-fns"
 import { transactionService } from "@/app/service/transaction.service"
@@ -158,8 +159,26 @@ export default function TransactionsPage() {
             </div>
 
             {loading && (
-                <div className="flex justify-center py-4">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100"></div>
+                <div className="space-y-4">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                        <Card key={i} className="hover:shadow-md transition-shadow">
+                            <CardContent className="p-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <Skeleton className="h-8 w-8 rounded-full" />
+                                        <div>
+                                            <Skeleton className="h-4 w-32 mb-2" />
+                                            <Skeleton className="h-3 w-24" />
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <Skeleton className="h-4 w-20 mb-2 ml-auto" />
+                                        <Skeleton className="h-3 w-16 ml-auto" />
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
                 </div>
             )}
 

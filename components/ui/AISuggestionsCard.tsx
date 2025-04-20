@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card';
+import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { Skeleton } from './skeleton';
 import { fetchAiSuggestion } from '@/app/service/ai.service';
 import dayjs from 'dayjs';

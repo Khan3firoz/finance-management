@@ -16,10 +16,13 @@ import { useTheme } from "next-themes"
 import { useRouter } from "next/navigation"
 import Cookies from "js-cookie"
 import { toast } from "sonner"
+import { useFinance } from "@/app/context/finance-context"
 
 export function UserNav() {
   const { setTheme, theme } = useTheme()
   const router = useRouter()
+  const { userData } = useFinance()
+  console.log(userData, "userData")
 
   const handleLogout = () => {
     // Clear token from cookies
@@ -39,17 +42,17 @@ export function UserNav() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src="/placeholder-user.jpg" alt="User" />
-            <AvatarFallback>U</AvatarFallback>
+          <Avatar className="h-8 w-10">
+            <AvatarImage src={userData?.avatar} alt="User" />
+            <AvatarFallback>{userData?.fullName[0]}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">John Doe</p>
-            <p className="text-xs leading-none text-muted-foreground">john.doe@example.com</p>
+            <p className="text-sm font-medium leading-none">{userData?.fullName}</p>
+            <p className="text-xs leading-none text-muted-foreground">{userData?.email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

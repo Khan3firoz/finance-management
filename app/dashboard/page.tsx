@@ -20,6 +20,7 @@ import { useFinance } from "@/app/context/finance-context"
 import { ExpenseChartData } from "@/app/types/expense"
 import ExpenseOverview from "@/components/ui/expense-overview"
 import BudgetChart from "@/components/ui/budget-chart"
+import BudgetVisualization from "@/components/ui/budget-visualization"
 
 export default function DashboardPage() {
   const { summary, incomeExpense, accounts, transactions, budgetsSummry, loading, error, } = useFinance()
@@ -121,7 +122,8 @@ export default function DashboardPage() {
             <div className="grid gap-4">
               <Card className="col-span-12">
                 <CardContent className="h-fit">
-                  <BudgetChart />
+                  {/* <BudgetChart /> */}
+                  <BudgetVisualization />
                   {/* <ExpenseOverview budgets={budgetsSummry || []} /> */}
                   {/* <TimeFilteredChart data={transformedExpenseData} /> */}
                 </CardContent>

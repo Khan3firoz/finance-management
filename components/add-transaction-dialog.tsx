@@ -92,7 +92,7 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
       const res = await createTransaction(payload)
       refreshData()
       form.reset()
-      toast.success(res.message)
+      toast.success("transaction added successfully")
       setOpen(false)
     } catch (error) {
       console.log(error, "error")

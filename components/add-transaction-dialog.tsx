@@ -29,7 +29,7 @@ import { createTransaction } from "@/app/service/account.service"
 import { toast } from "sonner"
 
 const formSchema = yup.object({
-  transactionType: yup.string().oneOf(["credit", "debit"], "Transaction type is required"),
+  transactionType: yup.string().required("Transaction type is required").oneOf(["credit", "debit"], "Transaction type is required"),
   amount: yup
     .number()
     .required("Amount is required")
@@ -207,7 +207,7 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
                     </FormControl>
                     <SelectContent>
                       {categories
-                        .filter((category) => category.transactionType === transactionType)
+                        .filter((category) => (category as any).transactionType === transactionType)
                         .map((category) => (
                           <SelectItem key={category._id} value={category._id}>
                             {category.icon} {category.name}

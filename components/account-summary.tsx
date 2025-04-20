@@ -1,6 +1,7 @@
 import { CreditCard, Landmark, Wallet, LucideIcon } from "lucide-react"
 
 import { Progress } from "@/components/ui/progress"
+import { Skeleton } from "@/components/ui/skeleton"
 import { EditAccountDialog } from "@/components/edit-account-dialog"
 
 interface Account {
@@ -31,10 +32,31 @@ export function AccountSummary({ allAccounts = [] }: AccountSummaryProps) {
     return account.accountType !== "credit" ? sum + (account.balance || 0) : sum
   }, 0)
 
-  if (!allAccounts.length) {
+  // Loading state
+  if (allAccounts.length === 0) {
     return (
-      <div className="flex items-center justify-center h-32 text-muted-foreground">
-        No accounts found
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="flex flex-col space-y-2">
+            <div className="flex items-center">
+              <Skeleton className="h-5 w-5 mr-2 rounded-full" />
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-5 w-20 ml-auto" />
+              <Skeleton className="h-8 w-8 ml-2 rounded-full" />
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-28" />
+              </div>
+              <Skeleton className="h-2 w-full" />
+            </div>
+          </div>
+        ))}
+        <div className="flex items-center border-t pt-4 mt-2">
+          <Skeleton className="h-5 w-24" />
+          <Skeleton className="h-5 w-28 ml-auto" />
+        </div>
       </div>
     )
   }

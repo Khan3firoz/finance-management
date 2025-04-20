@@ -3,22 +3,13 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
-  ArrowDownRight,
-  ArrowUpRight,
-  BanknoteIcon as BanknotesIcon,
-  BarChartIcon as ChartBarIcon,
-  CreditCardIcon,
   HomeIcon,
-  MenuIcon,
   WalletIcon,
 } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/cn"
 import { Button } from "@/components/ui/button"
-import { ModeToggle } from "@/components/mode-toggle"
 import { UserNav } from "@/components/user-nav"
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
-import { AddTransactionDialog } from "@/components/add-transaction-dialog"
 import { AddActionDropdown } from "./add-action-dropdown"
 import storage from "@/utils/storage"
 
@@ -29,7 +20,6 @@ interface SiteHeaderProps {
 export function SiteHeader({ className }: SiteHeaderProps) {
   const pathname = usePathname()
   const isAuthenticated = storage.getToken()
-  console.log(isAuthenticated, "isAuthenticated")
   return (
     <header className={cn("sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 py-3", className)}>
       <div className="container mx-auto max-w-7xl px-2 sm:px-4 lg:px-6 flex h-14 items-center justify-between">
@@ -57,7 +47,6 @@ export function SiteHeader({ className }: SiteHeaderProps) {
             </nav>
           )}
         </div>
-
         {isAuthenticated ? (
           <div className="flex items-center gap-2">
             <AddActionDropdown className="h-9 w-9" />
@@ -83,7 +72,7 @@ export function SiteHeader({ className }: SiteHeaderProps) {
                   pathname === "/dashboard" ? "text-foreground" : "text-foreground/60",
                 )}
               >
-                <span className="flex items-center gap-1">
+                <span className="flex items-start gap-1">
                   <div className="flex items-center justify-center bg-blue-100 p-1 sm:p-1 rounded-full">
                     <HomeIcon className="h-3 w-3 sm:h-5 sm:w-5 text-blue-500" />
                   </div>

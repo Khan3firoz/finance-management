@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { CalendarIcon, Plus, ArrowDownRight, ArrowUpRight } from "lucide-react"
+import { CalendarIcon, ArrowDownRight, ArrowUpRight } from "lucide-react"
 import dayjs from "dayjs"
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -30,7 +30,7 @@ import { createTransaction } from "@/app/service/account.service"
 import { toast } from "sonner"
 
 const formSchema = yup.object({
-  transactionType: yup.string().oneOf(["credit", "debit"], "Transaction type is required"),
+  transactionType: yup.string().required("Transaction type is required").oneOf(["credit", "debit"], "Transaction type is required"),
   amount: yup
     .number()
     .required("Amount is required")
@@ -75,7 +75,7 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
       const res = await createTransaction(payload)
       refreshData()
       form.reset()
-      toast.success("transaction added successfully")
+      toast.success('Transaction Added Successfully')
       setOpen(false)
     } catch (error) {
       console.log(error, "error")

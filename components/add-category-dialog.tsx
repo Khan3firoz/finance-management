@@ -68,7 +68,8 @@ export function AddCategoryDialog() {
         try {
             const res = await createCategory(payload)
             refreshData()
-            toast.success(res.message)
+            console.log(res, "res")
+            toast.success("Category added succesfully")
             setOpen(false)
             form.reset()
         } catch (error) {

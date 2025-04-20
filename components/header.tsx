@@ -3,7 +3,6 @@
 import { Plus, ArrowUpRight, ArrowDownRight, Wallet, PiggyBank, Tag, CreditCard } from "lucide-react"
 
 import { AddCategoryDialog } from "./add-category-dialog"
-import { AddCreditCardDialog } from "./add-credit-card-dialog"
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,

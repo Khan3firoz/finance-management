@@ -56,7 +56,6 @@ export default function LoginPage() {
         try {
             const res = await loginUser(data)
             const token = res?.data?.accessToken
-            debugger
             if (token) {
                 // Store token securely in cookie
                 storage.setToken(token)

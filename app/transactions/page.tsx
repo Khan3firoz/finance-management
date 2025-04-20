@@ -48,7 +48,7 @@ export default function TransactionsPage() {
             const response = await fetchAllTransaction(transactionType, startDate, endDate)
             const newTransactions = response.data?.transactions
             setTransactions(prev => reset ? newTransactions : [...prev, ...newTransactions])
-            setHasMore(newTransactions.length === 10)
+            setHasMore(newTransactions?.length === 10)
         } catch (error) {
             console.error('Error fetching transactions:', error)
         } finally {

@@ -12,32 +12,35 @@ interface Account {
     name: string
     balance: number
     type: string
+    iconName: string
+    limit?: number
+    accountName: string
+    accountType: string
+    currency: string
 }
 
 interface Transaction {
     _id: string
     amount: number
-    type: 'income' | 'expense'
+    type: string
     category: string
-    date: Date
+    date: string
     description: string
-    accountId: string
 }
 
 interface Category {
     _id: string
     name: string
-    type: 'credit' | 'debit'
-    budget?: number
+    type: string
+    icon: string
 }
 
 interface Budget {
     _id: string
-    categoryId: string
+    category: string
     amount: number
-    period: 'monthly' | 'yearly'
-    startDate: Date
-    endDate: Date
+    spent: number
+    period: string
 }
 
 interface FinanceContextType {
@@ -45,8 +48,6 @@ interface FinanceContextType {
     transactions: Transaction[]
     categories: Category[]
     budgets: Budget[]
-    categoriesRes: Category[] | null
-    userData: any
     summary: {
         netAmount: number
         totalIncome: number
@@ -59,6 +60,7 @@ interface FinanceContextType {
     loading: boolean
     error: string | null
     refreshData: () => Promise<void>
+    userData?: any
 }
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined)
@@ -87,7 +89,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
             setError(null)
 
             // Fetch all data in parallel
-            const [accountsRes, transactionsRes, summaryRes, incomeExpenseRes, categoriesRes, budgetRes] = await Promise.all([
+            const [accountsRes, transactionsRes, summaryRes, incomeExpenseRes, categoriesRes, budgetsRes] = await Promise.all([
                 fetchAccountList(),
                 fetchAllTransaction('all', startOfMonth(new Date()), new Date()),
                 fetchAccountStatsSummary(),
@@ -96,34 +98,25 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
                 fetchBudgetList()
             ])
 
-            setAccounts(accountsRes?.data?.accounts || [])
-            setTransactions(transactionsRes?.data?.transactions || [])
+            // Set accounts with proper type checking
+            const fetchedAccounts = accountsRes?.data?.accounts || []
+            setAccounts(Array.isArray(fetchedAccounts) ? fetchedAccounts : [])
+
+            // Set transactions with proper type checking
+            const fetchedTransactions = transactionsRes?.data?.transactions || []
+            setTransactions(Array.isArray(fetchedTransactions) ? fetchedTransactions : [])
+
+            // Set categories with proper type checking
+            const fetchedCategories = categoriesRes?.data?.categories || []
+            setCategories(Array.isArray(fetchedCategories) ? fetchedCategories : [])
+
+            // Set budgets with proper type checking
+            const fetchedBudgets = budgetsRes?.data?.budgets || []
+            setBudgets(Array.isArray(fetchedBudgets) ? fetchedBudgets : [])
+
+            // Set summary and incomeExpense
             setSummary(summaryRes?.data || null)
             setIncomeExpense(incomeExpenseRes?.data || null)
-            setCategories(categoriesRes?.data?.categories || [])
-            setBudgets(budgetRes?.data?.budgets || [])
-
-            // TODO: Add API calls for categories and budgets when available
-            // For now, using mock data
-            // setCategories([
-            //     { id: '1', name: 'Groceries', type: 'debit' },
-            //     { id: '2', name: 'Salary', type: 'credit' },
-            //     { id: '3', name: 'Rent', type: 'debit' },
-            //     { id: '4', name: 'Utilities', type: 'debit' },
-            //     { id: '5', name: 'Entertainment', type: 'debit' },
-            //     { id: '6', name: 'Transportation', type: 'debit' }
-            // ])
-
-            // setBudgets([
-            //     {
-            //         id: '1',
-            //         categoryId: '1',
-            //         amount: 1000,
-            //         period: 'monthly',
-            //         startDate: startOfMonth(new Date()),
-            //         endDate: new Date()
-            //     }
-            // ])
 
         } catch (err) {
             setError('Failed to fetch data')

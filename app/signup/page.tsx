@@ -1,5 +1,7 @@
 "use client"
 
+/// <reference lib="dom" />
+
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -79,7 +81,7 @@ export default function SignupPage() {
             formData.append('username', values.username)
             formData.append('email', values.email)
             formData.append('password', values.password)
-            if (values.avatar?.[0]) {
+            if (values.avatar && values.avatar?.length > 0) {
                 formData.append('avatar', values.avatar[0])
             }
 

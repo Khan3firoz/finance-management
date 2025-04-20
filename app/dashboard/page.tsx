@@ -17,6 +17,7 @@ import { AddActionDropdown } from "@/components/add-action-dropdown"
 import { TimeFilteredChart } from "@/components/time-filtered-chart"
 import { expenseData } from "@/app/data/expense-data"
 import { useFinance } from "@/app/context/finance-context"
+import { ExpenseChartData } from "@/app/types/expense"
 
 export default function DashboardPage() {
   const { summary, incomeExpense, accounts, transactions, loading, error } = useFinance()
@@ -47,6 +48,18 @@ export default function DashboardPage() {
     )
   }
 
+  // Transform expense data to match the expected type
+  const transformedExpenseData: ExpenseChartData = {
+    monthly: (expenseData?.monthly || []).map(item => ({
+      ...item,
+      year: new Date().getFullYear().toString()
+    })),
+    yearly: (expenseData?.yearly || []).map(item => ({
+      ...item,
+      year: new Date().getFullYear().toString()
+    }))
+  }
+
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-2 sm:p-8 pt-6">
@@ -67,7 +80,7 @@ export default function DashboardPage() {
                   <Wallet className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl sm:text-2xl font-bold">₹ {summary?.netAmount}</div>
+                  <div className="text-xl sm:text-2xl font-bold">₹ {summary?.netAmount || 0}</div>
                   <p className="text-xs sm:text-sm text-muted-foreground">+20.1% from last month</p>
                 </CardContent>
               </Card>
@@ -77,7 +90,7 @@ export default function DashboardPage() {
                   <DollarSign className="h-4 w-4 text-emerald-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl sm:text-2xl font-bold text-emerald-500">₹ {summary?.totalIncome}</div>
+                  <div className="text-xl sm:text-2xl font-bold text-emerald-500">₹ {summary?.totalIncome || 0}</div>
                   <p className="text-xs sm:text-sm text-muted-foreground">+2.5% from last month</p>
                 </CardContent>
               </Card>
@@ -87,7 +100,7 @@ export default function DashboardPage() {
                   <CreditCard className="h-4 w-4 text-red-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl sm:text-2xl font-bold text-red-500">₹ {summary?.totalExpense}</div>
+                  <div className="text-xl sm:text-2xl font-bold text-red-500">₹ {summary?.totalExpense || 0}</div>
                   <p className="text-xs sm:text-sm text-muted-foreground">+18.2% from last month</p>
                 </CardContent>
               </Card>
@@ -105,17 +118,17 @@ export default function DashboardPage() {
             <div className="grid gap-4">
               <Card className="col-span-12">
                 <CardContent className="h-fit">
-                  <TimeFilteredChart data={expenseData} />
+                  <TimeFilteredChart data={transformedExpenseData} />
                 </CardContent>
               </Card>
               <Card className="col-span-12">
                 <CardHeader>
                   <CardTitle>Recent Transactions</CardTitle>
-                  <CardDescription>You made 12 transactions this month.</CardDescription>
+                  <CardDescription>You made {transactions?.length || 0} transactions this month.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Suspense fallback={<Skeleton className="h-[350px] w-full" />}>
-                    <RecentTransactions transactions={transactions} />
+                    <RecentTransactions transactions={transactions || []} />
                   </Suspense>
                 </CardContent>
                 <CardFooter>
@@ -173,7 +186,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <Suspense fallback={<Skeleton className="h-[200px] w-full" />}>
-                <AccountSummary allAccounts={accounts} />
+                <AccountSummary allAccounts={accounts || []} />
               </Suspense>
             </CardContent>
             <CardFooter>

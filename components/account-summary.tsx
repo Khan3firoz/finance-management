@@ -3,7 +3,7 @@ import { CreditCard, Landmark, Wallet, LucideIcon } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { EditAccountDialog } from "@/components/edit-account-dialog"
 
-type Account = {
+interface Account {
   _id: string
   name: string
   balance: number
@@ -21,42 +21,58 @@ const iconMap: Record<string, LucideIcon> = {
   CreditCard: CreditCard,
 }
 
-export function AccountSummary({ allAccounts }: { allAccounts: Account[] }) {
+interface AccountSummaryProps {
+  allAccounts?: Account[]
+}
+
+export function AccountSummary({ allAccounts = [] }: AccountSummaryProps) {
   const totalAssets = allAccounts.reduce((sum, account) => {
-    return account.accountType !== "credit" ? sum + account.balance : sum
+    if (!account) return sum
+    return account.accountType !== "credit" ? sum + (account.balance || 0) : sum
   }, 0)
+
+  if (!allAccounts.length) {
+    return (
+      <div className="flex items-center justify-center h-32 text-muted-foreground">
+        No accounts found
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-4">
       {allAccounts.map((account) => {
-        const Icon = iconMap[account.iconName]
-        console.log(account, "account")
+        if (!account) return null
+
+        const Icon = iconMap[account.iconName] || Wallet
+        const balance = account.balance || 0
+        const limit = account.limit || 0
+
         return (
           <div key={account._id} className="flex flex-col space-y-2">
             <div className="flex items-center">
-              {/* <Icon className="mr-2 h-5 w-5 text-muted-foreground" /> */}
+              <Icon className="mr-2 h-5 w-5 text-muted-foreground" />
               <span className="font-medium">{account.accountName}</span>
-              <span className={`ml-auto font-medium {account.balance < 0 ? "text-red-500" : ""}`}>
-                {account.currency}{Math.abs(account.balance).toFixed(2)}
+              <span className={`ml-auto font-medium ${balance < 0 ? "text-red-500" : ""}`}>
+                {account.currency}{Math.abs(balance).toFixed(2)}
               </span>
               <div className="ml-2">
                 <EditAccountDialog account={account} />
               </div>
             </div>
 
-            {account.accountType === "credit_card"
-              && typeof account.limit === "number" && account.limit > 0 && (
+            {account.accountType === "credit_card" && limit > 0 && (
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Credit Used</span>
                   <span className="text-muted-foreground">
-                    {account.currency}{Math.abs(account.balance).toFixed(2)} /{account.limit.toFixed(2)}
+                    {account.currency}{Math.abs(balance).toFixed(2)} /{limit.toFixed(2)}
                   </span>
                 </div>
                 <Progress
-                  value={(Math.abs(account.balance) / account.limit) * 100}
+                  value={(Math.abs(balance) / limit) * 100}
                   className="h-2"
-                  indicatorClassName={Math.abs(account.balance) / account.limit > 0.8 ? "bg-red-500" : "bg-cyan-500"}
+                  indicatorClassName={Math.abs(balance) / limit > 0.8 ? "bg-red-500" : "bg-cyan-500"}
                 />
               </div>
             )}

@@ -143,7 +143,7 @@ export function AddBudgetDialog() {
                   <FormLabel>Amount</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2">$</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2">₹</span>
                       <Input
                         type="number"
                         step="0.01"
@@ -165,7 +165,7 @@ export function AddBudgetDialog() {
                   <FormLabel>Spent</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2">$</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2">₹</span>
                       <Input
                         type="number"
                         step="0.01"

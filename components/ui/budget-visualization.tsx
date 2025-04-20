@@ -104,7 +104,7 @@ const sampleData: ApiResponse = {
 const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: "USD",
+        currency: "INR",
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
     }).format(amount)
@@ -169,9 +169,9 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
     )
 }
 
-export default function BudgetVisualization() {
+export default function BudgetVisualization({ apiData }: { apiData: ApiResponse }) {
+    const { data } = apiData
     const [activeTab, setActiveTab] = useState("progress")
-    const { data } = sampleData
 
     // Sort the budgets array by category name
     const sortedBudgets = [...data.budgets].sort((a, b) => a.categoryName.localeCompare(b.categoryName))

@@ -93,7 +93,7 @@ export default function ExpensesPage() {
                         <TableCell className="hidden md:table-cell">{expense.category}</TableCell>
                         <TableCell className="hidden md:table-cell">{expense.account}</TableCell>
                         <TableCell className="font-medium text-red-600 dark:text-red-400">
-                          ${expense.amount.toFixed(2)}
+                          ₹{expense.amount.toFixed(2)}
                         </TableCell>
                         <TableCell className="text-right">
                           <EditTransactionDialog

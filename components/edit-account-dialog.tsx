@@ -146,7 +146,7 @@ export function EditAccountDialog({ account }: { account: Account }) {
                   <FormLabel>Balance</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2">$</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2">₹</span>
                       <Input placeholder="0.00" {...field} className="pl-7" type="number" step="0.01" />
                     </div>
                   </FormControl>
@@ -163,7 +163,7 @@ export function EditAccountDialog({ account }: { account: Account }) {
                     <FormLabel>Credit Limit</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2">$</span>
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2">₹</span>
                         <Input placeholder="0.00" {...field} className="pl-7" type="number" step="0.01" min="0" />
                       </div>
                     </FormControl>

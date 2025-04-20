@@ -113,8 +113,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
             setCategories(Array.isArray(fetchedCategories) ? fetchedCategories : [])
 
             // Set budgets with proper type checking
-            const fetchedBudgets = budgetsRes?.data?.budgets || []
-            setBudgetsSummry(Array.isArray(fetchedBudgets) ? fetchedBudgets : [])
+            setBudgetsSummry(budgetsRes || [])
 
             // Set summary and incomeExpense
             setSummary(summaryRes?.data || null)

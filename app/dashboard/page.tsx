@@ -24,7 +24,6 @@ import BudgetVisualization from "@/components/ui/budget-visualization"
 
 export default function DashboardPage() {
   const { summary, incomeExpense, accounts, transactions, budgetsSummry, loading, error, } = useFinance()
-  console.log(budgetsSummry, "budgetsSummry")
 
   if (loading) {
     return (
@@ -123,7 +122,7 @@ export default function DashboardPage() {
               <Card className="col-span-12">
                 <CardContent className="h-fit">
                   {/* <BudgetChart /> */}
-                  <BudgetVisualization />
+                  <BudgetVisualization apiData={budgetsSummry} />
                   {/* <ExpenseOverview budgets={budgetsSummry || []} /> */}
                   {/* <TimeFilteredChart data={transformedExpenseData} /> */}
                 </CardContent>

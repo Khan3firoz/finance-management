@@ -42,7 +42,7 @@ export default function LandingPage() {
                       </div>
                       <div className="text-right">
                         <p className="text-sm text-muted-foreground">Total Balance</p>
-                        <p className="text-2xl font-bold">$5,231.89</p>
+                        <p className="text-2xl font-bold">₹5,231.89</p>
                       </div>
                     </div>
                     <div className="space-y-4">
@@ -52,20 +52,20 @@ export default function LandingPage() {
                             <DollarSign className="h-4 w-4 text-emerald-500" />
                             <p className="text-sm font-medium">Income</p>
                           </div>
-                          <p className="text-lg font-bold text-emerald-500">+$3,500.00</p>
+                          <p className="text-lg font-bold text-emerald-500">+₹3,500.00</p>
                         </div>
                         <div className="bg-muted p-4 rounded-lg">
                           <div className="flex items-center gap-2 mb-2">
                             <CreditCard className="h-4 w-4 text-red-500" />
                             <p className="text-sm font-medium">Expenses</p>
                           </div>
-                          <p className="text-lg font-bold text-red-500">-$1,892.50</p>
+                          <p className="text-lg font-bold text-red-500">-₹1,892.50</p>
                         </div>
                       </div>
                       <div className="bg-muted p-4 rounded-lg">
                         <div className="flex items-center justify-between mb-2">
                           <p className="text-sm font-medium">Monthly Budget</p>
-                          <p className="text-sm text-muted-foreground">$2,500 / $3,000</p>
+                          <p className="text-sm text-muted-foreground">₹2,500 / ₹3,000</p>
                         </div>
                         <div className="w-full h-2 bg-muted-foreground/20 rounded-full overflow-hidden">
                           <div className="bg-emerald-500 h-full rounded-full" style={{ width: "83%" }}></div>

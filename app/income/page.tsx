@@ -93,7 +93,7 @@ export default function IncomePage() {
                         <TableCell className="hidden md:table-cell">{income.category}</TableCell>
                         <TableCell className="hidden md:table-cell">{income.account}</TableCell>
                         <TableCell className="font-medium text-emerald-600 dark:text-emerald-400">
-                          ${income.amount.toFixed(2)}
+                          ₹{income.amount.toFixed(2)}
                         </TableCell>
                         <TableCell className="text-right">
                           <EditTransactionDialog

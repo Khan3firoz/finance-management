@@ -81,7 +81,7 @@ export function AccountSummary({ allAccounts = [] }: AccountSummaryProps) {
       })}
       <div className="flex items-center border-t pt-4 mt-2">
         <span className="font-medium">Total Assets</span>
-        <span className="ml-auto font-bold text-emerald-500">${totalAssets.toFixed(2)}</span>
+        <span className="ml-auto font-bold text-emerald-500">₹{totalAssets.toFixed(2)}</span>
       </div>
     </div>
   )

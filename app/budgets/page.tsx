@@ -103,11 +103,11 @@ export default function BudgetsPage() {
                         <TableCell className="hidden md:table-cell">
                           {dayjs(budget.startDate).format("MMM D")} - {dayjs(budget.endDate).format("MMM D")}
                         </TableCell>
-                        <TableCell>${budget.amount.toFixed(2)}</TableCell>
+                        <TableCell>₹{budget.amount.toFixed(2)}</TableCell>
                         <TableCell>
                           <div className="w-full md:w-40 space-y-1">
                             <div className="flex text-xs justify-between">
-                              <span>${budget.spent.toFixed(2)} spent</span>
+                              <span>₹{budget.spent.toFixed(2)} spent</span>
                               <span>{Math.round((budget.spent / budget.amount) * 100)}%</span>
                             </div>
                             <Progress

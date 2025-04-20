@@ -19,6 +19,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { updateAccount } from "@/app/service/account.service"
+import { toast } from "sonner"
+import { useFinance } from "@/app/context/finance-context"
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required." }),
@@ -26,6 +29,15 @@ const formSchema = z.object({
   balance: z.string().min(1, { message: "Balance is required." }),
   limit: z.string().optional(),
 })
+
+const accountTypes = [
+  { id: "bank", label: "Bank Account" },
+  { id: "credit_card", label: "Credit Card" },
+  { id: "demat", label: "Investment Account" },
+  { id: "wallet", label: "Wallet" },
+  { id: "cash", label: "Cash" },
+  { id: "other", label: "Others" }
+]
 
 type Account = {
   _id: string
@@ -40,20 +52,36 @@ type Account = {
 
 export function EditAccountDialog({ account }: { account: Account }) {
   const [open, setOpen] = useState(false)
+  const { refreshData } = useFinance()
+
+  console.log(account, "eDITaccount")
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: account.name,
-      type: account.type,
+      name: account.accountName,
+      type: account.accountType.toString(),
       balance: account.balance.toString(),
       limit: account.limit?.toString() || "",
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // In a real app, you would update the account in your database here
-    console.log(values)
-    setOpen(false)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const payload = {
+        accountName: values.name,
+        accountType: values.type,
+        balance: parseFloat(values.balance),
+        ...(values.limit ? { limit: parseFloat(values.limit) } : {}),
+      }
+      await updateAccount(account._id, payload)
+      refreshData()
+      setOpen(false)
+      toast.success("Account updated successfully")
+    } catch (error) {
+      console.error("Error updating account:", error)
+      toast.error("Failed to update account")
+    }
   }
 
   const accountType = form.watch("type")
@@ -99,10 +127,11 @@ export function EditAccountDialog({ account }: { account: Account }) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="bank">Bank Account</SelectItem>
-                      <SelectItem value="credit">Credit Card</SelectItem>
-                      <SelectItem value="investment">Investment Account</SelectItem>
-                      <SelectItem value="cash">Cash</SelectItem>
+                      {accountTypes.map((type) => (
+                        <SelectItem key={type.id} value={type.id}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />

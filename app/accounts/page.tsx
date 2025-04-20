@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { deleteAccount, fetchAccountList } from "../service/account.service"
 import { AddAccountDialog } from "@/components/add-account-dialog"
 import { toast } from "sonner"
+import { EditAccountDialog } from "@/components/edit-account-dialog"
 
 // Sample data - in a real app, this would come from your database
 const accountsData = [
@@ -120,18 +121,13 @@ export default function AccountsPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="icon" onClick={() => handleEditAccount(account)}>
-                            <Edit className="h-4 w-4" />
-                            <span className="sr-only">Edit</span>
-                          </Button>
+                          <EditAccountDialog account={account} />
                           <Button variant="ghost" size="icon" onClick={() => handleDeleteAccount(account._id)}>
                             <Trash className="h-4 w-4" />
                             <span className="sr-only">Delete</span>
                           </Button>
                         </div>
                       </TableCell>
-                      {openAddAccountDialog &&
-                        <AddAccountDialog open={openAddAccountDialog} onClose={() => setOpenAddAccountDialog(false)} editAccount={editAccount} />}
                     </TableRow>
                   ))}
                 </TableBody>
@@ -140,7 +136,13 @@ export default function AccountsPage() {
           </CardContent>
         </Card>
       </div>
-
+      {openAddAccountDialog && (
+        <AddAccountDialog
+          open={openAddAccountDialog}
+          onClose={() => setOpenAddAccountDialog(false)}
+          editAccount={null}
+        />
+      )}
     </div>
   )
 }

@@ -5,7 +5,7 @@ import { fetchAccountList, fetchAccountStatsSummary, fetchAllTransaction, fetchI
 import { startOfMonth } from "date-fns"
 import { fetchCategory } from "../service/category.service"
 import storage from "@/utils/storage"
-import { fetchBudgetList } from "../service/budget.service"
+import { fetchBudgetSummary } from "../service/budget.service"
 
 interface Account {
     _id: string
@@ -37,17 +37,19 @@ interface Category {
 
 interface Budget {
     _id: string
-    category: string
-    amount: number
+    budgetId: string
+    categoryId: string
+    categoryName: string
+    budget: number
     spent: number
-    period: string
+    remaining: number
 }
 
 interface FinanceContextType {
     accounts: Account[]
     transactions: Transaction[]
     categories: Category[]
-    budgets: Budget[]
+    budgetsSummry: Budget[]
     summary: {
         netAmount: number
         totalIncome: number
@@ -69,7 +71,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
     const [accounts, setAccounts] = useState<Account[]>([])
     const [transactions, setTransactions] = useState<Transaction[]>([])
     const [categories, setCategories] = useState<Category[]>([])
-    const [budgets, setBudgets] = useState<Budget[]>([])
+    const [budgetsSummry, setBudgetsSummry] = useState<Budget[]>([])
     const [summary, setSummary] = useState<FinanceContextType['summary']>(null)
     const [incomeExpense, setIncomeExpense] = useState<FinanceContextType['incomeExpense']>(null)
     const [loading, setLoading] = useState(true)
@@ -95,7 +97,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
                 fetchAccountStatsSummary(),
                 fetchIncomeExpense({ filterType: "monthly", date: new Date(), month: new Date().getMonth() + 1, year: new Date().getFullYear() }),
                 fetchCategory(),
-                fetchBudgetList()
+                fetchBudgetSummary({ period: "monthly", month: new Date().getMonth() + 1, year: new Date().getFullYear() })
             ])
 
             // Set accounts with proper type checking
@@ -112,7 +114,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
 
             // Set budgets with proper type checking
             const fetchedBudgets = budgetsRes?.data?.budgets || []
-            setBudgets(Array.isArray(fetchedBudgets) ? fetchedBudgets : [])
+            setBudgetsSummry(Array.isArray(fetchedBudgets) ? fetchedBudgets : [])
 
             // Set summary and incomeExpense
             setSummary(summaryRes?.data || null)
@@ -135,7 +137,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
             accounts,
             transactions,
             categories,
-            budgets,
+            budgetsSummry,
             summary,
             incomeExpense,
             loading,

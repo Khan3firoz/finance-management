@@ -18,9 +18,12 @@ import { TimeFilteredChart } from "@/components/time-filtered-chart"
 import { expenseData } from "@/app/data/expense-data"
 import { useFinance } from "@/app/context/finance-context"
 import { ExpenseChartData } from "@/app/types/expense"
+import ExpenseOverview from "@/components/ui/expense-overview"
+import BudgetChart from "@/components/ui/budget-chart"
 
 export default function DashboardPage() {
-  const { summary, incomeExpense, accounts, transactions, loading, error } = useFinance()
+  const { summary, incomeExpense, accounts, transactions, budgetsSummry, loading, error, } = useFinance()
+  console.log(budgetsSummry, "budgetsSummry")
 
   if (loading) {
     return (
@@ -118,7 +121,9 @@ export default function DashboardPage() {
             <div className="grid gap-4">
               <Card className="col-span-12">
                 <CardContent className="h-fit">
-                  <TimeFilteredChart data={transformedExpenseData} />
+                  <BudgetChart />
+                  {/* <ExpenseOverview budgets={budgetsSummry || []} /> */}
+                  {/* <TimeFilteredChart data={transformedExpenseData} /> */}
                 </CardContent>
               </Card>
               <Card className="col-span-12">

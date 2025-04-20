@@ -47,6 +47,11 @@ const formSchema = yup.object({
   name: yup.string().required("Budget name is required"),
   spent: yup
     .number()
+    .required("Spent is required")
+    .positive("Spent must be positive")
+    .typeError("Spent must be a number"),
+  amount: yup
+    .number()
     .required("Amount is required")
     .positive("Amount must be positive")
     .typeError("Amount must be a number"),
@@ -75,6 +80,7 @@ export function AddBudgetDialog() {
       startDate: new Date(),
       endDate: new Date(),
       recurring: "",
+      amount: 0,
     },
   })
 
@@ -131,10 +137,32 @@ export function AddBudgetDialog() {
             />
             <FormField
               control={form.control}
-              name="spent"
+              name="amount"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Amount</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2">$</span>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        {...field}
+                        className="pl-7"
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="spent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Spent</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2">$</span>

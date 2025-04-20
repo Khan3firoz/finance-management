@@ -22,7 +22,7 @@ axios.interceptors.response.use(
     (error) => {
         console.log(error, "error==>")
         if (error && error?.response?.status === 401) {
-            if (window && !window.location.origin.includes('/sign-in')) {
+            if (typeof window !== 'undefined' && !window.location.origin.includes('/sign-in')) {
                 console.log(error, "errorLogin")
                 // storage.clearToken();
                 // storage.signOut();

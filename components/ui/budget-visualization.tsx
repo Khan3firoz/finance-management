@@ -19,6 +19,7 @@ import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Skeleton } from "@/components/ui/skeleton"
 
 // Budget data type definitions
 interface Budget {
@@ -134,6 +135,36 @@ export default function BudgetVisualization({ apiData }: { apiData: ApiResponse 
     const { data } = apiData
     const [activeTab, setActiveTab] = useState("progress")
     console.log(apiData, "apiData")
+
+    // Loading state
+    if (!data || !data.budgets || data.budgets.length === 0) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <Card className="w-full">
+                    <CardHeader>
+                        <Skeleton className="h-8 w-3/4 mx-auto mb-2" />
+                        <Skeleton className="h-4 w-1/2 mx-auto" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-6">
+                            <div className="flex justify-between items-center">
+                                <Skeleton className="h-10 w-full" />
+                            </div>
+                            {[1, 2, 3, 4].map((i) => (
+                                <div key={i} className="space-y-2">
+                                    <div className="flex justify-between items-center">
+                                        <Skeleton className="h-5 w-32" />
+                                        <Skeleton className="h-5 w-24" />
+                                    </div>
+                                    <Skeleton className="h-10 w-full rounded-md" />
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        )
+    }
 
     // Sort the budgets array by category name
     const sortedBudgets = [...data.budgets].sort((a, b) => a.categoryName.localeCompare(b.categoryName))

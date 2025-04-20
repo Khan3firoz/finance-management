@@ -3,7 +3,8 @@ import dayjs from "dayjs"
 
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { EditTransactionDialog } from "@/components/edit-transaction-dialog"
+import { Skeleton } from "@/components/ui/skeleton"
+
 import { useState } from "react"
 
 interface RecentTransactionsProps {
@@ -14,6 +15,27 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
 
   const [currentPage, setCurrentPage] = useState(1);
   const transactionsPerPage = 5;
+
+  // Loading state
+  if (!transactions || transactions.length === 0) {
+    return (
+      <div className="space-y-4">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="flex items-center">
+            <Skeleton className="h-9 w-9 rounded-full" />
+            <div className="ml-4 space-y-1">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+            <div className="ml-auto">
+              <Skeleton className="h-4 w-16 mb-1" />
+              <Skeleton className="h-3 w-12 ml-auto" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   const indexOfLastTransaction = currentPage * transactionsPerPage;
   const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;

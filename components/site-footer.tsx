@@ -1,5 +1,7 @@
+'use client'
+
 import { WalletIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/cn"
 
 interface SiteFooterProps {
   className?: string

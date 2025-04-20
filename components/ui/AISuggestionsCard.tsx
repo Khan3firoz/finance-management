@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card';
+import { Skeleton } from './skeleton';
 import { fetchAiSuggestion } from '@/app/service/ai.service';
 import dayjs from 'dayjs';
 
@@ -23,6 +24,7 @@ const AISuggestionsCard: React.FC = () => {
 
     const getAiSuggetion = async () => {
         try {
+            setLoading(true);
             const res = await fetchAiSuggestion({ startDate: firstDay.format('YYYY-MM-DD'), endDate: lastDay.format('YYYY-MM-DD') })
             console.log(res, "res")
             setSmartSuggestions(res?.data?.suggestions?.smartSuggestions || [])
@@ -30,8 +32,56 @@ const AISuggestionsCard: React.FC = () => {
             setAccountOptimization(res?.data?.suggestions?.accountOptimization || [])
         } catch (err) {
             console.log(err)
+        } finally {
+            setLoading(false);
         }
     }
+    // Loading state
+    if (loading || (!smartSuggestions.length && !spendingPatterns.length && !accountOptimization.length)) {
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>🤖 Smart Financial Suggestions</CardTitle>
+                </CardHeader>
+                <CardContent className="pl-2">
+                    <div className="h-[350px] flex items-center justify-center">
+                        <div className="w-full">
+                            <div className="rounded-xl p-4 space-y-6">
+                                {/* Skeleton for Smart Tips */}
+                                <div className="space-y-2">
+                                    <Skeleton className="h-5 w-40" />
+                                    <div className="space-y-2 pl-4">
+                                        <Skeleton className="h-4 w-full" />
+                                        <Skeleton className="h-4 w-3/4" />
+                                        <Skeleton className="h-4 w-5/6" />
+                                    </div>
+                                </div>
+
+                                {/* Skeleton for Spending Patterns */}
+                                <div className="space-y-2">
+                                    <Skeleton className="h-5 w-48" />
+                                    <div className="space-y-2 pl-4">
+                                        <Skeleton className="h-4 w-full" />
+                                        <Skeleton className="h-4 w-4/5" />
+                                    </div>
+                                </div>
+
+                                {/* Skeleton for Account Optimization */}
+                                <div className="space-y-2">
+                                    <Skeleton className="h-5 w-44" />
+                                    <div className="space-y-2 pl-4">
+                                        <Skeleton className="h-4 w-full" />
+                                        <Skeleton className="h-4 w-2/3" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
+
     return (
         <Card>
             <CardHeader>

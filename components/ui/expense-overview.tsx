@@ -25,6 +25,9 @@ const CategorySpentChart = ({ budgets }: any) => {
     const [chartHeight, setChartHeight] = useState(400);
 
     useEffect(() => {
+        // Only run on client side
+        if (typeof window === 'undefined') return;
+
         const updateChartHeight = () => {
             if (window.innerWidth < 640) {
                 setChartHeight(300);

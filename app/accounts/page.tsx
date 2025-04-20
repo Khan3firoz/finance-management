@@ -43,10 +43,18 @@ export default function AccountsPage() {
   const [allAccounts, setAllAccounts] = useState<any[]>([])
   const [openAddAccountDialog, setOpenAddAccountDialog] = useState(false)
   const [editAccount, setEditAccount] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
   const fetchAccounts = async () => {
-    const res = await fetchAccountList()
-    setAllAccounts(res?.data?.accounts)
+    setLoading(true)
+    try {
+      const res = await fetchAccountList()
+      setAllAccounts(res?.data?.accounts)
+    } catch (error) {
+      console.error('Error fetching accounts:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -84,7 +92,34 @@ export default function AccountsPage() {
             <CardDescription>Manage your bank accounts, credit cards, and other financial accounts.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
+            {loading ? (
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <div className="flex space-x-4">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-28" />
+                    <Skeleton className="h-4 w-20" />
+                  </div>
+                  <Skeleton className="h-4 w-16" />
+                </div>
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="flex justify-between items-center py-4 border-b">
+                    <Skeleton className="h-5 w-40" />
+                    <Skeleton className="h-5 w-24" />
+                    <Skeleton className="h-5 w-28" />
+                    <div className="w-40">
+                      <Skeleton className="h-4 w-full mb-1" />
+                      <Skeleton className="h-2 w-full" />
+                    </div>
+                    <div className="flex space-x-2">
+                      <Skeleton className="h-8 w-8 rounded-md" />
+                      <Skeleton className="h-8 w-8 rounded-md" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -132,7 +167,7 @@ export default function AccountsPage() {
                   ))}
                 </TableBody>
               </Table>
-            </Suspense>
+            )}
           </CardContent>
         </Card>
       </div>

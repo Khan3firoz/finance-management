@@ -1,4 +1,6 @@
-import { Suspense } from "react"
+"use client"
+
+import { Suspense, useState, useEffect } from "react"
 import dayjs from "dayjs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -6,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { AddBudgetDialog } from "@/components/add-budget-dialog"
 import { EditBudgetDialog } from "@/components/edit-budget-dialog"
+import { fetchBudgetList } from "@/app/service/budget.service"
 
 // Sample data - in a real app, this would come from your database
 const budgetsData = [
@@ -67,6 +70,24 @@ const budgetsData = [
 ]
 
 export default function BudgetsPage() {
+  const [budgets, setBudgets] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const fetchBudgets = async () => {
+    setLoading(true)
+    try {
+      const res = await fetchBudgetList()
+      setBudgets(res?.data?.budgets || [])
+    } catch (error) {
+      console.error('Error fetching budgets:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchBudgets()
+  }, [])
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -82,7 +103,36 @@ export default function BudgetsPage() {
             <CardDescription>Create and manage budgets to control your spending.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
+            {loading ? (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div className="flex space-x-4">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-28 hidden md:block" />
+                    <Skeleton className="h-4 w-32 hidden md:block" />
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                  <Skeleton className="h-4 w-16" />
+                </div>
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="flex justify-between items-center py-4 border-b">
+                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-5 w-28 hidden md:block" />
+                    <Skeleton className="h-5 w-32 hidden md:block" />
+                    <Skeleton className="h-5 w-20" />
+                    <div className="w-40">
+                      <div className="flex justify-between mb-1">
+                        <Skeleton className="h-3 w-16" />
+                        <Skeleton className="h-3 w-8" />
+                      </div>
+                      <Skeleton className="h-2 w-full" />
+                    </div>
+                    <Skeleton className="h-8 w-8 rounded-md" />
+                  </div>
+                ))}
+              </div>
+            ) : (
               <div className="overflow-auto">
                 <Table>
                   <TableHeader>
@@ -96,7 +146,7 @@ export default function BudgetsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {budgetsData.map((budget) => (
+                      {(budgets.length > 0 ? budgets : budgetsData).map((budget) => (
                       <TableRow key={budget.id} className="hover:bg-cyan-50 dark:hover:bg-cyan-950/20">
                         <TableCell className="font-medium">{budget.name}</TableCell>
                         <TableCell className="hidden md:table-cell">{budget.category}</TableCell>
@@ -131,7 +181,7 @@ export default function BudgetsPage() {
                   </TableBody>
                 </Table>
               </div>
-            </Suspense>
+            )}
           </CardContent>
         </Card>
       </div>

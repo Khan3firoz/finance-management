@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -40,24 +41,6 @@ const formSchema = yup.object({
   date: yup.date().required("Date is required").typeError("Invalid date"),
   accountId: yup.string().required("Account is required"),
 })
-
-// Sample data - in a real app, this would come from your database
-// const categories = [
-//   { id: "1", name: "Groceries", type: "expense" },
-//   { id: "2", name: "Housing", type: "expense" },
-//   { id: "3", name: "Entertainment", type: "expense" },
-//   { id: "4", name: "Transportation", type: "expense" },
-//   { id: "5", name: "Utilities", type: "expense" },
-//   { id: "6", name: "Salary", type: "income" },
-//   { id: "7", name: "Freelance", type: "income" },
-//   { id: "8", name: "Investment", type: "income" },
-// ]
-
-// const accounts = [
-//   { id: "1", name: "Checking Account" },
-//   { id: "2", name: "Savings Account" },
-//   { id: "3", name: "Credit Card" },
-// ]
 
 interface AddTransactionDialogProps {
   className?: string
@@ -199,22 +182,29 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {categories
-                        .filter((category) => category.transactionType === transactionType)
-                        .map((category) => (
-                          <SelectItem key={category._id} value={category._id}>
-                            {category.icon} {category.name}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
+                  {categories.length === 0 ? (
+                    <div className="space-y-2">
+                      <Skeleton className="h-10 w-full" />
+                      <Skeleton className="h-4 w-1/2" />
+                    </div>
+                  ) : (
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {categories
+                            .filter((category) => category.type === (transactionType === 'credit' ? 'income' : 'expense'))
+                            .map((category) => (
+                              <SelectItem key={category._id} value={category._id}>
+                                {category.icon} {category.name}
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
@@ -251,20 +241,27 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Account</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select an account" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {accounts.map((account) => (
-                        <SelectItem key={account._id} value={account._id}>
-                          {account.accountName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {accounts.length === 0 ? (
+                    <div className="space-y-2">
+                      <Skeleton className="h-10 w-full" />
+                      <Skeleton className="h-4 w-1/2" />
+                    </div>
+                  ) : (
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select an account" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {accounts.map((account) => (
+                            <SelectItem key={account._id} value={account._id}>
+                              {account.accountName}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}

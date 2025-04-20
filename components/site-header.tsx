@@ -38,9 +38,42 @@ export function SiteHeader({ className }: SiteHeaderProps) {
             <WalletIcon className="h-8 w-8" />
             <span className="hidden font-bold text-lg sm:text-xl sm:inline-block">FinanceTracker</span>
           </Link>
+          {isAuthenticated && (
+            <nav className="hidden md:flex items-center space-x-6 text-sm sm:text-base">
+              <Link
+                href="/dashboard"
+                className={cn(
+                  "transition-colors hover:text-foreground/80",
+                  pathname === "/dashboard" ? "text-foreground" : "text-foreground/60",
+                )}
+              >
+                <span className="flex items-center gap-1">
+                  <div className="flex items-center justify-center bg-transparent border border-text-muted-foreground p-1 sm:p-1 rounded-full">
+                    <HomeIcon className="h-3 w-3 sm:h-5 sm:w-5 text-gray-100" />
+                  </div>
+                  Dashboard
+                </span>
+              </Link>
+            </nav>
+          )}
         </div>
 
         {isAuthenticated ? (
+          <div className="flex items-center gap-2">
+            <AddActionDropdown className="h-9 w-9" />
+            <UserNav />
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Button asChild variant="ghost">
+              <Link href="/login">Login</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/signup">Sign Up</Link>
+            </Button>
+          </div>
+        )}
+        {/* {isAuthenticated ? (
           <>
             <nav className="hidden md:flex items-center space-x-6 text-sm sm:text-base">
               <Link
@@ -112,7 +145,7 @@ export function SiteHeader({ className }: SiteHeaderProps) {
               <Link href="/signup">Sign Up</Link>
             </Button>
           </div>
-        )}
+        )} */}
       </div>
     </header>
   )

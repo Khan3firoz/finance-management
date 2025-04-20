@@ -40,6 +40,7 @@ interface Budget {
     budgetId: string
     categoryId: string
     categoryName: string
+    categoryColor: string
     budget: number
     spent: number
     remaining: number
@@ -113,7 +114,8 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
             setCategories(Array.isArray(fetchedCategories) ? fetchedCategories : [])
 
             // Set budgets with proper type checking
-            setBudgetsSummry(budgetsRes || [])
+            const fetchedBudgets = budgetsRes?.data?.budgets || []
+            setBudgetsSummry(Array.isArray(fetchedBudgets) ? fetchedBudgets : [])
 
             // Set summary and incomeExpense
             setSummary(summaryRes?.data || null)

@@ -96,7 +96,7 @@ export function AddBudgetDialog() {
     }
     debugger
     try {
-      const res = await createBudget(payload)
+      await createBudget(payload)
       refreshData()
       debugger
     } catch (error) {
@@ -258,7 +258,7 @@ export function AddBudgetDialog() {
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          initialFocus
+                          // initialFocus is deprecated
                         />
                       </PopoverContent>
                     </Popover>
@@ -296,7 +296,7 @@ export function AddBudgetDialog() {
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          initialFocus
+                          // initialFocus is deprecated
                         />
                       </PopoverContent>
                     </Popover>

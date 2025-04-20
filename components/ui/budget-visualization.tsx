@@ -46,59 +46,20 @@ interface ApiResponse {
     success: boolean
 }
 
-// Sample data from the provided JSON
+// Sample data structure for reference
+/*
 const sampleData: ApiResponse = {
     statusCode: 200,
     data: {
         month: 4,
         year: 2025,
         totalBudgets: 4,
-        budgets: [
-            {
-                _id: "679e5871d9c5e473eaf8397d",
-                budgetId: "679e5871d9c5e473eaf8397d",
-                categoryId: "679503070a5043480a8a9ac3",
-                categoryName: "Groceries",
-                categoryColor: "pink",
-                budget: 12345,
-                spent: 600,
-                remaining: 11745,
-            },
-            {
-                _id: "679e5880d9c5e473eaf83980",
-                budgetId: "679e5880d9c5e473eaf83980",
-                categoryId: "679503070a5043480a8a9ac5",
-                categoryName: "Utilities & Bills",
-                categoryColor: "magenta",
-                budget: 4500,
-                spent: 10000,
-                remaining: -5500,
-            },
-            {
-                _id: "679e58bfd9c5e473eaf8398f",
-                budgetId: "679e58bfd9c5e473eaf8398f",
-                categoryId: "679503070a5043480a8a9ac6",
-                categoryName: "Entertainment",
-                categoryColor: "light-green",
-                budget: 4500,
-                spent: 10000,
-                remaining: -5500,
-            },
-            {
-                _id: "6804867c7ee1bfa6391c7af4",
-                budgetId: "6804867c7ee1bfa6391c7af4",
-                categoryId: "679503070a5043480a8a9a12",
-                categoryName: "Shopping",
-                categoryColor: "violet",
-                budget: 50000,
-                spent: 0,
-                remaining: 50000,
-            },
-        ],
+        budgets: [...]
     },
     message: "monthly budget summary fetched successfully",
     success: true,
 }
+*/
 
 // Helper function to format currency
 const formatCurrency = (amount: number) => {
@@ -172,6 +133,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 export default function BudgetVisualization({ apiData }: { apiData: ApiResponse }) {
     const { data } = apiData
     const [activeTab, setActiveTab] = useState("progress")
+    console.log(apiData, "apiData")
 
     // Sort the budgets array by category name
     const sortedBudgets = [...data.budgets].sort((a, b) => a.categoryName.localeCompare(b.categoryName))
@@ -295,7 +257,7 @@ export default function BudgetVisualization({ apiData }: { apiData: ApiResponse 
                                             <XAxis dataKey="name" angle={-45} textAnchor="end" height={70} tick={{ fontSize: 12 }} />
                                             <YAxis tickFormatter={(value) => `$${value.toLocaleString()}`} width={80} />
                                             <Tooltip
-                                                content={<ChartTooltipContent formatValue={(value) => formatCurrency(value as number)} />}
+                                                content={<ChartTooltipContent formatter={(value) => [formatCurrency(value as number), "Amount"]} />}
                                             />
                                             <Legend />
                                             <Bar dataKey="Budget" fill="#8884d8">

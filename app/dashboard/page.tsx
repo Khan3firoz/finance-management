@@ -2,28 +2,28 @@
 
 import { Suspense } from "react"
 import Link from "next/link"
-import { ArrowRight, CreditCard, DollarSign, LineChart, PiggyBank, Plus, Wallet, ChevronDown, BarChart, PieChart, AreaChart } from "lucide-react"
+import { ArrowRight, CreditCard, DollarSign, LineChart, PiggyBank, Wallet } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+// import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 import { AccountSummary } from "@/components/account-summary"
 import { RecentTransactions } from "@/components/recent-transactions"
 import { BudgetOverview } from "@/components/budget-overview"
-import { AddActionDropdown } from "@/components/add-action-dropdown"
-import { TimeFilteredChart } from "@/components/time-filtered-chart"
-import { expenseData } from "@/app/data/expense-data"
+// import { AddActionDropdown } from "@/components/add-action-dropdown"
+// import { TimeFilteredChart } from "@/components/time-filtered-chart"
+// import { expenseData } from "@/app/data/expense-data"
 import { useFinance } from "@/app/context/finance-context"
-import { ExpenseChartData } from "@/app/types/expense"
-import ExpenseOverview from "@/components/ui/expense-overview"
-import BudgetChart from "@/components/ui/budget-chart"
+// import { ExpenseChartData } from "@/app/types/expense"
+// import ExpenseOverview from "@/components/ui/expense-overview"
+// import BudgetChart from "@/components/ui/budget-chart"
 import BudgetVisualization from "@/components/ui/budget-visualization"
 
 export default function DashboardPage() {
-  const { summary, incomeExpense, accounts, transactions, budgetsSummry, loading, error, } = useFinance()
+  const { summary, accounts, transactions, budgetsSummry, loading, error, } = useFinance()
 
   if (loading) {
     return (
@@ -51,7 +51,8 @@ export default function DashboardPage() {
     )
   }
 
-  // Transform expense data to match the expected type
+  // Transform expense data to match the expected type - commented out as not currently used
+  /*
   const transformedExpenseData: ExpenseChartData = {
     monthly: (expenseData?.monthly || []).map(item => ({
       ...item,
@@ -62,6 +63,7 @@ export default function DashboardPage() {
       year: new Date().getFullYear().toString()
     }))
   }
+  */
 
   return (
     <div className="flex flex-col">
@@ -122,7 +124,17 @@ export default function DashboardPage() {
               <Card className="col-span-12">
                 <CardContent className="h-fit">
                   {/* <BudgetChart /> */}
-                  <BudgetVisualization apiData={budgetsSummry} />
+                  <BudgetVisualization apiData={{
+                    statusCode: 200,
+                    data: {
+                      month: new Date().getMonth() + 1,
+                      year: new Date().getFullYear(),
+                      totalBudgets: budgetsSummry?.length || 0,
+                      budgets: budgetsSummry || []
+                    },
+                    message: "Budget summary",
+                    success: true
+                  }} />
                   {/* <ExpenseOverview budgets={budgetsSummry || []} /> */}
                   {/* <TimeFilteredChart data={transformedExpenseData} /> */}
                 </CardContent>

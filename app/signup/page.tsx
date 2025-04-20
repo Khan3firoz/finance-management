@@ -36,14 +36,15 @@ const signupSchema = z.object({
     password: z.string()
         .min(8, "Password must be at least 8 characters")
         .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain at least one uppercase letter, one lowercase letter, and one number"),
-    avatar: z
-        .instanceof(FileList)
-        .refine((files) => files?.length === 0 || files?.[0]?.size <= MAX_FILE_SIZE,
-            "Max file size is 5MB.")
-        .refine(
-            (files) => files?.length === 0 || ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-            "Only .jpg, .jpeg, .png and .webp formats are supported."
-        )
+    avatar: z.any()
+        .refine((files) => {
+            if (!files || files.length === 0) return true;
+            return files[0]?.size <= MAX_FILE_SIZE;
+        }, "Max file size is 5MB.")
+        .refine((files) => {
+            if (!files || files.length === 0) return true;
+            return ACCEPTED_IMAGE_TYPES.includes(files[0]?.type);
+        }, "Only .jpg, .jpeg, .png and .webp formats are supported.")
         .optional()
 })
 

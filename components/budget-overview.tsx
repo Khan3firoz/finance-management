@@ -4,59 +4,37 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recha
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { useTheme } from "next-themes"
+import { useFinance } from "@/app/context/finance-context"
+import { Skeleton } from "@/components/ui/skeleton"
 
-// Sample data - in a real app, this would come from your database
-const budgetsData = [
-  {
-    id: "1",
-    name: "Groceries",
-    amount: 500,
-    spent: 320.5,
-    period: "Monthly",
-    category: "Groceries",
-    color: "#10b981", // emerald-500
-  },
-  {
-    id: "2",
-    name: "Entertainment",
-    amount: 200,
-    spent: 150.75,
-    period: "Monthly",
-    category: "Entertainment",
-    color: "#f59e0b", // amber-500
-  },
-  {
-    id: "3",
-    name: "Transportation",
-    amount: 300,
-    spent: 210.25,
-    period: "Monthly",
-    category: "Transportation",
-    color: "#ef4444", // red-500
-  },
-  {
-    id: "4",
-    name: "Dining Out",
-    amount: 250,
-    spent: 180.5,
-    period: "Monthly",
-    category: "Food & Dining",
-    color: "#8b5cf6", // violet-500
-  },
-  {
-    id: "5",
-    name: "Utilities",
-    amount: 400,
-    spent: 350.75,
-    period: "Monthly",
-    category: "Utilities",
-    color: "#3b82f6", // blue-500
-  },
+// Define colors for categories that don't have a color assigned
+const defaultColors = [
+  "#10b981", // emerald-500
+  "#f59e0b", // amber-500
+  "#ef4444", // red-500
+  "#8b5cf6", // violet-500
+  "#3b82f6", // blue-500
+  "#ec4899", // pink-500
+  "#14b8a6", // teal-500
+  "#f97316", // orange-500
 ]
 
 export function BudgetOverview() {
   const { theme } = useTheme()
   const isDark = theme === "dark"
+  const { budgetsSummry, loading, error } = useFinance()
+
+  // Map budget data to the format expected by the component
+  const budgetsData = budgetsSummry.map((budget, index) => ({
+    id: budget._id || budget.budgetId || String(index),
+    name: budget.categoryName,
+    amount: budget.budget,
+    spent: budget.spent,
+    period: "Monthly",
+    category: budget.categoryName,
+    color: budget.categoryColor || defaultColors[index % defaultColors.length],
+    remaining: budget.remaining
+  }))
 
   // Calculate total budget and spent
   const totalBudget = budgetsData.reduce((sum, budget) => sum + budget.amount, 0)
@@ -69,6 +47,47 @@ export function BudgetOverview() {
     value: budget.spent,
     color: budget.color,
   }))
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="grid gap-4 md:grid-cols-2">
+        <div>
+          <div className="mb-6">
+            <Skeleton className="h-6 w-48 mb-4" />
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
+            </div>
+            <Skeleton className="h-2 w-full mb-2" />
+          </div>
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-2 w-full" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <Skeleton className="h-6 w-48 mb-4" />
+          <Skeleton className="h-[300px] w-full rounded-md" />
+        </div>
+      </div>
+    )
+  }
+
+  // Show error state
+  if (error || budgetsData.length === 0) {
+    return (
+      <div className="p-4 border border-red-200 bg-red-50 text-red-800 rounded-md">
+        {error || "No budget data available. Please create a budget to see your overview."}
+      </div>
+    )
+  }
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -133,24 +152,30 @@ export function BudgetOverview() {
       <div>
         <h3 className="text-lg font-medium mb-4">Spending Distribution</h3>
         <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie data={pieData} cx="50%" cy="50%" labelLine={false} outerRadius={100} fill="#8884d8" dataKey="value">
-                {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: isDark ? "#1f2937" : "#fff",
-                  borderColor: isDark ? "#374151" : "#e5e7eb",
-                  color: isDark ? "#fff" : "#000",
-                }}
-                formatter={(value: number) => [`$${value.toFixed(2)}`, "Spent"]}
-              />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+          {pieData.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={pieData} cx="50%" cy="50%" labelLine={false} outerRadius={100} fill="#8884d8" dataKey="value">
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: isDark ? "#1f2937" : "#fff",
+                    borderColor: isDark ? "#374151" : "#e5e7eb",
+                    color: isDark ? "#fff" : "#000",
+                  }}
+                  formatter={(value: number) => [`$${value.toFixed(2)}`, "Spent"]}
+                />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex items-center justify-center h-full text-muted-foreground">
+              No spending data available
+            </div>
+          )}
         </div>
       </div>
     </div>

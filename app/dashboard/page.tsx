@@ -21,6 +21,7 @@ import { useFinance } from "@/app/context/finance-context"
 // import ExpenseOverview from "@/components/ui/expense-overview"
 // import BudgetChart from "@/components/ui/budget-chart"
 import BudgetVisualization from "@/components/ui/budget-visualization"
+import AISuggestionsCard from "@/components/ui/AISuggestionsCard"
 
 export default function DashboardPage() {
   const { summary, accounts, transactions, budgetsSummry, loading, error, } = useFinance()
@@ -161,18 +162,7 @@ export default function DashboardPage() {
             </div>
           </TabsContent>
           <TabsContent value="analytics" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Income vs Expenses</CardTitle>
-                <CardDescription>Compare your income and expenses over time.</CardDescription>
-              </CardHeader>
-              <CardContent className="pl-2">
-                <div className="h-[350px] flex items-center justify-center">
-                  <LineChart className="h-16 w-16 text-muted-foreground" />
-                  <p className="ml-4 text-muted-foreground">Analytics data will appear here</p>
-                </div>
-              </CardContent>
-            </Card>
+            <AISuggestionsCard />
           </TabsContent>
           <TabsContent value="budgets" className="space-y-4">
             <Card>

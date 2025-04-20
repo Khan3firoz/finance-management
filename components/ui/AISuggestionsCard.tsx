@@ -1,0 +1,82 @@
+'use client';
+
+import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card';
+import { fetchAiSuggestion } from '@/app/service/ai.service';
+import dayjs from 'dayjs';
+
+const AISuggestionsCard: React.FC = () => {
+    const firstDay = dayjs().startOf('month'); // e.g., 2025-04-01
+    const lastDay = dayjs().endOf('month'); // e.g., 2025-04-30
+
+    console.log('First Day:', firstDay.format('YYYY-MM-DD'));
+    console.log('Last Day:', lastDay.format('YYYY-MM-DD'));
+
+    const [smartSuggestions, setSmartSuggestions] = React.useState<string[]>([])
+    const [spendingPatterns, setSpendingPatterns] = React.useState<string[]>([])
+    const [accountOptimization, setAccountOptimization] = React.useState<string[]>([])
+    const [loading, setLoading] = React.useState(false)
+
+    React.useEffect(() => {
+        getAiSuggetion()
+    }, [])
+
+    const getAiSuggetion = async () => {
+        try {
+            const res = await fetchAiSuggestion({ startDate: firstDay.format('YYYY-MM-DD'), endDate: lastDay.format('YYYY-MM-DD') })
+            console.log(res, "res")
+            setSmartSuggestions(res?.data?.suggestions?.smartSuggestions || [])
+            setSpendingPatterns(res?.data?.suggestions.spendingPatternsDetected || [])
+            setAccountOptimization(res?.data?.suggestions?.accountOptimization || [])
+        } catch (err) {
+            console.log(err)
+        }
+    }
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>🤖 Smart Financial Suggestions</CardTitle>
+                {/* <CardDescription>Compare your income and expenses over time.</CardDescription> */}
+            </CardHeader>
+            <CardContent className="pl-2">
+                <div className="h-[350px] flex items-center justify-center">
+                    <div className="w-full">
+                        <div className="rounded-xl p-4">
+                            {/* Smart Tips */}
+                            <Section title="💡 Smart Tips" items={smartSuggestions} />
+
+                            {/* Spending Patterns */}
+                            <Section title="📊 Spending Patterns Detected" items={spendingPatterns} />
+
+                            {/* Account Optimization */}
+                            <Section title="🧩 Account Optimization" items={accountOptimization} />
+                        </div>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+    );
+};
+
+type SectionProps = {
+    title: string;
+    items: string[];
+};
+
+const Section: React.FC<SectionProps> = ({ title, items }) => {
+    return (
+        <div className="mb-4">
+            <h3 className="text-base font-semibold text-gray-100 mb-2">{title}</h3>
+            <ul className="list-disc list-inside text-muted-foreground space-y-1 text-sm">
+                {items.map((item, index) => (
+                    <li key={index}>{item}</li>
+                ))}
+            </ul>
+        </div>
+    );
+};
+
+export default AISuggestionsCard;
+
+

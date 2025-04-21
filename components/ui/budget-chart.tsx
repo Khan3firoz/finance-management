@@ -107,10 +107,11 @@ const BudgetChart = () => {
         },
         scales: {
             x: {
+                type: 'linear' as const,
                 beginAtZero: true,
                 ticks: {
-                    callback: function (value: number) {
-                        return `₹${value.toLocaleString()}`;
+                    callback: function (this: any, tickValue: string | number, index: number) {
+                        return `₹${Number(tickValue).toLocaleString()}`;
                     },
                 },
             },

@@ -94,7 +94,8 @@ export function BudgetOverview() {
       <div>
         <div className="mb-6">
           <h3 className="text-lg font-medium mb-2">Monthly Budget Overview</h3>
-          <div className="grid grid-cols-3 gap-4 mb-4">
+          {/* <div className="grid grid-cols-3 gap-4 mb-4"> */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <Card>
               <CardHeader className="p-3">
                 <CardDescription>Total Budget</CardDescription>

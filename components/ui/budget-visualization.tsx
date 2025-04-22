@@ -20,6 +20,7 @@ import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Skeleton } from "@/components/ui/skeleton"
+import { getMonthName } from "@/lib/utils"
 
 // Budget data type definitions
 interface Budget {
@@ -139,7 +140,7 @@ export default function BudgetVisualization({ apiData }: { apiData: ApiResponse 
     // Loading state
     if (!data || !data.budgets || data.budgets.length === 0) {
         return (
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto py-8">
                 <Card className="w-full">
                     <CardHeader>
                         <Skeleton className="h-8 w-3/4 mx-auto mb-2" />
@@ -190,22 +191,22 @@ export default function BudgetVisualization({ apiData }: { apiData: ApiResponse 
         value: item.spent,
         color: getCategoryHexColor(item.categoryColor),
     }))
-
+    
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="py-8">
             <Card className="w-full">
                 <CardHeader>
-                    <CardTitle className="text-2xl md:text-3xl text-center">April 2025 - Monthly Budget Overview</CardTitle>
+                    <CardTitle className="text-2xl md:text-3xl text-center">{getMonthName(data.month)} {data.year} - Monthly Budget Overview</CardTitle>
                     <CardDescription className="text-center">
                         Track your spending across {data.totalBudgets} budget categories
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Tabs defaultValue="progress" value={activeTab} onValueChange={setActiveTab} className="w-full">
-                        <TabsList className="grid w-full grid-cols-5">
+                        <TabsList className="grid w-full grid-cols-4">
                             <TabsTrigger value="progress">Progress</TabsTrigger>
                             <TabsTrigger value="bar">Bar Chart</TabsTrigger>
-                            <TabsTrigger value="pie-budget">Budget Pie</TabsTrigger>
+                            {/* <TabsTrigger value="pie-budget">Budget Pie</TabsTrigger> */}
                             <TabsTrigger value="pie-spent">Spent Pie</TabsTrigger>
                             <TabsTrigger value="cards">Cards</TabsTrigger>
                         </TabsList>
@@ -308,7 +309,7 @@ export default function BudgetVisualization({ apiData }: { apiData: ApiResponse 
                         </TabsContent>
 
                         {/* Budget Pie Chart View */}
-                        <TabsContent value="pie-budget" className="pt-6">
+                        {/* <TabsContent value="pie-budget" className="pt-6">
                             <div className="w-full h-[400px]">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
@@ -337,7 +338,7 @@ export default function BudgetVisualization({ apiData }: { apiData: ApiResponse 
                             <div className="text-center mt-4 text-sm text-muted-foreground">
                                 Budget distribution across categories
                             </div>
-                        </TabsContent>
+                        </TabsContent> */}
 
                         {/* Spent Pie Chart View */}
                         <TabsContent value="pie-spent" className="pt-6">

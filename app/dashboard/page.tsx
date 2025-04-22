@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useEffect } from "react"
 import Link from "next/link"
 import { ArrowRight, CreditCard, DollarSign, LineChart, PiggyBank, Wallet } from "lucide-react"
 
@@ -16,7 +16,12 @@ import BudgetVisualization from "@/components/ui/budget-visualization"
 import AISuggestionsCard from "@/components/ui/AISuggestionsCard"
 
 export default function DashboardPage() {
-  const { summary, accounts, transactions, budgetsSummry, loading, error, } = useFinance()
+  const { summary, accounts, transactions, budgetsSummry, loading, error, refreshData } = useFinance()
+
+  useEffect(() => {
+    refreshData()
+  }, [])
+
 
   if (loading) {
     return (
@@ -113,25 +118,17 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
             </div>
-            <div className="grid gap-4">
-              <Card className="col-span-12">
-                <CardContent className="h-fit">
-                  {/* <BudgetChart /> */}
-                  <BudgetVisualization apiData={{
-                    statusCode: 200,
-                    data: {
-                      month: new Date().getMonth() + 1,
-                      year: new Date().getFullYear(),
-                      totalBudgets: budgetsSummry?.length || 0,
-                      budgets: budgetsSummry || []
-                    },
-                    message: "Budget summary",
-                    success: true
-                  }} />
-                  {/* <ExpenseOverview budgets={budgetsSummry || []} /> */}
-                  {/* <TimeFilteredChart data={transformedExpenseData} /> */}
-                </CardContent>
-              </Card>
+              <BudgetVisualization apiData={{
+                statusCode: 200,
+                data: {
+                  month: new Date().getMonth() + 1,
+                  year: new Date().getFullYear(),
+                  totalBudgets: budgetsSummry?.length || 0,
+                  budgets: budgetsSummry || []
+                },
+                message: "Budget summary",
+                success: true
+              }} />
               <Card className="col-span-12">
                 <CardHeader>
                   <CardTitle>Recent Transactions</CardTitle>
@@ -151,7 +148,6 @@ export default function DashboardPage() {
                   </Button>
                 </CardFooter>
               </Card>
-            </div>
           </TabsContent>
           <TabsContent value="analytics" className="space-y-4">
             <AISuggestionsCard />

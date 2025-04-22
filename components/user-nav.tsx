@@ -41,13 +41,16 @@ export function UserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-10">
-            <AvatarImage src={userData?.avatar} alt="User" />
-            <AvatarFallback>{userData?.fullName[0]}</AvatarFallback>
+        <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={userData?.avatar} alt="User" className="h-8 w-8 object-cover rounded-full" />
+            <AvatarFallback className="h-8 w-8 flex items-center justify-center">
+              {userData?.fullName?.[0]}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
@@ -80,6 +83,6 @@ export function UserNav() {
           <span>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
-    </DropdownMenu>
+    </DropdownMenu >
   )
 }

@@ -41,7 +41,7 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
   const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
   const currentTransactions = transactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
   const totalPages = Math.ceil(transactions?.length / transactionsPerPage);
-  console.log(transactions, "transactions===>")
+  
   return (
     <div className="space-y-4">
       {currentTransactions.map((transaction) => (
@@ -63,7 +63,7 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                 <ArrowDownIcon className="mr-1 h-4 w-4 text-red-500" />
               )}
               <span className={cn("text-sm", transaction.transactionType === "credit" ? "text-emerald-500" : "text-red-500")}>
-                ${transaction.amount.toFixed(2)}
+              ₹{transaction.amount.toFixed(2)}
               </span>
             </div>
             <p className="text-xs text-right text-muted-foreground">{dayjs(transaction.date).format("MMM D, YYYY")}</p>

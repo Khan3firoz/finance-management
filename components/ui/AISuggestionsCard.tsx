@@ -10,9 +10,6 @@ const AISuggestionsCard: React.FC = () => {
     const firstDay = dayjs().startOf('month'); // e.g., 2025-04-01
     const lastDay = dayjs().endOf('month'); // e.g., 2025-04-30
 
-    console.log('First Day:', firstDay.format('YYYY-MM-DD'));
-    console.log('Last Day:', lastDay.format('YYYY-MM-DD'));
-
     const [smartSuggestions, setSmartSuggestions] = React.useState<string[]>([])
     const [spendingPatterns, setSpendingPatterns] = React.useState<string[]>([])
     const [accountOptimization, setAccountOptimization] = React.useState<string[]>([])
@@ -41,10 +38,10 @@ const AISuggestionsCard: React.FC = () => {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>🤖 Smart Financial Suggestions</CardTitle>
+                    <CardTitle>🤖 Smart Suggestions</CardTitle>
                 </CardHeader>
                 <CardContent className="pl-2">
-                    <div className="h-[350px] flex items-center justify-center">
+                    <div className="h-auto flex items-center justify-center">
                         <div className="w-full">
                             <div className="rounded-xl p-4 space-y-6">
                                 {/* Skeleton for Smart Tips */}
@@ -85,11 +82,11 @@ const AISuggestionsCard: React.FC = () => {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>🤖 Smart Financial Suggestions</CardTitle>
+                <CardTitle>🤖 Smart Suggestions</CardTitle>
                 {/* <CardDescription>Compare your income and expenses over time.</CardDescription> */}
             </CardHeader>
             <CardContent className="pl-2">
-                <div className="h-[350px] flex items-center justify-center">
+                <div className="h-auto flex items-center justify-center">
                     <div className="w-full">
                         <div className="rounded-xl p-4">
                             {/* Smart Tips */}

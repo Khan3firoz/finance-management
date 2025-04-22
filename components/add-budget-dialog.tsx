@@ -41,7 +41,8 @@ import {
 } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { useFinance } from "@/app/context/finance-context"
-import { createBudget } from "@/app/service/budget.service"
+import { createBudget, updateBudget } from "@/app/service/budget.service"
+import { toast } from "sonner"
 
 const formSchema = yup.object({
   name: yup.string().required("Budget name is required"),
@@ -67,57 +68,88 @@ const periods = [
   { id: "yearly", label: "Yearly" },
 ]
 
-export function AddBudgetDialog() {
-  const [open, setOpen] = useState(false)
+interface Budget {
+  _id: string
+  name: string
+  amount: number
+  spent: number
+  categoryId: string
+  category: {
+    name: string
+    color: string
+  }
+  startDate: string
+  endDate: string
+  recurring: string
+  description?: string
+}
+
+export function AddBudgetDialog({
+  open,
+  onClose,
+  editBudget,
+  onSuccess,
+}: {
+  open: boolean
+  onClose: () => void
+  editBudget: Budget | null
+  onSuccess: () => void
+}) {
+  // const [open, setOpen] = useState(false)
   const { categories, userData, refreshData } = useFinance()
 
   const form = useForm({
     resolver: yupResolver(formSchema),
     defaultValues: {
-      name: "",
-      spent: 0,
-      categoryId: "",
-      startDate: new Date(),
-      endDate: new Date(),
-      recurring: "",
-      amount: 0,
+      name: editBudget?.name || "",
+      spent: editBudget?.spent || 0,
+      categoryId: editBudget?.categoryId || "",
+      startDate: editBudget?.startDate ? new Date(editBudget.startDate) : new Date(),
+      endDate: editBudget?.endDate ? new Date(editBudget.endDate) : new Date(),
+      recurring: editBudget?.recurring || "",
+      amount: editBudget?.amount || 0,
     },
   })
 
   async function onSubmit(values: yup.InferType<typeof formSchema>) {
-    console.log(values)
     const payload = {
       ...values,
-      userId: userData._id,
-      startDate: dayjs(values.startDate).
-        format("YYYY-MM-DD"),
-      endDate: dayjs(values.endDate).
-        format("YYYY-MM-DD"),
+      userId: userData?.user?._id,
+      startDate: dayjs(values.startDate).format("YYYY-MM-DD"),
+      endDate: dayjs(values.endDate).format("YYYY-MM-DD"),
     }
-    debugger
     try {
-      await createBudget(payload)
+      if (editBudget) {
+        await updateBudget(editBudget._id, payload)
+        toast.success("Budget updated successfully")
+      } else {
+        await createBudget(payload)
+        toast.success("Budget created successfully")
+      }
       refreshData()
-      debugger
+      onSuccess()
+      form.reset()
     } catch (error) {
-      console.log(error, "error")
+      console.log(error)
+      toast.error(editBudget ? "Failed to update budget" : "Failed to create budget")
+      onClose()
     }
 
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className="flex items-center gap-2">
           <PiggyBank className="h-4 w-4" />
-          Add Budget
+          {editBudget ? 'Edit' : 'Add'} Budget
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add New Budget</DialogTitle>
+          <DialogTitle>{editBudget ? 'Edit' : 'Add New'} Budget</DialogTitle>
           <DialogDescription>
-            Create a new budget to track your spending limits.
+            {editBudget ? 'Edit' : 'Create'} a budget to track your spending limits.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

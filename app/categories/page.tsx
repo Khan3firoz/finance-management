@@ -1,122 +1,153 @@
 "use client"
 
-import { Suspense } from "react"
-import Link from "next/link"
-import { Edit, Plus, Trash } from "lucide-react"
+import { Suspense, useEffect, useState } from "react"
+import { Edit, MoreVertical, Plus, Trash } from "lucide-react"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { fetchCategory, deleteCategory } from "@/app/service/category.service"
+import { toast } from "sonner"
+import { useFinance } from "@/app/context/finance-context"
+import { AddCategoryDialog } from "@/components/add-category-dialog"
 
-// Sample data - in a real app, this would come from your database
-const categoriesData = [
-  {
-    id: "1",
-    name: "Groceries",
-    type: "expense",
-    description: "Food and household items",
-    color: "#10b981",
-  },
-  {
-    id: "2",
-    name: "Housing",
-    type: "expense",
-    description: "Rent, mortgage, and home maintenance",
-    color: "#3b82f6",
-  },
-  {
-    id: "3",
-    name: "Entertainment",
-    type: "expense",
-    description: "Movies, games, and subscriptions",
-    color: "#f59e0b",
-  },
-  {
-    id: "4",
-    name: "Transportation",
-    type: "expense",
-    description: "Gas, public transit, and car maintenance",
-    color: "#ef4444",
-  },
-  {
-    id: "5",
-    name: "Utilities",
-    type: "expense",
-    description: "Electricity, water, and internet",
-    color: "#6366f1",
-  },
-  {
-    id: "6",
-    name: "Employment",
-    type: "income",
-    description: "Salary and wages",
-    color: "#10b981",
-  },
-  {
-    id: "7",
-    name: "Investment",
-    type: "income",
-    description: "Dividends and capital gains",
-    color: "#3b82f6",
-  },
-]
+type CategoryType = 'debit' | 'credit';
+
+interface Category {
+  _id: string
+  name: string
+  type: string
+  description: string
+  color: string
+}
+
+
 
 export default function CategoriesPage() {
+  const [categories, setCategories] = useState<Category[]>([])
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [editCategory, setEditCategory] = useState<Category | null>(null)
+  const { refreshData } = useFinance()
+
+  const loadCategories = async () => {
+    try {
+      const response = await fetchCategory()
+      if (response?.data?.categories) {
+        setCategories(response.data.categories)
+      }
+    } catch (error) {
+      toast.error('Failed to load categories')
+    }
+  }
+
+  const handleDeleteCategory = async (id: string) => {
+    try {
+      await deleteCategory(id)
+      toast.success('Category deleted successfully')
+      loadCategories()
+      refreshData()
+    } catch (error) {
+      toast.error('Failed to delete category')
+    }
+  }
+
+  useEffect(() => {
+    loadCategories()
+  }, [])
+
   return (
-    <div className="flex flex-col">
-      <div className="flex-1 space-y-4 p-2 sm:p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">Categories</h2>
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Categories</CardTitle>
+            <CardDescription>Manage your expense and income categories</CardDescription>
+          </div>
+          <Button onClick={() => {
+            setEditCategory(null)
+            setIsAddDialogOpen(true)
+          }}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Category
+          </Button>
         </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Expense & Income Categories</CardTitle>
-            <CardDescription>Manage categories to organize your finances.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Color</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {categoriesData.map((category) => (
-                    <TableRow key={category.id}>
-                      <TableCell>
-                        <div className="h-4 w-4 rounded-full" style={{ backgroundColor: category.color }} />
-                      </TableCell>
-                      <TableCell className="font-medium">{category.name}</TableCell>
-                      <TableCell className="capitalize">{category.type}</TableCell>
-                      <TableCell>{category.description}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/categories/${category.id}`}>
-                              <Edit className="h-4 w-4" />
-                              <span className="sr-only">Edit</span>
-                            </Link>
-                          </Button>
-                          <Button variant="ghost" size="icon">
-                            <Trash className="h-4 w-4" />
-                            <span className="sr-only">Delete</span>
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Suspense>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+      </CardHeader>
+      <CardContent>
+        <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Color</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {categories.map((category) => (
+                <TableRow key={category._id}>
+                  <TableCell>{category.name}</TableCell>
+                  <TableCell>
+                    <div
+                      className="h-6 w-6 rounded-full"
+                      style={{ backgroundColor: category.color }}
+                    />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreVertical className="h-4 w-4" />
+                          <span className="sr-only">Open menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setEditCategory(category)
+                            setIsAddDialogOpen(true)
+                          }}
+                        >
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDeleteCategory(category._id)}
+                          className="text-red-600"
+                        >
+                          <Trash className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Suspense>
+      </CardContent>
+
+      <AddCategoryDialog
+        open={isAddDialogOpen}
+        onClose={() => {
+          setIsAddDialogOpen(false)
+          setEditCategory(null)
+        }}
+        editCategory={editCategory}
+        onSuccess={() => {
+          setIsAddDialogOpen(false)
+          setEditCategory(null)
+          loadCategories()
+          refreshData()
+        }}
+      />
+    </Card>
   )
 }

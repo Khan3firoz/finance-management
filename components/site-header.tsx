@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation"
 import {
   HomeIcon,
   MenuIcon,
+  PiggyBank,
   TagsIcon,
-  WalletIcon,
   XIcon,
 } from "lucide-react"
 import { useState } from "react"
@@ -63,22 +63,34 @@ export function SiteHeader({ className }: SiteHeaderProps) {
                   </span>
                 </Link>
                 <Link
-                  href="/category"
+                  href="/categories"
                   className={cn(
                     "transition-colors hover:text-foreground/80",
-                    pathname === "/category" ? "text-foreground" : "text-foreground/60",
+                    pathname === "/categories" ? "text-foreground" : "text-foreground/60",
                   )}
                 >
                   <span className="flex items-center gap-1">
                     <div className="flex items-center justify-center bg-transparent border border-text-muted-foreground p-1 sm:p-1 rounded-full">
                       <TagsIcon className="h-3 w-3 sm:h-5 sm:w-5 text-gray-100" />
                     </div>
-                    Category
+                    Categories
+                  </span>
+                </Link>
+                <Link
+                  href="/budgets"
+                  className={cn(
+                    "transition-colors hover:text-foreground/80",
+                    pathname === "/budgets" ? "text-foreground" : "text-foreground/60",
+                  )}
+                >
+                  <span className="flex items-center gap-1">
+                    <div className="flex items-center justify-center bg-transparent border border-text-muted-foreground p-1 sm:p-1 rounded-full">
+                      <PiggyBank className="h-3 w-3 sm:h-5 sm:w-5 text-gray-100" />
+                    </div>
+                    Budgets
                   </span>
                 </Link>
               </nav>
-
-
             </>
           )}
         </div>
@@ -114,6 +126,28 @@ export function SiteHeader({ className }: SiteHeaderProps) {
             >
               <HomeIcon className="h-5 w-5" />
               Dashboard
+            </Link>
+            <Link
+              href="/categories"
+              className={cn(
+                "flex items-center gap-2 py-2 px-3 rounded-md transition-colors hover:bg-muted",
+                pathname === "/categories" ? "bg-muted text-foreground" : "text-foreground/70"
+              )}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <TagsIcon className="h-5 w-5" />
+              Categories
+            </Link>
+            <Link
+              href="/budgets"
+              className={cn(
+                "flex items-center gap-2 py-2 px-3 rounded-md transition-colors hover:bg-muted",
+                pathname === "/budgets" ? "bg-muted text-foreground" : "text-foreground/70"
+              )}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <PiggyBank className="h-5 w-5" />
+              Budgets
             </Link>
           </nav>
         </div>

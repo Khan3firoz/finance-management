@@ -1,11 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { Tag } from "lucide-react"
-import { createCategory } from "@/app/service/category.service"
+import { createCategory, updateCategory } from "@/app/service/category.service"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -36,60 +35,89 @@ import {
 import { toast } from "sonner"
 import { useFinance } from "@/app/context/finance-context"
 
+interface Category {
+    id: string
+    name: string
+    type: CategoryType
+    // description: string
+    color: string
+}
+
+interface AddCategoryDialogProps {
+    open: boolean
+    onClose: () => void
+    editCategory: any
+    onSuccess: () => void
+}
+
+type CategoryType = "debit" | "credit"
+
 type FormValues = {
     name: string
-    transactionType: "credit" | "debit"
+    type: CategoryType
+    description: string
+    color: string
 }
 
 const formSchema = yup.object({
     name: yup.string().required("Category name is required"),
-    transactionType: yup.string().oneOf(["credit", "debit"] as const).required("Category type is required"),
+    type: yup.string().oneOf(["debit", "credit"] as const).required("Category type is required"),
+    // description: yup.string().required("Description is required"),
+    color: yup.string().required("Color is required")
 }).required()
 
-export function AddCategoryDialog() {
-    const [open, setOpen] = useState(false)
-    const { refreshData, userData } = useFinance()
+export function AddCategoryDialog({ open, onClose, editCategory, onSuccess }: AddCategoryDialogProps) {
+    const { refreshData } = useFinance()
 
     const form = useForm<FormValues>({
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver(formSchema) as any,
         defaultValues: {
-            name: "",
-            transactionType: "debit",
-        },
+            name: editCategory?.name || "",
+            type: editCategory?.type || "debit",
+            // description: editCategory?.description || "",
+            color: editCategory?.color || "#000000"
+        }
     })
 
-
-    const onSubmit = async (values: FormValues) => {
-        const payload = {
-            ...values,
-            userId: userData?.user?._id,
-            parentCategory: null,
+    useEffect(() => {
+        if (editCategory) {
+            form.reset({
+                name: editCategory.name,
+                type: editCategory.transactionType,
+                // description: editCategory.description,
+                color: editCategory.color
+            })
         }
+    }, [editCategory, form])
+
+    console.log(editCategory,"eedit")
+    const onSubmit = async (values: FormValues) => {
         try {
-            const res = await createCategory(payload)
-            refreshData()
-            console.log(res, "res")
-            toast.success("Category added succesfully")
-            setOpen(false)
-            form.reset()
+            if (editCategory) {
+                await updateCategory(editCategory._id, values)
+                toast.success("Category updated successfully")
+                refreshData()
+                form.reset()
+            } else {
+                await createCategory(values)
+                toast.success("Category created successfully")
+                refreshData()
+                form.reset()
+            }
+            onSuccess()
         } catch (error) {
-            console.log(error, "error")
+            toast.error(editCategory ? "Failed to update category" : "Failed to create category")
+            onClose()
         }
     }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                    <Tag className="h-4 w-4" />
-                    Add Category
-                </Button>
-            </DialogTrigger>
+        <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Add New Category</DialogTitle>
+                    <DialogTitle>{editCategory ? "Edit" : "Add"} Category</DialogTitle>
                     <DialogDescription>
-                        Create a new category to organize your transactions.
+                        {editCategory ? "Edit" : "Add"} a category to organize your transactions.
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
@@ -99,9 +127,9 @@ export function AddCategoryDialog() {
                             name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Category Name</FormLabel>
+                                    <FormLabel>Name</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="e.g., Groceries" {...field} />
+                                        <Input placeholder="Enter category name" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -109,14 +137,14 @@ export function AddCategoryDialog() {
                         />
                         <FormField
                             control={form.control}
-                            name="transactionType"
+                            name="type"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Category Type</FormLabel>
+                                    <FormLabel>Type</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Select a type" />
+                                                <SelectValue placeholder="Select category type" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
@@ -128,8 +156,34 @@ export function AddCategoryDialog() {
                                 </FormItem>
                             )}
                         />
+                        {/* <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Description</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Enter category description" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        /> */}
+                        <FormField
+                            control={form.control}
+                            name="color"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Color</FormLabel>
+                                    <FormControl>
+                                        <Input type="color" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         <DialogFooter>
-                            <Button type="submit">Add Category</Button>
+                            <Button type="submit">{editCategory ? "Update" : "Save"} Category</Button>
                         </DialogFooter>
                     </form>
                 </Form>

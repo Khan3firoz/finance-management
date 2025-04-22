@@ -11,3 +11,11 @@ export const fetchBudgetSummary = async (params) => {
 export const createBudget = async (budgetData) => {
     return await axios.post(`/budget/create`, budgetData)
 }
+
+export const updateBudget = async (id, budgetData) => {
+    return await axios.put(`/budget/${id}`, budgetData)
+}
+
+export const deleteBudget = async (id) => {
+    return await axios.delete(`/budget/${id}`)
+}

@@ -49,10 +49,8 @@ interface AddTransactionDialogProps {
 
 export function AddTransactionDialog({ className, type }: AddTransactionDialogProps) {
   const [open, setOpen] = useState(false)
-  const { categories, accounts, userData, refreshData } = useFinance()
-  console.log(userData, "userData-->")
+  const { categories, accounts, userData, refreshData } = useFinance();
 
-  console.log(categories, "categoriesRes")
   const form = useForm({
     resolver: yupResolver(formSchema),
     defaultValues: {
@@ -63,31 +61,39 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
       date: new Date(),
       accountId: "",
     },
-  })
+  });
 
   async function onSubmit(values: any) {
     const payload = {
       ...values,
-      userId: userData?._id
-    }
+      userId: userData?._id,
+    };
     // In a real app, you would save the transaction to your database here
     try {
-      const res = await createTransaction(payload)
-      refreshData()
-      form.reset()
-      toast.success('Transaction Added Successfully')
-      setOpen(false)
+      const res = await createTransaction(payload);
+      refreshData();
+      form.reset();
+      toast.success("Transaction Added Successfully");
+      setOpen(false);
     } catch (error) {
-      console.log(error, "error")
+      console.log(error, "error");
     }
   }
 
-  const transactionType = form.watch("transactionType")
+  const transactionType = form.watch("transactionType");
+  console.log(transactionType, "transactionType");
+  console.log(categories, "categories");
+  const filteredCategories = categories?.filter(
+    (category) => category.transactionType === transactionType
+  );
+
+  console.log(filteredCategories, "filteredCategories");
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className="flex items-center gap-2">
-          {type === 'credit' ? (
+          {type === "credit" ? (
             <>
               <ArrowDownRight className="h-4 w-4 text-emerald-500" />
               Add Income
@@ -103,7 +109,9 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add Transaction</DialogTitle>
-          <DialogDescription>Create a new transaction to track your finances.</DialogDescription>
+          <DialogDescription>
+            Create a new transaction to track your finances.
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -114,29 +122,53 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
                 <FormItem className="space-y-1">
                   <FormLabel>Transaction Type</FormLabel>
                   <FormControl>
-                    <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex space-x-2">
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex space-x-2"
+                    >
                       <FormItem className="flex items-center space-x-1 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="credit" className="peer sr-only" />
+                          <RadioGroupItem
+                            value="credit"
+                            className="peer sr-only"
+                          />
                         </FormControl>
                         <Button
                           type="button"
-                          variant={field.value === "credit" ? "default" : "outline"}
-                          className={cn(field.value === "credit" && "bg-emerald-600 hover:bg-emerald-700 text-white")}
-                          onClick={() => form.setValue("transactionType", "credit")}
+                          variant={
+                            field.value === "credit" ? "default" : "outline"
+                          }
+                          className={cn(
+                            field.value === "credit" &&
+                              "bg-emerald-600 hover:bg-emerald-700 text-white"
+                          )}
+                          onClick={() =>
+                            form.setValue("transactionType", "credit")
+                          }
                         >
                           Income
                         </Button>
                       </FormItem>
                       <FormItem className="flex items-center space-x-1 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="debit" className="peer sr-only" />
+                          <RadioGroupItem
+                            value="debit"
+                            className="peer sr-only"
+                          />
                         </FormControl>
                         <Button
                           type="button"
-                          variant={field.value === "debit" ? "default" : "outline"}
-                          className={cn(field.value === "debit" && "bg-red-600 hover:bg-red-700 text-white")}
-                          onClick={() => form.setValue("transactionType", "debit")}
+                          variant={
+                            field.value === "debit" ? "default" : "outline"
+                          }
+                          className={cn(
+                            field.value === "debit" &&
+                              "bg-red-600 hover:bg-red-700 text-white"
+                          )}
+                          onClick={() =>
+                            form.setValue("transactionType", "debit")
+                          }
                         >
                           Expense
                         </Button>
@@ -155,8 +187,17 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
                   <FormLabel>Amount</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2">$</span>
-                      <Input placeholder="0.00" {...field} className="pl-7" type="number" step="0.01" min="0" />
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                        ₹
+                      </span>
+                      <Input
+                        placeholder="0.00"
+                        {...field}
+                        className="pl-7"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                      />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -188,22 +229,28 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
                       <Skeleton className="h-4 w-1/2" />
                     </div>
                   ) : (
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a category" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {categories
-                            .filter((category) => category.type === (transactionType === 'credit' ? 'income' : 'expense'))
-                            .map((category) => (
-                              <SelectItem key={category._id} value={category._id}>
-                                {category.icon} {category.name}
-                              </SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories
+                          .filter(
+                            (category) =>
+                              category.transactionType === transactionType
+                          )
+                          .map((category) => (
+                            <SelectItem key={category._id} value={category._id}>
+                              {category.icon} {category.name}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
                   )}
                   <FormMessage />
                 </FormItem>
@@ -220,15 +267,27 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
                       <FormControl>
                         <Button
                           variant={"outline"}
-                          className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
                         >
-                          {field.value ? dayjs(field.value).format("MMMM D, YYYY") : <span>Pick a date</span>}
+                          {field.value ? (
+                            dayjs(field.value).format("MMMM D, YYYY")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                      />
                     </PopoverContent>
                   </Popover>
                   <FormMessage />
@@ -247,20 +306,23 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
                       <Skeleton className="h-4 w-1/2" />
                     </div>
                   ) : (
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an account" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {accounts.map((account) => (
-                            <SelectItem key={account._id} value={account._id}>
-                              {account.accountName}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an account" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {accounts.map((account) => (
+                          <SelectItem key={account._id} value={account._id}>
+                            {account.accountName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   )}
                   <FormMessage />
                 </FormItem>
@@ -270,7 +332,9 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
               <Button
                 type="submit"
                 className={
-                  transactionType === "credit" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-red-600 hover:bg-red-700"
+                  transactionType === "credit"
+                    ? "bg-emerald-600 hover:bg-emerald-700"
+                    : "bg-red-600 hover:bg-red-700"
                 }
               >
                 Add {transactionType === "credit" ? "Income" : "Expense"}
@@ -280,5 +344,5 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

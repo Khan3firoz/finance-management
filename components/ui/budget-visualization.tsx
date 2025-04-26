@@ -134,8 +134,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 
 export default function BudgetVisualization({ apiData }: { apiData: ApiResponse }) {
     const { data } = apiData
-    const [activeTab, setActiveTab] = useState("progress")
-    console.log(apiData, "apiData")
+    const [activeTab, setActiveTab] = useState("progress");
 
     // Loading state
     if (!data || !data.budgets || data.budgets.length === 0) {
@@ -191,7 +190,7 @@ export default function BudgetVisualization({ apiData }: { apiData: ApiResponse 
         value: item.spent,
         color: getCategoryHexColor(item.categoryColor),
     }))
-    
+
     return (
         <div className="py-8">
             <Card className="w-full">

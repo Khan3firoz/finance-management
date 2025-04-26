@@ -2,26 +2,48 @@
 
 import { Suspense, useEffect } from "react"
 import Link from "next/link"
-import { ArrowRight, CreditCard, DollarSign, LineChart, PiggyBank, Wallet } from "lucide-react"
+import {
+  ArrowRight,
+  CreditCard,
+  DollarSign,
+  IndianRupee,
+  LineChart,
+  PiggyBank,
+  Wallet,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AccountSummary } from "@/components/account-summary"
-import { RecentTransactions } from "@/components/recent-transactions"
-import { BudgetOverview } from "@/components/budget-overview"
-import { useFinance } from "@/app/context/finance-context"
-import BudgetVisualization from "@/components/ui/budget-visualization"
-import AISuggestionsCard from "@/components/ui/AISuggestionsCard"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AccountSummary } from "@/components/account-summary";
+import { RecentTransactions } from "@/components/recent-transactions";
+import { BudgetOverview } from "@/components/budget-overview";
+import { useFinance } from "@/app/context/finance-context";
+import BudgetVisualization from "@/components/ui/budget-visualization";
+import AISuggestionsCard from "@/components/ui/AISuggestionsCard";
 
 export default function DashboardPage() {
-  const { summary, accounts, transactions, budgetsSummry, loading, error, refreshData } = useFinance()
+  const {
+    summary,
+    accounts,
+    transactions,
+    budgetsSummry,
+    loading,
+    error,
+    refreshData,
+  } = useFinance();
 
   useEffect(() => {
-    refreshData()
-  }, [])
-
+    refreshData();
+  }, []);
 
   if (loading) {
     return (
@@ -36,7 +58,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -46,7 +68,7 @@ export default function DashboardPage() {
           <div className="text-red-500">{error}</div>
         </div>
       </div>
-    )
+    );
   }
 
   // Transform expense data to match the expected type - commented out as not currently used
@@ -67,87 +89,123 @@ export default function DashboardPage() {
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-2 sm:p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            Dashboard
+          </h2>
         </div>
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="overview" className="text-sm sm:text-base">Overview</TabsTrigger>
-            <TabsTrigger value="analytics" className="text-sm sm:text-base">Analytics</TabsTrigger>
-            <TabsTrigger value="budgets" className="text-sm sm:text-base">Budgets</TabsTrigger>
+            <TabsTrigger value="overview" className="text-sm sm:text-base">
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="text-sm sm:text-base">
+              Analytics
+            </TabsTrigger>
+            <TabsTrigger value="budgets" className="text-sm sm:text-base">
+              Budgets
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
             <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs sm:text-sm font-medium">Total Balance</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium">
+                    Total Balance
+                  </CardTitle>
                   <Wallet className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl sm:text-2xl font-bold">₹ {summary?.netAmount || 0}</div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">+20.1% from last month</p>
+                  <div className="text-xl sm:text-2xl font-bold">
+                    ₹ {summary?.netAmount || 0}
+                  </div>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
+                    +20.1% from last month
+                  </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs sm:text-sm font-medium">Income</CardTitle>
-                  <DollarSign className="h-4 w-4 text-emerald-500" />
+                  <CardTitle className="text-xs sm:text-sm font-medium">
+                    Income
+                  </CardTitle>
+                  <IndianRupee className="h-4 w-4 text-emerald-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl sm:text-2xl font-bold text-emerald-500">₹ {summary?.totalIncome || 0}</div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">+2.5% from last month</p>
+                  <div className="text-xl sm:text-2xl font-bold text-emerald-500">
+                    ₹ {summary?.totalIncome || 0}
+                  </div>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
+                    +2.5% from last month
+                  </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs sm:text-sm font-medium">Expenses</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium">
+                    Expenses
+                  </CardTitle>
                   <CreditCard className="h-4 w-4 text-red-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl sm:text-2xl font-bold text-red-500">₹ {summary?.totalExpense || 0}</div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">+18.2% from last month</p>
+                  <div className="text-xl sm:text-2xl font-bold text-red-500">
+                    ₹ {summary?.totalExpense || 0}
+                  </div>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
+                    +18.2% from last month
+                  </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs sm:text-sm font-medium">Savings</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium">
+                    Savings
+                  </CardTitle>
                   <PiggyBank className="h-4 w-4 text-cyan-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl sm:text-2xl font-bold text-cyan-500">₹ 1,607.50</div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">+4.3% from last month</p>
+                  <div className="text-xl sm:text-2xl font-bold text-cyan-500">
+                    ₹ 1,607.50
+                  </div>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
+                    +4.3% from last month
+                  </p>
                 </CardContent>
               </Card>
             </div>
-              <BudgetVisualization apiData={{
+            <BudgetVisualization
+              apiData={{
                 statusCode: 200,
                 data: {
                   month: new Date().getMonth() + 1,
                   year: new Date().getFullYear(),
                   totalBudgets: budgetsSummry?.length || 0,
-                  budgets: budgetsSummry || []
+                  budgets: budgetsSummry || [],
                 },
                 message: "Budget summary",
-                success: true
-              }} />
-              <Card className="col-span-12">
-                <CardHeader>
-                  <CardTitle>Recent Transactions</CardTitle>
-                  <CardDescription>You made {transactions?.length || 0} transactions this month.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Suspense fallback={<Skeleton className="h-[350px] w-full" />}>
-                    <RecentTransactions transactions={transactions || []} />
-                  </Suspense>
-                </CardContent>
-                <CardFooter>
-                  <Button asChild variant="outline" className="w-full">
-                    <Link href="/transactions">
-                      View All Transactions
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardFooter>
-              </Card>
+                success: true,
+              }}
+            />
+            <Card className="col-span-12">
+              <CardHeader>
+                <CardTitle>Recent Transactions</CardTitle>
+                <CardDescription>
+                  You made {transactions?.length || 0} transactions this month.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Suspense fallback={<Skeleton className="h-[350px] w-full" />}>
+                  <RecentTransactions transactions={transactions || []} />
+                </Suspense>
+              </CardContent>
+              <CardFooter>
+                <Button asChild variant="outline" className="w-full">
+                  <Link href="/transactions">
+                    View All Transactions
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardFooter>
+            </Card>
           </TabsContent>
           <TabsContent value="analytics" className="space-y-4">
             <AISuggestionsCard />
@@ -156,7 +214,9 @@ export default function DashboardPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Budget Overview</CardTitle>
-                <CardDescription>Track your spending against your budget.</CardDescription>
+                <CardDescription>
+                  Track your spending against your budget.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<Skeleton className="h-[350px] w-full" />}>
@@ -197,6 +257,6 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 

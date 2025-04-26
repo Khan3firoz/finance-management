@@ -51,10 +51,10 @@ type Account = {
 }
 
 export function EditAccountDialog({ account }: { account: Account }) {
-  const [open, setOpen] = useState(false)
-  const { refreshData } = useFinance()
+  const [open, setOpen] = useState(false);
+  const { refreshData } = useFinance();
 
-  console.log(account, "eDITaccount")
+  // console.log(account, "eDITaccount")
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -64,7 +64,7 @@ export function EditAccountDialog({ account }: { account: Account }) {
       balance: account.balance.toString(),
       limit: account.limit?.toString() || "",
     },
-  })
+  });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -73,18 +73,18 @@ export function EditAccountDialog({ account }: { account: Account }) {
         accountType: values.type,
         balance: parseFloat(values.balance),
         ...(values.limit ? { limit: parseFloat(values.limit) } : {}),
-      }
-      await updateAccount(account._id, payload)
-      refreshData()
-      setOpen(false)
-      toast.success("Account updated successfully")
+      };
+      await updateAccount(account._id, payload);
+      refreshData();
+      setOpen(false);
+      toast.success("Account updated successfully");
     } catch (error) {
-      console.error("Error updating account:", error)
-      toast.error("Failed to update account")
+      console.error("Error updating account:", error);
+      toast.error("Failed to update account");
     }
   }
 
-  const accountType = form.watch("type")
+  const accountType = form.watch("type");
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -97,7 +97,9 @@ export function EditAccountDialog({ account }: { account: Account }) {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Edit Account</DialogTitle>
-          <DialogDescription>Make changes to your financial account.</DialogDescription>
+          <DialogDescription>
+            Make changes to your financial account.
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -120,7 +122,10 @@ export function EditAccountDialog({ account }: { account: Account }) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Account Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select account type" />
@@ -146,8 +151,16 @@ export function EditAccountDialog({ account }: { account: Account }) {
                   <FormLabel>Balance</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2">₹</span>
-                      <Input placeholder="0.00" {...field} className="pl-7" type="number" step="0.01" />
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                        ₹
+                      </span>
+                      <Input
+                        placeholder="0.00"
+                        {...field}
+                        className="pl-7"
+                        type="number"
+                        step="0.01"
+                      />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -163,8 +176,17 @@ export function EditAccountDialog({ account }: { account: Account }) {
                     <FormLabel>Credit Limit</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2">₹</span>
-                        <Input placeholder="0.00" {...field} className="pl-7" type="number" step="0.01" min="0" />
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                          ₹
+                        </span>
+                        <Input
+                          placeholder="0.00"
+                          {...field}
+                          className="pl-7"
+                          type="number"
+                          step="0.01"
+                          min="0"
+                        />
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -181,5 +203,5 @@ export function EditAccountDialog({ account }: { account: Account }) {
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

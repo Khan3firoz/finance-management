@@ -1,44 +1,54 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import storage from './utils/storage'
 
-
-// List of public routes that don't require authentication
 const publicRoutes = ['/', '/login', '/signup']
 
+function decodeJWT(token: string) {
+    try {
+        const base64Payload = token.split('.')[1]
+        const decodedPayload = Buffer.from(base64Payload, 'base64').toString()
+        console.log(decodedPayload, 'decodedPayload')
+        return JSON.parse(decodedPayload)
+    } catch (err) {
+        return null
+    }
+}
+
 export function middleware(request: NextRequest) {
-    const token = request.cookies.get('finTrac_token')
-    // const token = storage.getToken()
-    // console.log(token, "token")
+    const token = request.cookies.get('finTrac_token')?.value
     const { pathname } = request.nextUrl
 
-    // Allow access to public routes without authentication
+    // Allow access to public routes
     if (publicRoutes.includes(pathname)) {
         return NextResponse.next()
     }
 
-    // If no token is present and trying to access protected route, redirect to login
     if (!token) {
         const loginUrl = new URL('/login', request.url)
-        // Store the attempted URL to redirect back after login
         loginUrl.searchParams.set('callbackUrl', pathname)
         return NextResponse.redirect(loginUrl)
+    }
+
+    // Decode and check expiration
+    const decoded = decodeJWT(token)
+    const isExpired = !decoded || decoded.exp * 1000 < Date.now()
+
+    if (isExpired) {
+        const loginUrl = new URL('/login', request.url)
+        loginUrl.searchParams.set('callbackUrl', pathname)
+
+        // Clear the expired cookie
+        const response = NextResponse.redirect(loginUrl)
+        response.cookies.set('finTrac_token', '', { maxAge: 0, path: '/' })
+
+        return response
     }
 
     return NextResponse.next()
 }
 
-// Configure which routes to run middleware on
 export const config = {
     matcher: [
-        /*
-         * Match all request paths except for the ones starting with:
-         * - api (API routes)
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         * - public folder
-         */
         '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
     ],
 }

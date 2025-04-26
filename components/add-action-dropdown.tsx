@@ -25,34 +25,32 @@ export function AddActionDropdown({ className }: AddActionDropdownProps) {
     const [openAddAccount, setOpenAddAccount] = useState(false)
 
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    className={`${className} aspect-square rounded-full hover:bg-accent`}
-                >
-                    <Plus className="h-4 w-4" />
-                    <span className="sr-only">Add new</span>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-                <AddTransactionDialog type="credit" />
-                <AddTransactionDialog type="debit" />
-                <DropdownMenuItem onClick={() => setOpenAddAccount(true)}>
-                    <WalletIcon className="h-4 w-4 mr-2" />
-                    Add Account
-                </DropdownMenuItem>
-                <AddBudgetDialog />
-                <AddCategoryDialog />
-            </DropdownMenuContent>
-            {openAddAccount && (
-                <AddAccountDialog
-                    open={openAddAccount}
-                    onClose={() => setOpenAddAccount(false)}
-                    editAccount={null}
-                />
-            )}
-        </DropdownMenu>
-    )
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className={`${className} aspect-square rounded-full hover:bg-accent`}
+          >
+            <Plus className="h-4 w-4" />
+            <span className="sr-only">Add new</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <AddTransactionDialog type="credit" />
+          <AddTransactionDialog type="debit" />
+          <DropdownMenuItem onClick={() => setOpenAddAccount(true)}>
+            <WalletIcon className="h-4 w-4 mr-2" />
+            Add Account
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+        {openAddAccount && (
+          <AddAccountDialog
+            open={openAddAccount}
+            onClose={() => setOpenAddAccount(false)}
+            editAccount={null}
+          />
+        )}
+      </DropdownMenu>
+    );
 }

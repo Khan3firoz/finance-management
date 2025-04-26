@@ -57,17 +57,10 @@ export default function LoginPage() {
             const res = await loginUser(data)
             const token = res?.data?.accessToken
             if (token) {
-                // Store token securely in cookie
-                storage.setToken(token)
-                // Cookies.set('token', token, {
-                //     secure: true,
-                //     sameSite: 'strict',
-                //     expires: 7 // 7 days
-                // })
-
-                storage.setUser(res.data.user)
-                routes.push('/dashboard')
-                toast.success("Logged in successfully")
+              storage.setToken(token);
+              storage.setUser(res.data.user);
+              routes.push("/dashboard");
+              toast.success("Logged in successfully");
             }
         } catch (err: any) {
             toast.error(err?.response?.data?.message || "Login failed")

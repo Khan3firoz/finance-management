@@ -21,8 +21,7 @@ import { useFinance } from "@/app/context/finance-context"
 export function UserNav() {
   const { setTheme, theme } = useTheme()
   const router = useRouter()
-  const { userData } = useFinance()
-  console.log(userData, "userData")
+  const { userData } = useFinance();
 
   const handleLogout = () => {
     // Clear token from cookies

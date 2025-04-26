@@ -54,6 +54,7 @@
     "next": "^15.3.0",
     "next-themes": "latest",
     "react": "^19",
+    "react-calendar": "^5.1.0",
     "react-chartjs-2": "^5.3.0",
     "react-datepicker": "^8.3.0",
     "react-day-picker": "^9.6.6",

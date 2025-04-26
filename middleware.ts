@@ -7,7 +7,6 @@ function decodeJWT(token: string) {
     try {
         const base64Payload = token.split('.')[1]
         const decodedPayload = Buffer.from(base64Payload, 'base64').toString()
-        console.log(decodedPayload, 'decodedPayload')
         return JSON.parse(decodedPayload)
     } catch (err) {
         return null

@@ -90,7 +90,6 @@ export function AddCategoryDialog({ open, onClose, editCategory, onSuccess }: Ad
         }
     }, [editCategory, form])
 
-    console.log(editCategory,"eedit")
     const onSubmit = async (values: FormValues) => {
         try {
             if (editCategory) {

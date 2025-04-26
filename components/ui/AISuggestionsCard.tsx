@@ -22,8 +22,10 @@ const AISuggestionsCard: React.FC = () => {
     const getAiSuggetion = async () => {
         try {
             setLoading(true);
-            const res = await fetchAiSuggestion({ startDate: firstDay.format('YYYY-MM-DD'), endDate: lastDay.format('YYYY-MM-DD') })
-            console.log(res, "res")
+            const res = await fetchAiSuggestion({
+              startDate: firstDay.format("YYYY-MM-DD"),
+              endDate: lastDay.format("YYYY-MM-DD"),
+            });
             setSmartSuggestions(res?.data?.suggestions?.smartSuggestions || [])
             setSpendingPatterns(res?.data?.suggestions.spendingPatternsDetected || [])
             setAccountOptimization(res?.data?.suggestions?.accountOptimization || [])

@@ -21,59 +21,62 @@ import { AddCategoryDialog } from "@/components/add-category-dialog"
 type CategoryType = 'debit' | 'credit';
 
 interface Category {
-  _id: string
-  name: string
-  type: string
-  description: string
-  color: string
+  _id: string;
+  name: string;
+  type: string;
+  description: string;
+  color: string;
+  transactionType: string;
 }
 
-
-
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([])
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [editCategory, setEditCategory] = useState<Category | null>(null)
-  const { refreshData } = useFinance()
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [editCategory, setEditCategory] = useState<Category | null>(null);
+  const { refreshData } = useFinance();
 
   const loadCategories = async () => {
     try {
-      const response = await fetchCategory()
+      const response = await fetchCategory();
       if (response?.data?.categories) {
-        setCategories(response.data.categories)
+        setCategories(response.data.categories);
       }
     } catch (error) {
-      toast.error('Failed to load categories')
+      toast.error("Failed to load categories");
     }
-  }
+  };
 
   const handleDeleteCategory = async (id: string) => {
     try {
-      await deleteCategory(id)
-      toast.success('Category deleted successfully')
-      loadCategories()
-      refreshData()
+      await deleteCategory(id);
+      toast.success("Category deleted successfully");
+      loadCategories();
+      refreshData();
     } catch (error) {
-      toast.error('Failed to delete category')
+      toast.error("Failed to delete category");
     }
-  }
+  };
 
   useEffect(() => {
-    loadCategories()
-  }, [])
+    loadCategories();
+  }, []);
 
   return (
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <div>
+          <div className="flex flex-col gap-2">
             <CardTitle>Categories</CardTitle>
-            <CardDescription>Manage your expense and income categories</CardDescription>
+            <CardDescription>
+              Manage your expense and income categories
+            </CardDescription>
           </div>
-          <Button onClick={() => {
-            setEditCategory(null)
-            setIsAddDialogOpen(true)
-          }}>
+          <Button
+            onClick={() => {
+              setEditCategory(null);
+              setIsAddDialogOpen(true);
+            }}
+          >
             <Plus className="mr-2 h-4 w-4" />
             Add Category
           </Button>
@@ -85,6 +88,7 @@ export default function CategoriesPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead>Color</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -93,6 +97,15 @@ export default function CategoriesPage() {
               {categories.map((category) => (
                 <TableRow key={category._id}>
                   <TableCell>{category.name}</TableCell>
+                  <TableCell
+                    className={`${
+                      category.transactionType === "debit"
+                        ? "text-red-600"
+                        : "text-green-600"
+                    }`}
+                  >
+                    {category.transactionType === "debit" ? "Debit" : "Credit"}
+                  </TableCell>
                   <TableCell>
                     <div
                       className="h-6 w-6 rounded-full"
@@ -110,8 +123,8 @@ export default function CategoriesPage() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
                           onClick={() => {
-                            setEditCategory(category)
-                            setIsAddDialogOpen(true)
+                            setEditCategory(category);
+                            setIsAddDialogOpen(true);
                           }}
                         >
                           <Edit className="mr-2 h-4 w-4" />
@@ -137,17 +150,17 @@ export default function CategoriesPage() {
       <AddCategoryDialog
         open={isAddDialogOpen}
         onClose={() => {
-          setIsAddDialogOpen(false)
-          setEditCategory(null)
+          setIsAddDialogOpen(false);
+          setEditCategory(null);
         }}
         editCategory={editCategory}
         onSuccess={() => {
-          setIsAddDialogOpen(false)
-          setEditCategory(null)
-          loadCategories()
-          refreshData()
+          setIsAddDialogOpen(false);
+          setEditCategory(null);
+          loadCategories();
+          refreshData();
         }}
       />
     </Card>
-  )
+  );
 }

@@ -54,8 +54,6 @@ export function EditAccountDialog({ account }: { account: Account }) {
   const [open, setOpen] = useState(false);
   const { refreshData } = useFinance();
 
-  // console.log(account, "eDITaccount")
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

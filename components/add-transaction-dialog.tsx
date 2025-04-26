@@ -28,9 +28,13 @@ import { cn } from "@/lib/utils"
 import { useFinance } from "@/app/context/finance-context"
 import { createTransaction } from "@/app/service/account.service"
 import { toast } from "sonner"
+import ThemedCalendar from "@/components/ui/themed-calendar";
 
 const formSchema = yup.object({
-  transactionType: yup.string().required("Transaction type is required").oneOf(["credit", "debit"], "Transaction type is required"),
+  transactionType: yup
+    .string()
+    .required("Transaction type is required")
+    .oneOf(["credit", "debit"], "Transaction type is required"),
   amount: yup
     .number()
     .required("Amount is required")
@@ -40,15 +44,18 @@ const formSchema = yup.object({
   categoryId: yup.string().required("Category is required"),
   date: yup.date().required("Date is required").typeError("Invalid date"),
   accountId: yup.string().required("Account is required"),
-})
+});
 
 interface AddTransactionDialogProps {
-  className?: string
-  type: 'credit' | 'debit'
+  className?: string;
+  type: "credit" | "debit";
 }
 
-export function AddTransactionDialog({ className, type }: AddTransactionDialogProps) {
-  const [open, setOpen] = useState(false)
+export function AddTransactionDialog({
+  className,
+  type,
+}: AddTransactionDialogProps) {
+  const [open, setOpen] = useState(false);
   const { categories, accounts, userData, refreshData } = useFinance();
 
   const form = useForm({
@@ -81,13 +88,9 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
   }
 
   const transactionType = form.watch("transactionType");
-  console.log(transactionType, "transactionType");
-  console.log(categories, "categories");
   const filteredCategories = categories?.filter(
     (category) => category.transactionType === transactionType
   );
-
-  console.log(filteredCategories, "filteredCategories");
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -282,11 +285,9 @@ export function AddTransactionDialog({ className, type }: AddTransactionDialogPr
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        initialFocus
+                      <ThemedCalendar
+                        value={field.value}
+                        onChange={field.onChange}
                       />
                     </PopoverContent>
                   </Popover>

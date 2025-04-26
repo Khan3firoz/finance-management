@@ -167,7 +167,7 @@ export function BudgetOverview() {
                     borderColor: isDark ? "#374151" : "#e5e7eb",
                     color: isDark ? "#fff" : "#000",
                   }}
-                  formatter={(value: number) => [`$${value.toFixed(2)}`, "Spent"]}
+                  formatter={(value: number) => [`₹${value.toFixed(2)}`, "Spent"]}
                 />
                 <Legend />
               </PieChart>

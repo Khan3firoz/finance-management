@@ -286,7 +286,7 @@ export default function BudgetVisualization({ apiData }: { apiData: ApiResponse 
                                         <BarChart data={barChartData} margin={{ top: 20, right: 30, left: 20, bottom: 70 }}>
                                             <CartesianGrid strokeDasharray="3 3" />
                                             <XAxis dataKey="name" angle={-45} textAnchor="end" height={70} tick={{ fontSize: 12 }} />
-                                            <YAxis tickFormatter={(value) => `$${value.toLocaleString()}`} width={80} />
+                                            <YAxis tickFormatter={(value) => `₹${value.toLocaleString()}`} width={80} />
                                             <Tooltip
                                                 content={<ChartTooltipContent formatter={(value) => [formatCurrency(value as number), "Amount"]} />}
                                             />

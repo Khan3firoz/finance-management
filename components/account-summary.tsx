@@ -29,7 +29,7 @@ interface AccountSummaryProps {
 export function AccountSummary({ allAccounts = [] }: AccountSummaryProps) {
   const totalAssets = allAccounts.reduce((sum, account) => {
     if (!account) return sum
-    return account.accountType !== "credit" ? sum + (account.balance || 0) : sum
+    return account.accountType !== "credit_card" ? sum + (account.balance || 0) : sum - (account.balance || 0)
   }, 0)
 
   // Loading state

@@ -84,7 +84,7 @@ export default function TransactionsPage() {
         <div className="space-y-6 sm:mt-4 md:mt-8">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex flex-col gap-2">
-                    <h2 className="text-2xl font-semibold">All Transactions</h2>
+                    <h2 className="text-2xl font-semibold">All Transactions({transactions.length})</h2>
                     <p className="text-sm text-muted-foreground">View and filter your transaction history</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">

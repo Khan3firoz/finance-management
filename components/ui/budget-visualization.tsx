@@ -65,7 +65,7 @@ const sampleData: ApiResponse = {
 
 // Helper function to format currency
 const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
         style: "currency",
         currency: "INR",
         minimumFractionDigits: 0,

@@ -74,10 +74,10 @@ export default function TransactionsPage() {
     }, [inView, hasMore, loading, page])
 
     const formatAmount = (amount: number) => {
-        return new Intl.NumberFormat('en-US', {
+        return new Intl.NumberFormat('en-IN', {
             style: 'currency',
-            currency: 'USD',
-        }).format(amount)
+            currency: 'INR',
+        }).format(amount);
     }
 
     return (

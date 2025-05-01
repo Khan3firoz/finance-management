@@ -8,7 +8,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ArrowUp, ArrowDown } from "lucide-react"
 import { format, startOfMonth } from "date-fns"
-import { transactionService } from "@/app/service/transaction.service"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { fetchAllTransaction } from "../service/account.service"
@@ -118,7 +117,6 @@ export default function TransactionsPage() {
                             startDate={startDate}
                             endDate={endDate}
                             minDate={startDate}
-                            maxDate={new Date()}
                             className="w-full sm:w-[150px] p-2 rounded-md border border-input bg-background text-sm"
                             dateFormat="MMM dd, yyyy"
                         />

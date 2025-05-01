@@ -40,7 +40,7 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
   const indexOfLastTransaction = currentPage * transactionsPerPage;
   const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
   const currentTransactions = transactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
-  const totalPages = Math.ceil(transactions?.length / transactionsPerPage);
+  // const totalPages = Math.ceil(transactions?.length / transactionsPerPage);
   
   return (
     <div className="space-y-4">

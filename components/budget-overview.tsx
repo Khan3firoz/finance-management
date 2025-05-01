@@ -99,19 +99,19 @@ export function BudgetOverview() {
             <Card>
               <CardHeader className="p-3">
                 <CardDescription>Total Budget</CardDescription>
-                <CardTitle className="text-xl">${totalBudget.toFixed(2)}</CardTitle>
+                <CardTitle className="text-xl">₹{totalBudget.toFixed(2)}</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader className="p-3">
                 <CardDescription>Spent</CardDescription>
-                <CardTitle className="text-xl text-red-500">${totalSpent.toFixed(2)}</CardTitle>
+                <CardTitle className="text-xl text-red-500">₹{totalSpent.toFixed(2)}</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader className="p-3">
                 <CardDescription>Remaining</CardDescription>
-                <CardTitle className="text-xl text-emerald-500">${totalRemaining.toFixed(2)}</CardTitle>
+                <CardTitle className="text-xl text-emerald-500">₹{totalRemaining.toFixed(2)}</CardTitle>
               </CardHeader>
             </Card>
           </div>
@@ -133,7 +133,7 @@ export function BudgetOverview() {
               <div className="flex justify-between">
                 <span className="font-medium">{budget.name}</span>
                 <span className="text-sm text-muted-foreground">
-                  ${budget.spent.toFixed(2)} / ${budget.amount.toFixed(2)}
+                ₹{budget.spent.toFixed(2)} / ₹{budget.amount.toFixed(2)}
                 </span>
               </div>
               <Progress
@@ -142,7 +142,7 @@ export function BudgetOverview() {
                 indicatorClassName={budget.spent / budget.amount > 0.9 ? "bg-red-500" : budget.color}
               />
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>${(budget.amount - budget.spent).toFixed(2)} remaining</span>
+                <span>₹{(budget.amount - budget.spent).toFixed(2)} remaining</span>
                 <span>{Math.round((budget.spent / budget.amount) * 100)}%</span>
               </div>
             </div>

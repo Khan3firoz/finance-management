@@ -30,36 +30,19 @@ interface Category {
 }
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editCategory, setEditCategory] = useState<Category | null>(null);
-  const { refreshData } = useFinance();
-
-  const loadCategories = async () => {
-    try {
-      const response = await fetchCategory();
-      if (response?.data?.categories) {
-        setCategories(response.data.categories);
-      }
-    } catch (error) {
-      toast.error("Failed to load categories");
-    }
-  };
+  const { categories, loading, refreshData } = useFinance();
 
   const handleDeleteCategory = async (id: string) => {
     try {
       await deleteCategory(id);
       toast.success("Category deleted successfully");
-      loadCategories();
       refreshData();
     } catch (error) {
       toast.error("Failed to delete category");
     }
   };
-
-  useEffect(() => {
-    loadCategories();
-  }, []);
 
   return (
     <Card>
@@ -68,7 +51,7 @@ export default function CategoriesPage() {
           <div className="flex flex-col gap-2">
             <CardTitle>Categories</CardTitle>
             <CardDescription>
-              Manage your expense and income categories
+              Manage your transaction categories
             </CardDescription>
           </div>
           <Button
@@ -83,68 +66,87 @@ export default function CategoriesPage() {
         </div>
       </CardHeader>
       <CardContent>
-        <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Color</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {categories.map((category) => (
-                <TableRow key={category._id}>
-                  <TableCell>{category.name}</TableCell>
-                  <TableCell
-                    className={`${
-                      category.transactionType === "debit"
-                        ? "text-red-600"
-                        : "text-green-600"
-                    }`}
-                  >
-                    {category.transactionType === "debit" ? "Debit" : "Credit"}
-                  </TableCell>
-                  <TableCell>
-                    <div
-                      className="h-6 w-6 rounded-full"
-                      style={{ backgroundColor: category.color }}
-                    />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreVertical className="h-4 w-4" />
-                          <span className="sr-only">Open menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => {
-                            setEditCategory(category);
-                            setIsAddDialogOpen(true);
-                          }}
-                        >
-                          <Edit className="mr-2 h-4 w-4" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleDeleteCategory(category._id)}
-                          className="text-red-600"
-                        >
-                          <Trash className="mr-2 h-4 w-4" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Suspense>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Color</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading
+              ? Array(5)
+                  .fill(0)
+                  .map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <Skeleton className="h-4 w-[100px]" />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className="h-4 w-[80px]" />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className="h-4 w-[60px]" />
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Skeleton className="h-8 w-8 ml-auto" />
+                      </TableCell>
+                    </TableRow>
+                  ))
+              : categories.map((category) => (
+                  <TableRow key={category._id}>
+                    <TableCell>{category.name}</TableCell>
+                    <TableCell
+                      className={`${
+                        category.transactionType === "debit"
+                          ? "text-red-600"
+                          : "text-green-600"
+                      }`}
+                    >
+                      {category.transactionType === "debit"
+                        ? "Debit"
+                        : "Credit"}
+                    </TableCell>
+                    <TableCell>
+                      <div
+                        className="h-6 w-6 rounded-full"
+                        style={{ backgroundColor: category.color }}
+                      />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreVertical className="h-4 w-4" />
+                            <span className="sr-only">Open menu</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setEditCategory(category);
+                              setIsAddDialogOpen(true);
+                            }}
+                          >
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDeleteCategory(category._id)}
+                            className="text-red-600"
+                          >
+                            <Trash className="mr-2 h-4 w-4" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+          </TableBody>
+        </Table>
       </CardContent>
 
       <AddCategoryDialog
@@ -157,7 +159,6 @@ export default function CategoriesPage() {
         onSuccess={() => {
           setIsAddDialogOpen(false);
           setEditCategory(null);
-          loadCategories();
           refreshData();
         }}
       />

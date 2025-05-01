@@ -1,13 +1,13 @@
 "use client"
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import * as yup from "yup"
-import { yupResolver } from "@hookform/resolvers/yup"
-import { CalendarIcon, PiggyBank } from "lucide-react"
-import dayjs from "dayjs"
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { CalendarIcon, PiggyBank } from "lucide-react";
+import dayjs from "dayjs";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -24,15 +24,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import ThemedCalendar from "@/components/ui/themed-calendar";
 import {
   Popover,
@@ -76,6 +76,7 @@ interface Budget {
   spent: number;
   categoryId: string;
   category: {
+    _id: string;
     name: string;
     color: string;
   };
@@ -98,7 +99,7 @@ export function AddBudgetDialog({
 }) {
   const { categories, refreshData } = useFinance();
   const userData = storage.getUser();
-
+  console.log(editBudget, "editBudget");
   const form = useForm({
     resolver: yupResolver(formSchema),
     defaultValues: {
@@ -113,6 +114,20 @@ export function AddBudgetDialog({
       amount: editBudget?.amount || 0,
     },
   });
+
+  useEffect(() => {
+    if (editBudget) {
+      form.reset({
+        name: editBudget.name,
+        spent: editBudget.spent,
+        categoryId: editBudget.category._id,
+        startDate: new Date(editBudget.startDate),
+        endDate: new Date(editBudget.endDate),
+        recurring: editBudget.recurring,
+        amount: editBudget.amount,
+      });
+    }
+  }, [editBudget, form]);
 
   const userId = userData?._id;
   async function onSubmit(values: yup.InferType<typeof formSchema>) {
@@ -155,7 +170,7 @@ export function AddBudgetDialog({
           {editBudget ? "Edit" : "Add"} Budget
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>{editBudget ? "Edit" : "Add New"} Budget</DialogTitle>
           <DialogDescription>
@@ -355,7 +370,9 @@ export function AddBudgetDialog({
               />
             </div>
             <DialogFooter>
-              <Button type="submit">Add Budget</Button>
+              <Button type="submit">
+                {editBudget ? "Update" : "Add"} Budget
+              </Button>
             </DialogFooter>
           </form>
         </Form>

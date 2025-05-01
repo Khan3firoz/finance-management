@@ -90,8 +90,8 @@ export default function SignupPage() {
             toast.success("Account created successfully")
             router.push("/login")
             router.refresh()
-        } catch (error) {
-            toast.error("Failed to create account. Please try again.")
+        } catch (error:any) {
+            toast.error(error.message||'Something went wrong!')
         } finally {
             setIsLoading(false)
         }

@@ -92,7 +92,7 @@ export function EditAccountDialog({ account }: { account: Account }) {
           <span className="sr-only">Edit</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Edit Account</DialogTitle>
           <DialogDescription>

@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { CalendarIcon, ArrowDownRight, ArrowUpRight } from "lucide-react"
-import dayjs from "dayjs"
-import * as yup from "yup"
-import { yupResolver } from "@hookform/resolvers/yup"
-import { useForm } from "react-hook-form"
+import React from "react";
+import { CalendarIcon, ArrowDownRight, ArrowUpRight } from "lucide-react";
+import dayjs from "dayjs";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -62,24 +62,20 @@ const formSchema = yup.object({
   accountId: yup.string().required("Account is required"),
 });
 
-interface AddTransactionDialogProps {
+interface AddTransactionModalProps {
   className?: string;
   type: "credit" | "debit";
-  onOpenChange?: (open: boolean) => void;
+  open: boolean;
+  onClose: () => void;
 }
 
-export function AddTransactionDialog({
+export function AddTransactionModal({
   className,
   type = "debit",
-  onOpenChange,
-}: AddTransactionDialogProps) {
-  const [open, setOpen] = useState(false);
+  open,
+  onClose,
+}: AddTransactionModalProps) {
   const { categories, accounts, userData, refreshData } = useFinance();
-
-  const handleOpenChange = (newOpen: boolean) => {
-    setOpen(newOpen);
-    onOpenChange?.(newOpen);
-  };
 
   const form = useForm({
     resolver: yupResolver(formSchema),
@@ -99,14 +95,13 @@ export function AddTransactionDialog({
       userId: userData?._id,
       date: dayjs(values.date).format("YYYY-MM-DD"),
     };
-    debugger;
     // In a real app, you would save the transaction to your database here
     try {
       const res = await createTransaction(payload);
       refreshData();
       form.reset();
       toast.success("Transaction Added Successfully");
-      setOpen(false);
+      onClose();
     } catch (error) {
       console.log(error, "error");
     }
@@ -118,7 +113,7 @@ export function AddTransactionDialog({
   );
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className="flex items-center gap-2">
           {type === "credit" ? (
@@ -136,7 +131,7 @@ export function AddTransactionDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Add Transaction=2222</DialogTitle>
+          <DialogTitle>Add Transaction111</DialogTitle>
           <DialogDescription>
             Create a new transaction to track your finances.
           </DialogDescription>

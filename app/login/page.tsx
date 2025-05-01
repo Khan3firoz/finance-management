@@ -37,19 +37,6 @@ export default function LoginPage() {
         },
     })
 
-    // async function onSubmit(values: z.infer<typeof loginSchema>) {
-    //     try {
-    //         setIsLoading(true)
-    //         await authService.login(values)
-    //         toast.success("Logged in successfully")
-    //         router.push("/dashboard")
-    //         // router.refresh()
-    //     } catch (error: any) {
-    //         toast.error(error.message || "Invalid email or password")
-    //     } finally {
-    //         setIsLoading(false)
-    //     }
-    // }
 
     const onSubmit = async (data: z.infer<typeof loginSchema>) => {
         try {
@@ -62,8 +49,7 @@ export default function LoginPage() {
               toast.success("Logged in successfully");
             }
         } catch (err: any) {
-            toast.error(err?.response?.data?.message || "Login failed")
-            console.log(err, "error")
+            toast.error(err?.message || "Some thing went wrong!");
         }
     };
 

@@ -5,9 +5,7 @@ import Link from "next/link"
 import {
   ArrowRight,
   CreditCard,
-  DollarSign,
   IndianRupee,
-  LineChart,
   PiggyBank,
   Wallet,
 } from "lucide-react";
@@ -40,10 +38,11 @@ export default function DashboardPage() {
     error,
     refreshData,
   } = useFinance();
-
+  console.log(accounts, "accounts==>");
   useEffect(() => {
     refreshData();
   }, []);
+  console.log(loading, "loading");
 
   if (loading) {
     return (
@@ -70,20 +69,6 @@ export default function DashboardPage() {
       </div>
     );
   }
-
-  // Transform expense data to match the expected type - commented out as not currently used
-  /*
-  const transformedExpenseData: ExpenseChartData = {
-    monthly: (expenseData?.monthly || []).map(item => ({
-      ...item,
-      year: new Date().getFullYear().toString()
-    })),
-    yearly: (expenseData?.yearly || []).map(item => ({
-      ...item,
-      year: new Date().getFullYear().toString()
-    }))
-  }
-  */
 
   return (
     <div className="flex flex-col">
@@ -184,6 +169,7 @@ export default function DashboardPage() {
                 message: "Budget summary",
                 success: true,
               }}
+              loading={loading}
             />
             <Card className="col-span-12">
               <CardHeader>
@@ -194,17 +180,22 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<Skeleton className="h-[350px] w-full" />}>
-                  <RecentTransactions transactions={transactions || []} />
+                  <RecentTransactions
+                    transactions={transactions || []}
+                    loading={loading}
+                  />
                 </Suspense>
               </CardContent>
-              <CardFooter>
-                <Button asChild variant="outline" className="w-full">
-                  <Link href="/transactions">
-                    View All Transactions
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-              </CardFooter>
+              {transactions?.length > 0 && (
+                <CardFooter>
+                  <Button asChild variant="outline" className="w-full">
+                    <Link href="/transactions">
+                      View All Transactions
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </CardFooter>
+              )}
             </Card>
           </TabsContent>
           <TabsContent value="analytics" className="space-y-4">
@@ -242,17 +233,22 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <Suspense fallback={<Skeleton className="h-[200px] w-full" />}>
-                <AccountSummary allAccounts={accounts || []} />
+                <AccountSummary
+                  allAccounts={accounts || []}
+                  loading={loading}
+                />
               </Suspense>
             </CardContent>
-            <CardFooter>
-              <Button asChild variant="outline" className="w-full">
-                <Link href="/accounts">
-                  Manage Accounts
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </CardFooter>
+            {accounts?.length > 0 && (
+              <CardFooter>
+                <Button asChild variant="outline" className="w-full">
+                  <Link href="/accounts">
+                    Manage Accounts
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardFooter>
+            )}
           </Card>
         </div>
       </div>

@@ -6,26 +6,27 @@ import { startOfMonth } from "date-fns"
 import { fetchCategory } from "../service/category.service"
 import storage from "@/utils/storage"
 import { fetchBudgetSummary } from "../service/budget.service"
+import { fetchAllBudgets } from "../service/budget.service";
 
 interface Account {
-    _id: string
-    name: string
-    balance: number
-    type: string
-    iconName: string
-    limit?: number
-    accountName: string
-    accountType: string
-    currency: string
+  _id: string;
+  name: string;
+  balance: number;
+  type: string;
+  iconName: string;
+  limit?: number;
+  accountName: string;
+  accountType: string;
+  currency: string;
 }
 
 interface Transaction {
-    _id: string
-    amount: number
-    type: string
-    category: string
-    date: string
-    description: string
+  _id: string;
+  amount: number;
+  type: string;
+  category: string;
+  date: string;
+  description: string;
 }
 
 interface Category {
@@ -45,7 +46,20 @@ interface Budget {
   spent: number;
   remaining: number;
 }
-
+interface AllBudget {
+  _id: string;
+  userId: string;
+  amount: number;
+  recurring: string;
+  createdAt: string;
+  startDate: string;
+  endDate: string;
+  name: string;
+  category: {
+    _id: string;
+    name: string;
+  };
+}
 interface FinanceContextType {
   accounts: Account[];
   transactions: Transaction[];
@@ -64,6 +78,7 @@ interface FinanceContextType {
   error: string | null;
   refreshData: () => Promise<void>;
   userData?: any;
+  allBudgets: AllBudget[];
 }
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
@@ -79,6 +94,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userData, setUserData] = useState<any>(null);
+  const [allBudgets, setAllBudgets] = useState<AllBudget[]>([]);
 
   useEffect(() => {
     const userData = storage.getUser();
@@ -100,6 +116,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
         incomeExpenseRes,
         categoriesRes,
         budgetsRes,
+        allBudgetsRes,
       ] = await Promise.all([
         fetchAccountList(),
         fetchAllTransaction("all", startOfMonth(new Date()), new Date()),
@@ -116,11 +133,14 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
           month: new Date().getMonth() + 1,
           year: new Date().getFullYear(),
         }),
+        fetchAllBudgets(),
       ]);
-
       // Set accounts with proper type checking
       const fetchedAccounts = accountsRes?.data?.accounts || [];
       setAccounts(Array.isArray(fetchedAccounts) ? fetchedAccounts : []);
+
+      const fetchedAllBudgets = allBudgetsRes?.data?.budgets || [];
+      setAllBudgets(Array.isArray(fetchedAllBudgets) ? fetchedAllBudgets : []);
 
       // Set transactions with proper type checking
       const fetchedTransactions = transactionsRes?.data?.transactions || [];
@@ -166,6 +186,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
         error,
         refreshData,
         userData,
+        allBudgets,
       }}
     >
       {children}

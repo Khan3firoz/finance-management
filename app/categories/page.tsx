@@ -23,10 +23,9 @@ type CategoryType = 'debit' | 'credit';
 interface Category {
   _id: string;
   name: string;
-  type: string;
+  transactionType: string;
   description: string;
   color: string;
-  transactionType: string;
 }
 
 export default function CategoriesPage() {

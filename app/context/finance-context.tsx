@@ -34,6 +34,8 @@ interface Category {
   name: string;
   icon: string;
   transactionType: string;
+  color: string;
+  description: string;
 }
 
 interface Budget {

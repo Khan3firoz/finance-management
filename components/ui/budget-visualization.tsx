@@ -81,13 +81,26 @@ const getProgressColor = (spent: number, budget: number) => {
   return "bg-green-500";
 };
 
-const getCategoryColor = (color: string) => {
-  const colorMap: Record<string, string> = {
-    pink: "bg-pink-500",
-    magenta: "bg-fuchsia-500",
-    "light-green": "bg-green-400",
-    violet: "bg-violet-500",
-  };
+const defaultColors = [
+  "#10b981", // emerald-500
+  "#f59e0b", // amber-500
+  "#ef4444", // red-500
+  "#8b5cf6", // violet-500
+  "#3b82f6", // blue-500
+  "#ec4899", // pink-500
+  "#14b8a6", // teal-500
+  "#f97316", // orange-500
+];
+
+const getCategoryColor = (color: any, index: any) => {
+  // const colorMap: Record<string, string> = {
+  //   pink: "bg-pink-500",
+  //   magenta: "bg-fuchsia-500",
+  //   "light-green": "bg-green-400",
+  //   violet: "bg-violet-500",
+
+  // };
+  const colorMap = defaultColors[index % defaultColors.length];
   return colorMap[color] || "bg-gray-500";
 };
 
@@ -218,7 +231,7 @@ export default function BudgetVisualization({
               {hasBudgets ? (
                 <TooltipProvider>
                   <div className="w-full space-y-6">
-                    {data.budgets.map((budget) => (
+                    {data.budgets.map((budget, index) => (
                       <div key={budget._id} className="relative">
                         <div className="flex justify-between mb-2">
                           <span className="font-medium">
@@ -234,7 +247,8 @@ export default function BudgetVisualization({
                             <div className="w-full h-10 bg-gray-200 rounded-md relative cursor-pointer">
                               <div
                                 className={`h-full rounded-md ${getCategoryColor(
-                                  budget.categoryColor
+                                  budget.categoryColor,
+                                  index
                                 )}`}
                                 style={{
                                   width: `${Math.min(
@@ -415,11 +429,12 @@ export default function BudgetVisualization({
             <TabsContent value="cards" className="pt-6">
               {hasBudgets ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {sortedBudgets.map((budget) => (
+                  {sortedBudgets.map((budget, index) => (
                     <Card key={budget._id} className="overflow-hidden">
                       <div
                         className={`h-2 w-full ${getCategoryColor(
-                          budget.categoryColor
+                          budget.categoryColor,
+                          index
                         )}`}
                       />
                       <CardHeader className="pb-2">

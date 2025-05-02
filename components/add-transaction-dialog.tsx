@@ -99,7 +99,6 @@ export function AddTransactionDialog({
       userId: userData?._id,
       date: dayjs(values.date).format("YYYY-MM-DD"),
     };
-    debugger;
     // In a real app, you would save the transaction to your database here
     try {
       const res = await createTransaction(payload);

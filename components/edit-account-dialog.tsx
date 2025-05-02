@@ -72,13 +72,22 @@ export function EditAccountDialog({ account }: { account: Account }) {
         balance: parseFloat(values.balance),
         ...(values.limit ? { limit: parseFloat(values.limit) } : {}),
       };
-      await updateAccount(account._id, payload);
-      refreshData();
+
+      // Close dialog first
       setOpen(false);
+
+      // Update account
+      await updateAccount(account._id, payload);
+
+      // Show success message
       toast.success("Account updated successfully");
+
+      // Force refresh all data
+      await refreshData(true);
     } catch (error) {
       console.error("Error updating account:", error);
       toast.error("Failed to update account");
+      setOpen(true); // Reopen dialog on error
     }
   }
 

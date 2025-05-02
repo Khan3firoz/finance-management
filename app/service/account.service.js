@@ -1,5 +1,6 @@
 import { axios } from "./axios"
 import dayjs from 'dayjs';
+import { cache } from "@/app/lib/cache";
 
 const formatDate = (dateString) => {
     return dayjs(dateString).format('DD/MM/YYYY');
@@ -12,7 +13,19 @@ export const createAccount = async (payload) => {
     return await axios.post('/account/create', payload)
 }
 export const updateAccount = async (id, payload) => {
-    return await axios.put(`/account/${id}`, payload)
+    try {
+        const response = await axios.put(`/account/${id}`, payload);
+
+        // Clear all relevant caches
+        cache.remove('finance_accounts');
+        cache.remove('finance_summary');
+        cache.remove('finance_income_expense');
+
+        return response;
+    } catch (error) {
+        console.error('Error updating account:', error);
+        throw error;
+    }
 }
 export const deleteAccount = async (id) => {
     return await axios.delete(`/account/${id}`)

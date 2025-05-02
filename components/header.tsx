@@ -1,6 +1,6 @@
 "use client"
 
-import { Plus, ArrowUpRight, ArrowDownRight, Wallet, PiggyBank, Tag, CreditCard, Menu, X } from "lucide-react"
+import { Plus, ArrowUpRight, ArrowDownRight, Wallet, PiggyBank, Tag, CreditCard, Menu, X, ArrowRightLeft } from "lucide-react"
 import { useState } from "react"
 
 import { AddCategoryDialog } from "./add-category-dialog"
@@ -11,9 +11,11 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { AddTransferModal } from "./modal/add-transfer"
 
 export function Header() {
     const [isOpen, setIsOpen] = useState(false)
+    const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
 
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -44,7 +46,7 @@ export function Header() {
                     <div className="w-full flex-1 md:w-auto md:flex-none">
                         {/* Add your search component here */}
                     </div>
-                    <nav className="flex items-center">
+                    <nav className="flex items-center space-x-2">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="sm" className="flex items-center gap-2">
@@ -60,6 +62,13 @@ export function Header() {
                                 <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
                                     <ArrowDownRight className="h-4 w-4 text-red-500" />
                                     Add Expense
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                    className="flex items-center gap-2 cursor-pointer"
+                                    onClick={() => setIsTransferModalOpen(true)}
+                                >
+                                    <ArrowRightLeft className="h-4 w-4 text-blue-500" />
+                                    Transfer
                                 </DropdownMenuItem>
                                 <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
                                     <Wallet className="h-4 w-4" />
@@ -102,6 +111,16 @@ export function Header() {
                                         <ArrowDownRight className="h-4 w-4 text-red-500" />
                                         Add Expense
                                     </DropdownMenuItem>
+                                    <DropdownMenuItem 
+                                        className="flex items-center gap-2 cursor-pointer"
+                                        onClick={() => {
+                                            setIsTransferModalOpen(true)
+                                            setIsOpen(false)
+                                        }}
+                                    >
+                                        <ArrowRightLeft className="h-4 w-4 text-blue-500" />
+                                        Transfer
+                                    </DropdownMenuItem>
                                     <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
                                         <Wallet className="h-4 w-4" />
                                         Add Account
@@ -124,6 +143,10 @@ export function Header() {
                     </div>
                 )}
             </div>
+            <AddTransferModal
+                open={isTransferModalOpen}
+                onClose={() => setIsTransferModalOpen(false)}
+            />
         </header>
     )
 }

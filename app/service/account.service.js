@@ -26,6 +26,10 @@ export const createTransaction = async (payload) => {
     return await axios.post('/account/transaction', payload)
 }
 
+export const createTransfer = async (payload) => {
+    return await axios.post('/account/transfer', payload)
+}
+
 // export const fetchAllTransaction = async (type, startDate, endDate) => {
 //     return await axios.get(`/account/transaction?${type ? `transactionType=${type}` : ''}&startDate=${startDate}&endDate=${endDate}`)
 // }

@@ -87,10 +87,8 @@ interface FinanceContextType {
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
 
 const CACHE_KEYS = {
-  ACCOUNTS: "finance_accounts",
-  TRANSACTIONS: "finance_transactions",
+  TRANSACTIONS: undefined,
   SUMMARY: "finance_summary",
-  INCOME_EXPENSE: "finance_income_expense",
   CATEGORIES: "finance_categories",
   BUDGETS: "finance_budgets",
   ALL_BUDGETS: "finance_all_budgets",
@@ -123,84 +121,50 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
 
       // If force refresh is true, clear all caches
       if (forceRefresh) {
-        Object.values(CACHE_KEYS).forEach((key) => cache.remove(key));
+        // Only clear caches for keys that are still used
+        cache.remove(CACHE_KEYS.SUMMARY);
+        cache.remove(CACHE_KEYS.CATEGORIES);
+        cache.remove(CACHE_KEYS.BUDGETS);
+        cache.remove(CACHE_KEYS.ALL_BUDGETS);
       }
 
-      // Try to get cached data first
-      const cachedAccounts = forceRefresh
-        ? null
-        : cache.get(CACHE_KEYS.ACCOUNTS);
-      const cachedTransactions = forceRefresh
-        ? null
-        : cache.get(CACHE_KEYS.TRANSACTIONS);
-      const cachedSummary = forceRefresh ? null : cache.get(CACHE_KEYS.SUMMARY);
-      const cachedIncomeExpense = forceRefresh
-        ? null
-        : cache.get(CACHE_KEYS.INCOME_EXPENSE);
-      const cachedCategories = forceRefresh
-        ? null
-        : cache.get(CACHE_KEYS.CATEGORIES);
-      const cachedBudgets = forceRefresh ? null : cache.get(CACHE_KEYS.BUDGETS);
-      const cachedAllBudgets = forceRefresh
-        ? null
-        : cache.get(CACHE_KEYS.ALL_BUDGETS);
+      // Always fetch these from backend, do not use cache
+      const accountsRes = await fetchAccountList();
+      const transactionsRes = await fetchAllTransaction("all", startOfMonth(new Date()), new Date());
+      const incomeExpenseRes = await fetchIncomeExpense({
+        filterType: "monthly",
+        date: new Date(),
+        month: new Date().getMonth() + 1,
+        year: new Date().getFullYear(),
+      });
 
-      // Fetch only uncached data
+      // Use cache for these (if not force refresh)
+      const cachedSummary = forceRefresh ? null : cache.get(CACHE_KEYS.SUMMARY);
+      const cachedCategories = forceRefresh ? null : cache.get(CACHE_KEYS.CATEGORIES);
+      const cachedBudgets = forceRefresh ? null : cache.get(CACHE_KEYS.BUDGETS);
+      const cachedAllBudgets = forceRefresh ? null : cache.get(CACHE_KEYS.ALL_BUDGETS);
+
       const [
-        accountsRes,
-        transactionsRes,
         summaryRes,
-        incomeExpenseRes,
         categoriesRes,
         budgetsRes,
         allBudgetsRes,
       ] = await Promise.all([
-        cachedAccounts
-          ? Promise.resolve({ data: { accounts: cachedAccounts } })
-          : fetchAccountList(),
-        cachedTransactions
-          ? Promise.resolve({ data: { transactions: cachedTransactions } })
-          : fetchAllTransaction("all", startOfMonth(new Date()), new Date()),
-        cachedSummary
-          ? Promise.resolve({ data: cachedSummary })
-          : fetchAccountStatsSummary(),
-        cachedIncomeExpense
-          ? Promise.resolve({ data: cachedIncomeExpense })
-          : fetchIncomeExpense({
-              filterType: "monthly",
-              date: new Date(),
-              month: new Date().getMonth() + 1,
-              year: new Date().getFullYear(),
-            }),
-        cachedCategories
-          ? Promise.resolve({ data: { categories: cachedCategories } })
-          : fetchCategory(),
-        cachedBudgets
-          ? Promise.resolve({ data: { budgets: cachedBudgets } })
-          : fetchBudgetSummary({
-              period: "monthly",
-              month: new Date().getMonth() + 1,
-              year: new Date().getFullYear(),
-            }),
-        cachedAllBudgets
-          ? Promise.resolve({ data: { budgets: cachedAllBudgets } })
-          : fetchAllBudgets(),
+        cachedSummary ? Promise.resolve({ data: cachedSummary }) : fetchAccountStatsSummary(),
+        cachedCategories ? Promise.resolve({ data: { categories: cachedCategories } }) : fetchCategory(),
+        cachedBudgets ? Promise.resolve({ data: { budgets: cachedBudgets } }) : fetchBudgetSummary({
+          period: "monthly",
+          month: new Date().getMonth() + 1,
+          year: new Date().getFullYear(),
+        }),
+        cachedAllBudgets ? Promise.resolve({ data: { budgets: cachedAllBudgets } }) : fetchAllBudgets(),
       ]);
 
-      // Cache the fetched data
-      if (!cachedAccounts)
-        cache.set(CACHE_KEYS.ACCOUNTS, accountsRes?.data?.accounts);
-      if (!cachedTransactions)
-        cache.set(CACHE_KEYS.TRANSACTIONS, transactionsRes?.data?.transactions);
+      // Cache the fetched data (only for the remaining keys)
       if (!cachedSummary) cache.set(CACHE_KEYS.SUMMARY, summaryRes?.data);
-      if (!cachedIncomeExpense)
-        cache.set(CACHE_KEYS.INCOME_EXPENSE, incomeExpenseRes?.data);
-      if (!cachedCategories)
-        cache.set(CACHE_KEYS.CATEGORIES, categoriesRes?.data?.categories);
-      if (!cachedBudgets)
-        cache.set(CACHE_KEYS.BUDGETS, budgetsRes?.data?.budgets);
-      if (!cachedAllBudgets)
-        cache.set(CACHE_KEYS.ALL_BUDGETS, allBudgetsRes?.data?.budgets);
+      if (!cachedCategories) cache.set(CACHE_KEYS.CATEGORIES, categoriesRes?.data?.categories);
+      if (!cachedBudgets) cache.set(CACHE_KEYS.BUDGETS, budgetsRes?.data?.budgets);
+      if (!cachedAllBudgets) cache.set(CACHE_KEYS.ALL_BUDGETS, allBudgetsRes?.data?.budgets);
 
       // Set state with fetched data
       const fetchedAccounts = accountsRes?.data?.accounts || [];
@@ -210,9 +174,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       setAllBudgets(Array.isArray(fetchedAllBudgets) ? fetchedAllBudgets : []);
 
       const fetchedTransactions = transactionsRes?.data?.transactions || [];
-      setTransactions(
-        Array.isArray(fetchedTransactions) ? fetchedTransactions : []
-      );
+      setTransactions(Array.isArray(fetchedTransactions) ? fetchedTransactions : []);
 
       const fetchedCategories = categoriesRes?.data?.categories || [];
       setCategories(Array.isArray(fetchedCategories) ? fetchedCategories : []);

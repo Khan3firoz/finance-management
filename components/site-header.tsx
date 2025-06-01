@@ -9,13 +9,14 @@ import {
   TagsIcon,
   XIcon,
 } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 import { cn } from "@/lib/cn"
 import { Button } from "@/components/ui/button"
 import { UserNav } from "@/components/user-nav"
 import { AddActionDropdown } from "./add-action-dropdown"
 import storage from "@/utils/storage"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface SiteHeaderProps {
   className?: string
@@ -23,10 +24,34 @@ interface SiteHeaderProps {
 
 export function SiteHeader({ className }: SiteHeaderProps) {
   const pathname = usePathname()
-  const isAuthenticated = storage.getToken()
+  const [isAuthenticated, setIsAuthenticated] = useState<null | boolean>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
+  useEffect(() => {
+    setIsAuthenticated(!!storage.getToken())
+  }, [])
+
   const toggleMenu = () => setIsMenuOpen((prev) => !prev)
+
+  if (isAuthenticated === null) {
+    // Render a skeleton while loading auth state
+    return (
+      <header className={cn(
+        "sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 py-3",
+        className
+      )}>
+        <div className="container mx-auto max-w-7xl px-2 sm:px-4 lg:px-6 flex h-14 items-center justify-between">
+          <div className="flex items-center gap-2 w-full justify-between">
+            <Skeleton className="h-8 w-32" />
+            <div className="flex gap-2">
+              <Skeleton className="h-8 w-20" />
+              <Skeleton className="h-8 w-20" />
+            </div>
+          </div>
+        </div>
+      </header>
+    )
+  }
 
   return (
     <header

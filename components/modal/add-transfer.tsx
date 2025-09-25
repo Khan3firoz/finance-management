@@ -34,7 +34,7 @@ import { useFinance } from "@/app/context/finance-context"
 import { toast } from "sonner"
 import storage from "@/utils/storage"
 import { Checkbox } from "@/components/ui/checkbox"
-import { createTransfer } from "@/app/service/account.service"
+import { createTransfer } from "@/app/service/api.service"
 
 interface TransferFormValues {
   sourceAccountId: string

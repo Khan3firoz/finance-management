@@ -1,9 +1,8 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, ReactNode, useMemo, useCallback } from "react"
-import { fetchAccountList, fetchAccountStatsSummary, fetchAllTransaction, fetchIncomeExpense } from "@/app/service/account.service"
+import { fetchAccountList, fetchAccountStatsSummary, fetchAllTransaction, fetchIncomeExpense, fetchCategory } from "@/app/service/api.service"
 import { startOfMonth } from "date-fns"
-import { fetchCategory } from "../service/category.service"
 import storage from "@/utils/storage"
 import { cache } from "@/app/lib/cache";
 
@@ -45,6 +44,7 @@ interface FinanceContextType {
     netAmount: number;
     totalIncome: number;
     totalExpense: number;
+    creditCardExpenses: number;
   } | null;
   incomeExpense: {
     income: number;

@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-import { updateAccount } from "@/app/service/account.service"
+import { updateAccount } from "@/app/service/api.service"
 import { toast } from "sonner"
 // Removed useFinance import - will use callback instead
 

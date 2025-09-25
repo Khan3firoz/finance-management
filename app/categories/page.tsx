@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { fetchCategory, deleteCategory } from "@/app/service/category.service"
+import { fetchCategory, deleteCategory } from "@/app/service/api.service"
 import { toast } from "sonner"
 import { AddCategoryDialog } from "@/components/add-category-dialog"
 

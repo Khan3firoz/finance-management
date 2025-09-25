@@ -10,7 +10,7 @@ import { ArrowUp, ArrowDown } from "lucide-react"
 import { format, startOfMonth } from "date-fns"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
-import { fetchAllTransaction } from "../service/account.service"
+import { fetchAllTransaction } from "../service/api.service"
 
 interface Transaction {
     _id: string

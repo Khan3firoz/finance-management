@@ -137,9 +137,9 @@ export default function DashboardPage() {
                   <div className="text-xl sm:text-2xl font-bold">
                     ₹ {summary?.netAmount || 0}
                   </div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
+                  {/* <p className="text-xs sm:text-sm text-muted-foreground">
                     +20.1% from last month
-                  </p>
+                  </p> */}
                 </CardContent>
               </Card>
               <Card>
@@ -153,9 +153,9 @@ export default function DashboardPage() {
                   <div className="text-xl sm:text-2xl font-bold text-emerald-500">
                     ₹ {summary?.totalIncome || 0}
                   </div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
+                  {/* <p className="text-xs sm:text-sm text-muted-foreground">
                     +2.5% from last month
-                  </p>
+                  </p> */}
                 </CardContent>
               </Card>
               <Card>
@@ -169,25 +169,25 @@ export default function DashboardPage() {
                   <div className="text-xl sm:text-2xl font-bold text-red-500">
                     ₹ {summary?.totalExpense || 0}
                   </div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
+                  {/* <p className="text-xs sm:text-sm text-muted-foreground">
                     +18.2% from last month
-                  </p>
+                  </p> */}
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-xs sm:text-sm font-medium">
-                    Savings
+                  Credit Card Expenses
                   </CardTitle>
                   <PiggyBank className="h-4 w-4 text-cyan-500" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl sm:text-2xl font-bold text-cyan-500">
-                    ₹ 1,607.50
+                    ₹ {summary?.creditCardExpenses || 0}
                   </div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
+                  {/* <p className="text-xs sm:text-sm text-muted-foreground">
                     +4.3% from last month
-                  </p>
+                  </p> */}
                 </CardContent>
               </Card>
             </div>

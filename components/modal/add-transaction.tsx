@@ -42,7 +42,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { useFinance } from "@/app/context/finance-context";
-import { createTransaction } from "@/app/service/account.service";
+import { createTransaction } from "@/app/service/api.service";
 import { toast } from "sonner";
 import ThemedCalendar from "@/components/ui/themed-calendar";
 

@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { Skeleton } from './skeleton';
-import { fetchAiSuggestion } from '@/app/service/ai.service';
+import { fetchAiSuggestion } from '@/app/service/api.service';
 import dayjs from 'dayjs';
 
 const AISuggestionsCard: React.FC = () => {

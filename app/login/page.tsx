@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
-import { loginUser } from "@/app/service/user.service"
+import { loginUser } from "@/app/service/api.service"
 import storage from "@/utils/storage"
 import { useFinance } from "@/app/context/finance-context"
 

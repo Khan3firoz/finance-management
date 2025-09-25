@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { createCategory, updateCategory } from "@/app/service/category.service"
+import { createCategory, updateCategory } from "@/app/service/api.service"
 
 import { Button } from "@/components/ui/button"
 import {

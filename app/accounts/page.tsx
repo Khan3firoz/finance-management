@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { deleteAccount, fetchAccountList } from "../service/account.service"
+import { deleteAccount, fetchAccountList } from "../service/api.service"
 import { AddAccountDialog } from "@/components/add-account-dialog"
 import { toast } from "sonner"
 import { EditAccountDialog } from "@/components/edit-account-dialog"

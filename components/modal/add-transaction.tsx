@@ -75,7 +75,7 @@ export function AddTransactionModal({
   open,
   onClose,
 }: AddTransactionModalProps) {
-  const { categories, accounts, userData, refreshData } = useFinance();
+  const { categories, accounts, userData, refreshData, loading } = useFinance();
 
   const form = useForm({
     resolver: yupResolver(formSchema),
@@ -115,6 +115,13 @@ export function AddTransactionModal({
     (category) => category.transactionType === transactionType
   );
 
+  // Debug logging
+  console.log("Categories:", categories);
+  console.log("Transaction Type:", transactionType);
+  console.log("Filtered Categories:", filteredCategories);
+  console.log("Categories length:", categories?.length);
+  console.log("Loading state:", loading);
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogTrigger asChild>
@@ -134,7 +141,7 @@ export function AddTransactionModal({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Add Transaction111</DialogTitle>
+          <DialogTitle>Add Transaction</DialogTitle>
           <DialogDescription>
             Create a new transaction to track your finances.
           </DialogDescription>
@@ -249,7 +256,7 @@ export function AddTransactionModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
-                  {categories.length === 0 ? (
+                  {loading || !categories || categories.length === 0 ? (
                     <div className="space-y-2">
                       <Skeleton className="h-10 w-full" />
                       <Skeleton className="h-4 w-1/2" />
@@ -265,11 +272,7 @@ export function AddTransactionModal({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {categories
-                          .filter(
-                            (category) =>
-                              category.transactionType === transactionType
-                          )
+                        {(filteredCategories && filteredCategories.length > 0 ? filteredCategories : categories)
                           .map((category) => (
                             <SelectItem key={category._id} value={category._id}>
                               {category.icon} {category.name}
@@ -324,7 +327,7 @@ export function AddTransactionModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Account</FormLabel>
-                  {accounts.length === 0 ? (
+                  {loading || accounts.length === 0 ? (
                     <div className="space-y-2">
                       <Skeleton className="h-10 w-full" />
                       <Skeleton className="h-4 w-1/2" />

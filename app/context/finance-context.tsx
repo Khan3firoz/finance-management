@@ -56,6 +56,7 @@ interface FinanceContextType {
   userData?: any;
   updateUserData: (userData: any) => void;
   isAuthenticated: boolean;
+  isAuthLoading: boolean;
 }
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
@@ -76,12 +77,14 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userData, setUserData] = useState<any>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   useEffect(() => {
     const userData = storage.getUser();
     if (userData) {
       setUserData(userData);
     }
+    setIsAuthLoading(false);
   }, []);
 
   const updateUserData = useCallback((newUserData: any) => {
@@ -183,7 +186,8 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
     userData,
     updateUserData,
     isAuthenticated,
-  }), [accounts, transactions, categories, summary, incomeExpense, loading, error, refreshData, userData, updateUserData, isAuthenticated]);
+    isAuthLoading,
+  }), [accounts, transactions, categories, summary, incomeExpense, loading, error, refreshData, userData, updateUserData, isAuthenticated, isAuthLoading]);
 
   return (
     <FinanceContext.Provider value={contextValue}>

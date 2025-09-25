@@ -74,7 +74,7 @@ export function AddTransactionDialog({
   onOpenChange,
 }: AddTransactionDialogProps) {
   const [open, setOpen] = useState(false);
-  const { categories, accounts, userData, refreshData } = useFinance();
+  const { categories, accounts, userData, refreshData, loading } = useFinance();
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
@@ -119,6 +119,13 @@ export function AddTransactionDialog({
     (category) => category.transactionType === transactionType
   );
 
+  // Debug logging
+  console.log("Categories:", categories);
+  console.log("Transaction Type:", transactionType);
+  console.log("Filtered Categories:", filteredCategories);
+  console.log("Categories length:", categories?.length);
+  console.log("Loading state:", loading);
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
@@ -138,7 +145,7 @@ export function AddTransactionDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Add Transaction=2222</DialogTitle>
+          <DialogTitle>Add Transaction</DialogTitle>
           <DialogDescription>
             Create a new transaction to track your finances.
           </DialogDescription>
@@ -253,7 +260,7 @@ export function AddTransactionDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
-                  {categories.length === 0 ? (
+                  {loading || !categories || categories.length === 0 ? (
                     <div className="space-y-2">
                       <Skeleton className="h-10 w-full" />
                       <Skeleton className="h-4 w-1/2" />
@@ -269,11 +276,7 @@ export function AddTransactionDialog({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {categories
-                          .filter(
-                            (category) =>
-                              category.transactionType === transactionType
-                          )
+                        {(filteredCategories && filteredCategories.length > 0 ? filteredCategories : categories)
                           .map((category) => (
                             <SelectItem key={category._id} value={category._id}>
                               {category.icon} {category.name}
@@ -328,7 +331,7 @@ export function AddTransactionDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Account</FormLabel>
-                  {accounts.length === 0 ? (
+                  {loading || accounts.length === 0 ? (
                     <div className="space-y-2">
                       <Skeleton className="h-10 w-full" />
                       <Skeleton className="h-4 w-1/2" />

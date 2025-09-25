@@ -25,12 +25,12 @@ interface SiteHeaderProps {
 
 export function SiteHeader({ className }: SiteHeaderProps) {
   const pathname = usePathname()
-  const { isAuthenticated } = useFinance()
+  const { isAuthenticated, isAuthLoading } = useFinance()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const toggleMenu = () => setIsMenuOpen((prev) => !prev)
 
-  if (isAuthenticated === false) {
+  if (isAuthLoading) {
     // Show loading state while checking authentication
     return (
       <header className={cn(

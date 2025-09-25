@@ -1,8 +1,8 @@
 "use client"
 
-import { Plus, ArrowUpRight, ArrowDownRight, WalletIcon, ArrowRightLeft } from "lucide-react"
+import { Plus, ArrowUpRight, ArrowDownRight, ArrowRightLeft } from "lucide-react"
 import Link from "next/link"
-import { AddAccountDialog } from "./add-account-dialog"
+// Removed AddAccountDialog import - accounts can be added from accounts page
 import { AddTransactionDialog } from "./add-transaction-dialog"
 import { AddCategoryDialog } from "./add-category-dialog"
 import { useState } from "react"
@@ -21,7 +21,6 @@ interface AddActionDropdownProps {
 }
 
 export function AddActionDropdown({ className }: AddActionDropdownProps) {
-    const [openAddAccount, setOpenAddAccount] = useState(false)
     const [openTransfer, setOpenTransfer] = useState(false)
     const [open, setOpen] = useState(false);
 
@@ -50,24 +49,10 @@ export function AddActionDropdown({ className }: AddActionDropdownProps) {
               <ArrowRightLeft className="h-4 w-4 mr-2 text-blue-500" />
               Transfer
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                setOpenAddAccount(true);
-                setOpen(false);
-              }}
-            >
-              <WalletIcon className="h-4 w-4 mr-2" />
-              Add Account
-            </DropdownMenuItem>
+            {/* Removed Add Account - can be added from accounts page */}
           </DropdownMenuContent>
         </DropdownMenu>
-        {openAddAccount && (
-          <AddAccountDialog
-            open={openAddAccount}
-            onClose={() => setOpenAddAccount(false)}
-            editAccount={null}
-          />
-        )}
+        {/* Removed AddAccountDialog - accounts can be added from accounts page */}
         <AddTransferModal
           open={openTransfer}
           onClose={() => setOpenTransfer(false)}

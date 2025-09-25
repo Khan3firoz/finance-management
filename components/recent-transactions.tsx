@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { useState } from "react";
+import { useState, memo } from "react";
 import { NoDataFound } from "./no-data-found";
 import { useFinance } from "@/app/context/finance-context";
 import { AddTransactionDialog } from "./add-transaction-dialog";
@@ -16,7 +16,7 @@ interface RecentTransactionsProps {
   loading: boolean;
 }
 
-export function RecentTransactions({
+export const RecentTransactions = memo(function RecentTransactions({
   transactions,
   loading,
 }: RecentTransactionsProps) {
@@ -119,4 +119,4 @@ export function RecentTransactions({
       )}
     </div>
   );
-}
+});

@@ -106,6 +106,9 @@ export function AddTransactionDialog({
       form.reset();
       toast.success("Transaction Added Successfully");
       setOpen(false);
+      
+      // Dispatch custom event to refresh dashboard
+      window.dispatchEvent(new CustomEvent('financeDataUpdated'));
     } catch (error) {
       console.log(error, "error");
     }

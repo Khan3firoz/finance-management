@@ -21,7 +21,7 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { updateAccount } from "@/app/service/account.service"
 import { toast } from "sonner"
-import { useFinance } from "@/app/context/finance-context"
+// Removed useFinance import - will use callback instead
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required." }),
@@ -50,9 +50,9 @@ type Account = {
   accountType: string
 }
 
-export function EditAccountDialog({ account }: { account: Account }) {
+export function EditAccountDialog({ account, onSuccess }: { account: Account; onSuccess?: () => void }) {
   const [open, setOpen] = useState(false);
-  const { refreshData } = useFinance();
+  // Removed useFinance - will use callback instead
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -82,8 +82,11 @@ export function EditAccountDialog({ account }: { account: Account }) {
       // Show success message
       toast.success("Account updated successfully");
 
-      // Force refresh all data
-      await refreshData(true);
+      // Call success callback to refresh data
+      onSuccess?.();
+      
+      // Dispatch custom event to refresh dashboard
+      window.dispatchEvent(new CustomEvent('financeDataUpdated'));
     } catch (error) {
       console.error("Error updating account:", error);
       toast.error("Failed to update account");

@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, ReactNode, useMemo, useCallback } from "react"
 import { fetchAccountList, fetchAccountStatsSummary, fetchAllTransaction, fetchIncomeExpense } from "@/app/service/account.service"
 import { startOfMonth } from "date-fns"
 import { fetchCategory } from "../service/category.service"
@@ -84,93 +84,109 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const updateUserData = (newUserData: any) => {
+  const updateUserData = useCallback((newUserData: any) => {
     setUserData(newUserData);
     storage.setUser(newUserData);
-  };
+  }, []);
 
-  const isAuthenticated = !!userData && !!storage.getToken();
+  const isAuthenticated = useMemo(() => !!userData && !!storage.getToken(), [userData]);
 
-  const refreshData = async (forceRefresh = false) => {
+  const refreshData = useCallback(async (forceRefresh = false) => {
     try {
       setLoading(true);
       setError(null);
 
-      // If force refresh is true, clear all caches
+      // Clear caches if force refresh
       if (forceRefresh) {
-        // Only clear caches for keys that are still used
         cache.remove(CACHE_KEYS.SUMMARY);
         cache.remove(CACHE_KEYS.CATEGORIES);
       }
 
-      // Always fetch these from backend, do not use cache
-      const accountsRes = await fetchAccountList();
-      const transactionsRes = await fetchAllTransaction("all", startOfMonth(new Date()), new Date());
-      const incomeExpenseRes = await fetchIncomeExpense({
+      // Check cache first for static data
+      const cachedSummary = forceRefresh ? null : cache.get(CACHE_KEYS.SUMMARY);
+      const cachedCategories = forceRefresh ? null : cache.get(CACHE_KEYS.CATEGORIES);
+
+      // Fetch all data in parallel - only fetch what's not cached
+      const promises = [];
+      
+      // Always fetch dynamic data (accounts, transactions, income/expense)
+      promises.push(fetchAccountList());
+      promises.push(fetchAllTransaction("all", startOfMonth(new Date()), new Date()));
+      promises.push(fetchIncomeExpense({
         filterType: "monthly",
         date: new Date(),
         month: new Date().getMonth() + 1,
         year: new Date().getFullYear(),
-      });
+      }));
 
-      // Use cache for these (if not force refresh)
-      const cachedSummary = forceRefresh ? null : cache.get(CACHE_KEYS.SUMMARY);
-      const cachedCategories = forceRefresh ? null : cache.get(CACHE_KEYS.CATEGORIES);
+      // Only fetch cached data if not in cache
+      if (!cachedSummary) {
+        promises.push(fetchAccountStatsSummary());
+      }
+      if (!cachedCategories) {
+        promises.push(fetchCategory());
+      }
 
-      const [
-        summaryRes,
-        categoriesRes,
-      ] = await Promise.all([
-        cachedSummary ? Promise.resolve({ data: cachedSummary }) : fetchAccountStatsSummary(),
-        cachedCategories ? Promise.resolve({ data: { categories: cachedCategories } }) : fetchCategory(),
-      ]);
+      const results = await Promise.all(promises);
+      
+      // Process results
+      const [accountsRes, transactionsRes, incomeExpenseRes, summaryRes, categoriesRes] = results;
 
-      // Cache the fetched data (only for the remaining keys)
-      if (!cachedSummary) cache.set(CACHE_KEYS.SUMMARY, summaryRes?.data);
-      if (!cachedCategories) cache.set(CACHE_KEYS.CATEGORIES, categoriesRes?.data?.categories);
-
-      // Set state with fetched data
+      // Set dynamic data
       const fetchedAccounts = accountsRes?.data?.accounts || [];
       setAccounts(Array.isArray(fetchedAccounts) ? fetchedAccounts : []);
 
       const fetchedTransactions = transactionsRes?.data?.transactions || [];
       setTransactions(Array.isArray(fetchedTransactions) ? fetchedTransactions : []);
 
-      const fetchedCategories = categoriesRes?.data?.categories || [];
-      setCategories(Array.isArray(fetchedCategories) ? fetchedCategories : []);
-
-      setSummary(summaryRes?.data || null);
       setIncomeExpense(incomeExpenseRes?.data || null);
+
+      // Handle cached data
+      if (cachedSummary) {
+        setSummary(cachedSummary);
+      } else if (summaryRes) {
+        setSummary(summaryRes?.data || null);
+        cache.set(CACHE_KEYS.SUMMARY, summaryRes?.data);
+      }
+
+      if (cachedCategories) {
+        setCategories(cachedCategories);
+      } else if (categoriesRes) {
+        const fetchedCategories = categoriesRes?.data?.categories || [];
+        setCategories(Array.isArray(fetchedCategories) ? fetchedCategories : []);
+        cache.set(CACHE_KEYS.CATEGORIES, fetchedCategories);
+      }
+
     } catch (err) {
       setError("Failed to fetch data");
       console.error(err);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (userData) {
       refreshData();
     }
-  }, [userData]);
+  }, [userData, refreshData]);
+
+  const contextValue = useMemo(() => ({
+    accounts,
+    transactions,
+    categories,
+    summary,
+    incomeExpense,
+    loading,
+    error,
+    refreshData,
+    userData,
+    updateUserData,
+    isAuthenticated,
+  }), [accounts, transactions, categories, summary, incomeExpense, loading, error, refreshData, userData, updateUserData, isAuthenticated]);
 
   return (
-    <FinanceContext.Provider
-      value={{
-        accounts,
-        transactions,
-        categories,
-        summary,
-        incomeExpense,
-        loading,
-        error,
-        refreshData,
-        userData,
-        updateUserData,
-        isAuthenticated,
-      }}
-    >
+    <FinanceContext.Provider value={contextValue}>
       {children}
     </FinanceContext.Provider>
   );

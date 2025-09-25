@@ -1,6 +1,6 @@
 "use client"
 
-import { Plus, ArrowUpRight, ArrowDownRight, Wallet, PiggyBank, Tag, CreditCard, Menu, X, ArrowRightLeft } from "lucide-react"
+import { Plus, ArrowUpRight, ArrowDownRight, PiggyBank, Tag, CreditCard, Menu, X, ArrowRightLeft } from "lucide-react"
 import { useState } from "react"
 
 import { AddCategoryDialog } from "./add-category-dialog"
@@ -70,10 +70,7 @@ export function Header() {
                                     <ArrowRightLeft className="h-4 w-4 text-blue-500" />
                                     Transfer
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-                                    <Wallet className="h-4 w-4" />
-                                    Add Account
-                                </DropdownMenuItem>
+                                {/* Removed Add Account - can be added from accounts page */}
                                 <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
                                     <CreditCard className="h-4 w-4" />
                                     Add Credit Card
@@ -117,10 +114,7 @@ export function Header() {
                                         <ArrowRightLeft className="h-4 w-4 text-blue-500" />
                                         Transfer
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-                                        <Wallet className="h-4 w-4" />
-                                        Add Account
-                                    </DropdownMenuItem>
+                                    {/* Removed Add Account - can be added from accounts page */}
                                     <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
                                         <CreditCard className="h-4 w-4" />
                                         Add Credit Card

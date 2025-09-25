@@ -104,6 +104,9 @@ export function AddCategoryDialog({ open, onClose, editCategory, onSuccess }: Ad
                 form.reset()
             }
             onSuccess()
+            
+            // Dispatch custom event to refresh dashboard
+            window.dispatchEvent(new CustomEvent('financeDataUpdated'));
         } catch (error) {
             toast.error(editCategory ? "Failed to update category" : "Failed to create category")
             onClose()

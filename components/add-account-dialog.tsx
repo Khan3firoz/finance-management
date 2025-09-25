@@ -35,7 +35,7 @@ import {
 import { createAccount, updateAccount } from "@/app/service/account.service"
 import { toast } from "sonner"
 import storage from "@/utils/storage"
-import { useFinance } from "@/app/context/finance-context"
+// Removed useFinance import - using callback instead
 
 const accountTypes = [
     { id: "bank", label: "Bank Account" },
@@ -67,10 +67,10 @@ const formSchema = z.object({
     }),
 })
 
-export function AddAccountDialog({ open, onClose, editAccount }: { open: boolean, onClose: () => void, editAccount: any }) {
+export function AddAccountDialog({ open, onClose, editAccount, onSuccess }: { open: boolean, onClose: () => void, editAccount: any, onSuccess?: () => void }) {
 
     const userData = storage.getUser()
-    const { refreshData } = useFinance()
+    // Removed useFinance - using callback instead
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -96,9 +96,12 @@ export function AddAccountDialog({ open, onClose, editAccount }: { open: boolean
         }
         try {
             const res = await (editAccount ? updateAccount(values) : createAccount(payload))
-            refreshData()
+            onSuccess?.() // Call success callback
             onClose()
             toast.success("Account created successfully")
+            
+            // Dispatch custom event to refresh dashboard
+            window.dispatchEvent(new CustomEvent('financeDataUpdated'));
             form.reset()
         } catch (error) {
             console.log(error, "error")

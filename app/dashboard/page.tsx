@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect } from "react"
+import { Suspense, useEffect, useMemo, useState, useCallback } from "react"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -8,6 +8,7 @@ import {
   IndianRupee,
   PiggyBank,
   Wallet,
+  RefreshCw,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -35,11 +36,41 @@ export default function DashboardPage() {
     error,
     refreshData,
   } = useFinance();
-  console.log(accounts, "accounts==>");
+
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // Memoized refresh function
+  const handleRefresh = useCallback(() => {
+    setRefreshKey(prev => prev + 1);
+  }, []);
+
+  // Memoize expensive calculations
+  const transactionCount = useMemo(() => transactions?.length || 0, [transactions]);
+  const hasAccounts = useMemo(() => accounts?.length > 0, [accounts]);
+  const hasTransactions = useMemo(() => transactions?.length > 0, [transactions]);
+
+  // Force refresh when refreshKey changes
   useEffect(() => {
     refreshData();
+  }, [refreshData, refreshKey]);
+
+  // Listen for storage changes to auto-refresh
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setRefreshKey(prev => prev + 1);
+    };
+
+    // Listen for storage events
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also listen for custom events (for same-tab updates)
+    window.addEventListener('financeDataUpdated', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('financeDataUpdated', handleStorageChange);
+    };
   }, []);
-  console.log(loading, "loading");
 
   if (loading) {
     return (
@@ -74,6 +105,15 @@ export default function DashboardPage() {
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
             Dashboard
           </h2>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRefresh}
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Refresh
+          </Button>
         </div>
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
@@ -155,7 +195,7 @@ export default function DashboardPage() {
               <CardHeader>
                 <CardTitle>Recent Transactions</CardTitle>
                 <CardDescription>
-                  You made {transactions?.length || 0} transactions this month.
+                  You made {transactionCount} transactions this month.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -166,7 +206,7 @@ export default function DashboardPage() {
                   />
                 </Suspense>
               </CardContent>
-              {transactions?.length > 0 && (
+              {hasTransactions && (
                 <CardFooter>
                   <Button asChild variant="outline" className="w-full">
                     <Link href="/transactions">
@@ -196,7 +236,7 @@ export default function DashboardPage() {
                 />
               </Suspense>
             </CardContent>
-            {accounts?.length > 0 && (
+            {hasAccounts && (
               <CardFooter>
                 <Button asChild variant="outline" className="w-full">
                   <Link href="/accounts">

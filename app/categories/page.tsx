@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { Edit, MoreVertical, Plus, Trash } from "lucide-react"
 import {
     DropdownMenu,
@@ -15,7 +15,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { fetchCategory, deleteCategory } from "@/app/service/category.service"
 import { toast } from "sonner"
-import { useFinance } from "@/app/context/finance-context"
 import { AddCategoryDialog } from "@/components/add-category-dialog"
 
 type CategoryType = 'debit' | 'credit';
@@ -31,13 +30,39 @@ interface Category {
 export default function CategoriesPage() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editCategory, setEditCategory] = useState<Category | null>(null);
-  const { categories, loading, refreshData } = useFinance();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch categories only - no other API calls
+  const fetchCategories = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await fetchCategory();
+      console.log('Categories API response:', response);
+      
+      // Handle different response structures
+      const categoriesData = response?.data?.categories || response?.data || [];
+      console.log('Categories data:', categoriesData);
+      
+      setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+      toast.error("Failed to fetch categories");
+      setCategories([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   const handleDeleteCategory = async (id: string) => {
     try {
       await deleteCategory(id);
       toast.success("Category deleted successfully");
-      refreshData();
+      fetchCategories(); // Refresh only categories
     } catch (error) {
       toast.error("Failed to delete category");
     }
@@ -94,6 +119,14 @@ export default function CategoriesPage() {
                       </TableCell>
                     </TableRow>
                   ))
+              : categories.length === 0
+              ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                      No categories found. Create your first category to get started.
+                    </TableCell>
+                  </TableRow>
+                )
               : categories.map((category) => (
                   <TableRow key={category._id}>
                     <TableCell>{category.name}</TableCell>
@@ -158,7 +191,7 @@ export default function CategoriesPage() {
         onSuccess={() => {
           setIsAddDialogOpen(false);
           setEditCategory(null);
-          refreshData();
+          fetchCategories(); // Refresh only categories
         }}
       />
     </Card>

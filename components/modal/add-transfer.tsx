@@ -44,6 +44,7 @@ interface TransferFormValues {
   categoryId: string
   tags?: string[]
   isBillPayment: boolean
+  txnDate: Date
 }
 
 const formSchema = yup.object().shape({
@@ -58,6 +59,7 @@ const formSchema = yup.object().shape({
   categoryId: yup.string().required("Category is required"),
   tags: yup.array().of(yup.string()).optional(),
   isBillPayment: yup.boolean().default(false),
+  txnDate: yup.date().required("Date is required").typeError("Invalid date"),
 })
 
 interface AddTransferModalProps {
@@ -79,6 +81,7 @@ export function AddTransferModal({ open, onClose }: AddTransferModalProps) {
       categoryId: "",
       tags: [],
       isBillPayment: false,
+      txnDate: new Date(),
     },
   })
 
@@ -87,12 +90,16 @@ export function AddTransferModal({ open, onClose }: AddTransferModalProps) {
       const payload = {
         ...values,
         userId: userData?._id,
+        txnDate: values.txnDate.toISOString(), // Format as ISO string (date only)
       }
       await createTransfer(payload)
       refreshData()
       form.reset()
       toast.success("Transfer created successfully")
       onClose()
+      
+      // Dispatch custom event to refresh dashboard
+      window.dispatchEvent(new CustomEvent('financeDataUpdated'));
     } catch (error) {
       console.error(error)
       toast.error("Failed to create transfer")
@@ -183,6 +190,24 @@ export function AddTransferModal({ open, onClose }: AddTransferModalProps) {
                         className="pl-7"
                       />
                     </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="txnDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Date</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      {...field}
+                      value={field.value ? new Date(field.value).toISOString().slice(0, 10) : ''}
+                      onChange={(e) => field.onChange(new Date(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

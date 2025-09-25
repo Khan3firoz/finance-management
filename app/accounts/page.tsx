@@ -1,5 +1,5 @@
 'use client'
-import { Suspense, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { CreditCard, Edit, Landmark, Plus, Trash, Wallet } from "lucide-react"
 
@@ -70,9 +70,10 @@ export default function AccountsPage() {
     try {
       const res = await deleteAccount(id)
       toast.success("Account deleted successfully")
-      fetchAccounts()
+      fetchAccounts() // Auto-refresh after deletion
     } catch (error) {
       console.log(error, "error")
+      toast.error("Failed to delete account")
     }
   }
 
@@ -156,7 +157,10 @@ export default function AccountsPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <EditAccountDialog account={account} />
+                          <EditAccountDialog 
+                            account={account} 
+                            onSuccess={fetchAccounts} 
+                          />
                           <Button variant="ghost" size="icon" onClick={() => handleDeleteAccount(account._id)}>
                             <Trash className="h-4 w-4" />
                             <span className="sr-only">Delete</span>
@@ -176,6 +180,10 @@ export default function AccountsPage() {
           open={openAddAccountDialog}
           onClose={() => setOpenAddAccountDialog(false)}
           editAccount={null}
+          onSuccess={() => {
+            setOpenAddAccountDialog(false);
+            fetchAccounts(); // Auto-refresh after adding account
+          }}
         />
       )}
     </div>

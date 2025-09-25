@@ -5,7 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EditAccountDialog } from "@/components/edit-account-dialog";
 import { NoDataFound } from "./no-data-found";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { AddAccountDialog } from "./modal/add-account";
 
 interface Account {
@@ -31,7 +31,7 @@ interface AccountSummaryProps {
   loading: boolean;
 }
 
-export function AccountSummary({
+export const AccountSummary = memo(function AccountSummary({
   allAccounts = [],
   loading,
 }: AccountSummaryProps) {
@@ -152,4 +152,4 @@ export function AccountSummary({
       </div>
     </div>
   );
-}
+});

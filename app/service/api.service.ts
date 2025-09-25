@@ -179,6 +179,7 @@ class ApiService {
   async getAiSuggestions(payload: { startDate: string; endDate: string }) {
     return await axios.post(API_ENDPOINTS.AI.SUGGESTIONS, payload);
   }
+
 }
 
 // Export singleton instance

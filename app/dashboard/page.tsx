@@ -24,6 +24,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AccountSummary } from "@/components/account-summary";
 import { RecentTransactions } from "@/components/recent-transactions";
+import { TransactionSummary } from "@/components/transaction-summary";
 import { useFinance } from "@/app/context/finance-context";
 import AISuggestionsCard from "@/components/ui/AISuggestionsCard";
 
@@ -119,6 +120,9 @@ export default function DashboardPage() {
           <TabsList>
             <TabsTrigger value="overview" className="text-sm sm:text-base">
               Overview
+            </TabsTrigger>
+            <TabsTrigger value="summary" className="text-sm sm:text-base">
+              Summary
             </TabsTrigger>
             <TabsTrigger value="analytics" className="text-sm sm:text-base">
               Analytics
@@ -217,6 +221,9 @@ export default function DashboardPage() {
                 </CardFooter>
               )}
             </Card>
+          </TabsContent>
+          <TabsContent value="summary" className="space-y-4">
+            <TransactionSummary />
           </TabsContent>
           <TabsContent value="analytics" className="space-y-4">
             <AISuggestionsCard />

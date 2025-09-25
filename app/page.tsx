@@ -17,7 +17,7 @@ export default function LandingPage() {
                   Take Control of Your Financial Future
                 </h1>
                 <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                  FinanceTracker helps you manage your money with ease. Track expenses, set budgets, and achieve your
+                  FinanceTracker helps you manage your money with ease. Track expenses and achieve your
                   financial goals.
                 </p>
               </div>
@@ -60,15 +60,6 @@ export default function LandingPage() {
                             <p className="text-sm font-medium">Expenses</p>
                           </div>
                           <p className="text-lg font-bold text-red-500">-₹1,892.50</p>
-                        </div>
-                      </div>
-                      <div className="bg-muted p-4 rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <p className="text-sm font-medium">Monthly Budget</p>
-                          <p className="text-sm text-muted-foreground">₹2,500 / ₹3,000</p>
-                        </div>
-                        <div className="w-full h-2 bg-muted-foreground/20 rounded-full overflow-hidden">
-                          <div className="bg-emerald-500 h-full rounded-full" style={{ width: "83%" }}></div>
                         </div>
                       </div>
                     </div>
@@ -114,9 +105,9 @@ export default function LandingPage() {
                   <div className="flex h-16 w-16 items-center justify-center rounded-full bg-cyan-100 dark:bg-cyan-900">
                     <PiggyBank className="h-8 w-8 text-cyan-600 dark:text-cyan-400" />
                   </div>
-                  <h3 className="text-xl font-bold">Budget Management</h3>
+                  <h3 className="text-xl font-bold">Financial Insights</h3>
                   <p className="text-muted-foreground">
-                    Create and manage budgets to control spending and achieve your financial goals.
+                    Visualize your financial data with charts and reports to make informed decisions.
                   </p>
                 </div>
               </CardContent>

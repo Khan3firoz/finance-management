@@ -16,11 +16,10 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Finance App - Smart Money Management",
   description:
-    "Take control of your finances with our comprehensive money management app. Track expenses, set budgets, and achieve your financial goals.",
+    "Take control of your finances with our comprehensive money management app. Track expenses and achieve your financial goals.",
   keywords: [
     "finance",
     "money management",
-    "budgeting",
     "expense tracking",
     "financial planning",
   ],

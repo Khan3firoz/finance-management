@@ -79,10 +79,6 @@ export function Header() {
                                     Add Credit Card
                                 </DropdownMenuItem>
                                 <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-                                    <PiggyBank className="h-4 w-4" />
-                                    Add Budget
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
                                     <Tag className="h-4 w-4" />
                                     Add Category
                                 </DropdownMenuItem>
@@ -128,10 +124,6 @@ export function Header() {
                                     <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
                                         <CreditCard className="h-4 w-4" />
                                         Add Credit Card
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-                                        <PiggyBank className="h-4 w-4" />
-                                        Add Budget
                                     </DropdownMenuItem>
                                     <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
                                         <Tag className="h-4 w-4" />

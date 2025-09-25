@@ -23,9 +23,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AccountSummary } from "@/components/account-summary";
 import { RecentTransactions } from "@/components/recent-transactions";
-import { BudgetOverview } from "@/components/budget-overview";
 import { useFinance } from "@/app/context/finance-context";
-import BudgetVisualization from "@/components/ui/budget-visualization";
 import AISuggestionsCard from "@/components/ui/AISuggestionsCard";
 
 export default function DashboardPage() {
@@ -33,7 +31,6 @@ export default function DashboardPage() {
     summary,
     accounts,
     transactions,
-    budgetsSummry,
     loading,
     error,
     refreshData,
@@ -85,9 +82,6 @@ export default function DashboardPage() {
             </TabsTrigger>
             <TabsTrigger value="analytics" className="text-sm sm:text-base">
               Analytics
-            </TabsTrigger>
-            <TabsTrigger value="budgets" className="text-sm sm:text-base">
-              Budgets
             </TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
@@ -157,20 +151,6 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
             </div>
-            <BudgetVisualization
-              apiData={{
-                statusCode: 200,
-                data: {
-                  month: new Date().getMonth() + 1,
-                  year: new Date().getFullYear(),
-                  totalBudgets: budgetsSummry?.length || 0,
-                  budgets: budgetsSummry || [],
-                },
-                message: "Budget summary",
-                success: true,
-              }}
-              loading={loading}
-            />
             <Card className="col-span-12">
               <CardHeader>
                 <CardTitle>Recent Transactions</CardTitle>
@@ -200,29 +180,6 @@ export default function DashboardPage() {
           </TabsContent>
           <TabsContent value="analytics" className="space-y-4">
             <AISuggestionsCard />
-          </TabsContent>
-          <TabsContent value="budgets" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Budget Overview</CardTitle>
-                <CardDescription>
-                  Track your spending against your budget.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Suspense fallback={<Skeleton className="h-[350px] w-full" />}>
-                  <BudgetOverview />
-                </Suspense>
-              </CardContent>
-              <CardFooter>
-                <Button asChild variant="outline" className="w-full">
-                  <Link href="/budgets">
-                    Manage Budgets
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-              </CardFooter>
-            </Card>
           </TabsContent>
         </Tabs>
         <div className="grid gap-4">

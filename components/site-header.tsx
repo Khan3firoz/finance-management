@@ -17,6 +17,7 @@ import { UserNav } from "@/components/user-nav"
 import { AddActionDropdown } from "./add-action-dropdown"
 import storage from "@/utils/storage"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useFinance } from "@/app/context/finance-context"
 
 interface SiteHeaderProps {
   className?: string
@@ -24,17 +25,13 @@ interface SiteHeaderProps {
 
 export function SiteHeader({ className }: SiteHeaderProps) {
   const pathname = usePathname()
-  const [isAuthenticated, setIsAuthenticated] = useState<null | boolean>(null)
+  const { isAuthenticated } = useFinance()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-
-  useEffect(() => {
-    setIsAuthenticated(!!storage.getToken())
-  }, [])
 
   const toggleMenu = () => setIsMenuOpen((prev) => !prev)
 
-  if (isAuthenticated === null) {
-    // Render a skeleton while loading auth state
+  if (isAuthenticated === false) {
+    // Show loading state while checking authentication
     return (
       <header className={cn(
         "sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 py-3",

@@ -232,7 +232,7 @@ export default function BudgetVisualization({
                 <TooltipProvider>
                   <div className="w-full space-y-6">
                     {data.budgets.map((budget, index) => (
-                      <div key={budget._id} className="relative">
+                      <div key={`${budget._id}-${index}`} className="relative">
                         <div className="flex justify-between mb-2">
                           <span className="font-medium">
                             {budget.categoryName}
@@ -357,12 +357,12 @@ export default function BudgetVisualization({
                         <Legend />
                         <Bar dataKey="Budget">
                           {barChartData.map((entry, i) => (
-                            <Cell key={i} fill={entry.fill} />
+                            <Cell key={`budget-${i}`} fill={entry.fill} />
                           ))}
                         </Bar>
                         <Bar dataKey="Spent">
                           {barChartData.map((entry, i) => (
-                            <Cell key={i} fill={entry.fill} opacity={0.7} />
+                            <Cell key={`spent-${i}`} fill={entry.fill} opacity={0.7} />
                           ))}
                         </Bar>
                       </BarChart>
@@ -397,7 +397,7 @@ export default function BudgetVisualization({
                         dataKey="value"
                       >
                         {spentPieData.map((entry, index) => (
-                          <Cell key={index} fill={entry.color} />
+                          <Cell key={`pie-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
                       <Tooltip
@@ -430,7 +430,7 @@ export default function BudgetVisualization({
               {hasBudgets ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {sortedBudgets.map((budget, index) => (
-                    <Card key={budget._id} className="overflow-hidden">
+                    <Card key={`${budget._id}-card-${index}`} className="overflow-hidden">
                       <div
                         className={`h-2 w-full ${getCategoryColor(
                           budget.categoryColor,

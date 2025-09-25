@@ -26,7 +26,7 @@ export function BudgetOverview() {
 
   // Map budget data to the format expected by the component
   const budgetsData = budgetsSummry.map((budget, index) => ({
-    id: budget._id || budget.budgetId || String(index),
+    id: `${budget._id || budget.budgetId || 'budget'}-${index}`,
     name: budget.categoryName,
     amount: budget.budget,
     spent: budget.spent,

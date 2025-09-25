@@ -82,6 +82,8 @@ interface FinanceContextType {
   refreshData: (forceRefresh?: boolean) => Promise<void>;
   userData?: any;
   allBudgets: AllBudget[];
+  updateUserData: (userData: any) => void;
+  isAuthenticated: boolean;
 }
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
@@ -113,6 +115,13 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       setUserData(userData);
     }
   }, []);
+
+  const updateUserData = (newUserData: any) => {
+    setUserData(newUserData);
+    storage.setUser(newUserData);
+  };
+
+  const isAuthenticated = !!userData && !!storage.getToken();
 
   const refreshData = async (forceRefresh = false) => {
     try {
@@ -212,6 +221,8 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
         refreshData,
         userData,
         allBudgets,
+        updateUserData,
+        isAuthenticated,
       }}
     >
       {children}

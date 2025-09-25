@@ -17,11 +17,12 @@ import { useRouter } from "next/navigation"
 import Cookies from "js-cookie"
 import { toast } from "sonner"
 import { useFinance } from "@/app/context/finance-context"
+import storage from "@/utils/storage"
 
 export function UserNav() {
   const { setTheme, theme } = useTheme()
   const router = useRouter()
-  const { userData } = useFinance();
+  const { userData, updateUserData } = useFinance();
 
   const handleLogout = () => {
     // Clear token from cookies
@@ -29,6 +30,13 @@ export function UserNav() {
       secure: true,
       sameSite: 'strict'
     })
+
+    // Clear from storage
+    storage.clearToken()
+    storage.signOut()
+    
+    // Update context
+    updateUserData(null)
 
     // Show success message
     toast.success("Logged out successfully")

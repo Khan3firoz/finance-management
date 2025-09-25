@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
 import { loginUser } from "@/app/service/user.service"
 import storage from "@/utils/storage"
+import { useFinance } from "@/app/context/finance-context"
 
 const loginSchema = z.object({
     email: z.string().email("Please enter a valid email address"),
@@ -27,6 +28,7 @@ const loginSchema = z.object({
 
 export default function LoginPage() {
     const routes = useRouter()
+    const { updateUserData } = useFinance()
     const [isLoading, setIsLoading] = useState(false)
 
     const form = useForm<z.infer<typeof loginSchema>>({
@@ -45,6 +47,7 @@ export default function LoginPage() {
             if (token) {
               storage.setToken(token);
               storage.setUser(res.data.user);
+              updateUserData(res.data.user); // Update context immediately
               routes.push("/dashboard");
               toast.success("Logged in successfully");
             }

@@ -95,10 +95,10 @@ export function AddAccountDialog({ open, onClose, editAccount, onSuccess }: { op
             ...(values.limit !== undefined && values.limit !== null && values.limit !== "" ? { limit: values.limit } : {}),
         }
         try {
-            const res = await (editAccount ? updateAccount(values) : createAccount(payload))
+            const res = await (editAccount ? updateAccount(editAccount._id, payload) : createAccount(payload))
             onSuccess?.() // Call success callback
             onClose()
-            toast.success("Account created successfully")
+            toast.success(editAccount ? "Account updated successfully" : "Account created successfully")
             
             // Dispatch custom event to refresh dashboard
             window.dispatchEvent(new CustomEvent('financeDataUpdated'));

@@ -113,11 +113,11 @@ export function AddAccountDialog({
     };
     try {
       const res = await (editAccount
-        ? updateAccount(values)
+        ? updateAccount(editAccount._id, payload)
         : createAccount(payload));
       refreshData();
       onClose();
-      toast.success("Account created successfully");
+      toast.success(editAccount ? "Account updated successfully" : "Account created successfully");
       form.reset();
     } catch (error) {
       console.log(error, "error");

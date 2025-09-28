@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { CalendarIcon, ArrowDownRight, ArrowUpRight } from "lucide-react"
 import dayjs from "dayjs"
 import * as yup from "yup"
@@ -74,12 +74,24 @@ export function AddTransactionDialog({
   onOpenChange,
 }: AddTransactionDialogProps) {
   const [open, setOpen] = useState(false);
-  const { categories, accounts, userData, refreshData, loading } = useFinance();
+  const { categories, accounts, userData, refreshData, refreshCategories, clearCategoriesCache, loading } = useFinance();
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
     onOpenChange?.(newOpen);
   };
+
+  // Refresh categories when dialog opens
+  useEffect(() => {
+    if (open) {
+      if (!categories || categories.length === 0) {
+        console.log("Dialog opened, refreshing categories...");
+        refreshCategories();
+      } else {
+        console.log("Categories already loaded:", categories.length);
+      }
+    }
+  }, [open, categories, refreshCategories]);
 
   const form = useForm({
     resolver: yupResolver(formSchema),

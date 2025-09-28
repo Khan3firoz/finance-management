@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { CalendarIcon, ArrowDownRight, ArrowUpRight } from "lucide-react";
 import dayjs from "dayjs";
 import * as yup from "yup";
@@ -75,7 +75,7 @@ export function AddTransactionModal({
   open,
   onClose,
 }: AddTransactionModalProps) {
-  const { categories, accounts, userData, refreshData, loading } = useFinance();
+  const { categories, accounts, userData, refreshData, refreshCategories, clearCategoriesCache, loading } = useFinance();
 
   const form = useForm({
     resolver: yupResolver(formSchema),
@@ -88,6 +88,18 @@ export function AddTransactionModal({
       accountId: "",
     },
   });
+
+  // Refresh categories when modal opens
+  useEffect(() => {
+    if (open) {
+      if (!categories || categories.length === 0) {
+        console.log("Modal opened, refreshing categories...");
+        refreshCategories();
+      } else {
+        console.log("Categories already loaded:", categories.length);
+      }
+    }
+  }, [open, categories, refreshCategories]);
 
   async function onSubmit(values: any) {
     const payload = {

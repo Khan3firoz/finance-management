@@ -34,9 +34,10 @@ export default function CategoriesPage() {
   const [loading, setLoading] = useState(true);
 
   // Fetch categories only - no other API calls
-  const fetchCategories = useCallback(async () => {
+  const fetchCategories = useCallback(async (retryCount = 0) => {
     try {
       setLoading(true);
+      console.log(`Fetching categories (attempt ${retryCount + 1})...`);
       const response = await fetchCategory();
       console.log('Categories API response:', response);
       
@@ -44,11 +45,30 @@ export default function CategoriesPage() {
       const categoriesData = response?.data?.categories || response?.data || [];
       console.log('Categories data:', categoriesData);
       
-      setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+      if (Array.isArray(categoriesData) && categoriesData.length > 0) {
+        setCategories(categoriesData);
+        console.log('Categories loaded successfully');
+      } else {
+        console.warn('No categories found or invalid data structure');
+        setCategories([]);
+        
+        // Retry once if no categories found
+        if (retryCount === 0) {
+          console.log('Retrying category fetch...');
+          setTimeout(() => fetchCategories(1), 1000);
+        }
+      }
     } catch (error) {
       console.error('Failed to fetch categories:', error);
-      toast.error("Failed to fetch categories");
-      setCategories([]);
+      
+      // Retry once on error
+      if (retryCount === 0) {
+        console.log('Retrying category fetch after error...');
+        setTimeout(() => fetchCategories(1), 2000);
+      } else {
+        toast.error("Failed to fetch categories");
+        setCategories([]);
+      }
     } finally {
       setLoading(false);
     }

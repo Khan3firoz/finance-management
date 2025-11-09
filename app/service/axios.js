@@ -1,7 +1,7 @@
 import storage from '@/utils/storage';
 import Axios from 'axios';
 
-const apiurl = process.env.NEXT_PUBLIC_SITE_URL;
+const apiurl = process.env.NEXT_PUBLIC_API_URL;
 function authRequestInterceptor(config) {
     config.headers = config.headers ?? {};
     const token = storage.getToken();
